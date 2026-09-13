@@ -6,7 +6,7 @@ SCEMS is an innovative, centralized digital platform designed to revolutionize u
 نظام (SCEMS) هو منصة رقمية مركزية مبتكرة مصممة لتطوير وتنظيم الفعاليات داخل الحرم الجامعي. 
 
 ## 👥 The Team | الفريق
-* **Team Leader (قائد الفريق):** Rayan Khaled Alharbi
+* **Team Leader :** Rayan Khaled Alharbi
 * **Team Members (أعضاء الفريق):**
   * TURKI NASSER ALANZI
   * Abdullah yousef alsaqabi 
