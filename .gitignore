@@ -10,5 +10,7 @@ __pycache__/
 .venv/
 *.log
 .DS_Store
+# Machine-specific Claude Code launch config (holds a Windows-only SWC cache path)
+.claude/launch.json
 analytics/data/*
 !analytics/data/README.md

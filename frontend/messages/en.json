@@ -5,6 +5,59 @@
     "apiChecking": "Checking server connection…",
     "apiUp": "Server is up",
     "apiDown": "Cannot reach the server",
-    "switchLanguage": "العربية"
+    "switchLanguage": "العربية",
+    "login": "Log in",
+    "register": "Create account",
+    "myAccount": "My account"
+  },
+  "Register": {
+    "title": "Create account",
+    "subtitle": "Create an account to register for events",
+    "fullName": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters",
+    "submit": "Create account",
+    "submitting": "Creating account…",
+    "success": "Your account was created. You can log in now.",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Log in"
+  },
+  "Login": {
+    "title": "Log in",
+    "subtitle": "Enter your details to access your account",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "submitting": "Logging in…",
+    "noAccount": "Do not have an account?",
+    "registerLink": "Create account"
+  },
+  "Me": {
+    "title": "My account",
+    "loading": "Loading…",
+    "fullName": "Name",
+    "email": "Email",
+    "role": "Role",
+    "logout": "Log out",
+    "loggingOut": "Logging out…",
+    "backHome": "Home"
+  },
+  "Roles": {
+    "ATTENDEE": "Attendee",
+    "ORGANIZER": "Organizer",
+    "ADMIN": "Admin"
+  },
+  "Errors": {
+    "INVALID_EMAIL": "Enter a valid email address",
+    "WEAK_PASSWORD": "Password must be at least 8 characters",
+    "INVALID_NAME": "Full name is required",
+    "EMAIL_TAKEN": "An account with this email already exists",
+    "INVALID_CREDENTIALS": "Incorrect email or password",
+    "ACCOUNT_INACTIVE": "This account is disabled. Contact the administration.",
+    "UNAUTHENTICATED": "Your session has ended. Please log in again.",
+    "FORBIDDEN": "You do not have permission to perform this action",
+    "NETWORK": "Cannot reach the server. Check your connection and try again.",
+    "UNKNOWN": "Something went wrong. Please try again."
   }
 }
