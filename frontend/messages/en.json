@@ -1,0 +1,10 @@
+{
+  "Home": {
+    "title": "Smart Campus Event Manager System",
+    "subtitle": "University of Hail — Graduation Project 2",
+    "apiChecking": "Checking server connection…",
+    "apiUp": "Server is up",
+    "apiDown": "Cannot reach the server",
+    "switchLanguage": "العربية"
+  }
+}

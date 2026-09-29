@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+/* Placeholder styles - the real look comes from the Figma design (Role 7). */
+html {
+  font-family: Tahoma, 'Segoe UI', system-ui, sans-serif;
+}

@@ -1,0 +1,21 @@
+# Local development / server deployment for the BACKEND services.
+# - The database is Supabase (cloud), so there is no database container here.
+# - The frontend is deployed on Vercel; run it locally with `npm run dev` inside /frontend.
+#
+# Usage:  cp .env.example .env   (fill it in)   then   docker compose up --build
+services:
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  analytics:
+    build: ./analytics
+    env_file: .env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
