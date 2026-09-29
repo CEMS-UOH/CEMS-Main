@@ -4,8 +4,6 @@
 // Put routes, controllers and services for this module in THIS folder only.
 const router = require('express').Router();
 
-// Example (delete when you add real routes):
-// const { ok } = require('../../lib/response');
-// router.get('/', (req, res) => ok(res, []));
+router.use('/auth', require('./auth.routes'));
 
 module.exports = router;
