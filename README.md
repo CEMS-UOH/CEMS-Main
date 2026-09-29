@@ -42,7 +42,7 @@ scems/
   backend/     Node.js + Express API, Prisma schema (Supabase Postgres)
   frontend/    Next.js (Arabic RTL default + English), Tailwind
   analytics/   Python (FastAPI, pandas, scikit-learn)
-  docs/        Roadmap, SRS, use cases
+  docs/        ROADMAP, DATABASE (schema + RLS decision), DEPLOY, SRS, use cases
   CLAUDE.md    Rules every teammate's AI tool follows (read it!)
 ```
 
@@ -74,7 +74,7 @@ Then open a new terminal. Linux/macOS, CI, and Vercel are not affected.
   to load the 5 categories, 3 venues and the first ADMIN account. See `docs/DATABASE.md` for the
   migration workflow, the RLS decision and the P1001 tip.
 - Role 4: run `npx shadcn@latest init` once inside `frontend/` and commit, so everyone shares the same UI component setup.
-- Role 8: connect Vercel to `frontend/`, set up the DigitalOcean droplet, run `docker compose up -d --build` there (see `docker-compose.yml`).
+- Role 8: connect Vercel to `frontend/` (root directory `frontend`), set up the DigitalOcean droplet, NGINX and Certbot. Full runbook in `docs/DEPLOY.md`, including the `CORS_ORIGINS` / `COOKIE_DOMAIN` values the shared session cookie needs.
 
 ## Open decisions (settle in the first meeting)
 1. **Mobile:** the official NFR mentions React Native; we build a responsive web app instead. Get the supervisor's written OK.
@@ -139,9 +139,12 @@ Honest list of what the foundation does **not** do yet. None of these block the 
 12. **Windows only:** `next-intl` depends on `@swc/core`, whose native loader refuses to run if
     an untrusted account can write to the directory tree it caches its binary in. See the
     Windows note under "Get started".
-13. `backend/Dockerfile` runs `npm ci --omit=dev` and then `npx prisma generate`, but `prisma`
-    is a devDependency - so the CLI is omitted and npx tries to download it during the build.
-    To be fixed in the deployment pass (move `prisma` into `dependencies`).
+13. **Docker images are not build-verified.** `backend/Dockerfile` was fixed (the `prisma` CLI
+    moved into `dependencies`, and `openssl` added for Prisma's query engine on Alpine), but
+    Docker Desktop would not start during the bootstrap session, so neither image has actually
+    been built. `docker compose config` validates, and both services are declared correctly.
+    Run `docker compose build` before the first deploy - see `docs/DEPLOY.md` -> "Still to be
+    verified".
 
 **Scope**
 14. The official NFR mentions a **React Native** mobile app; we build a responsive web app
