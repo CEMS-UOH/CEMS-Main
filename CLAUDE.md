@@ -42,6 +42,8 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 4. Every API response uses `ok()` / `fail()` from `backend/src/lib/response.js`:
    `{ success: true, data }` or `{ success: false, error: { message, code } }`. Throw `HttpError` for expected errors.
 5. Validate all request input in the controller. Never trust the client. Passwords are hashed with bcrypt; sessions use JWT (NFRs).
+   Authorization lives in the API, not in the database - RLS is enabled with no policies purely as a
+   second safety net over Supabase's public Data API. See `docs/DATABASE.md` before changing it.
 6. Never commit secrets. `.env` is git-ignored. Add new variables to `.env.example` (with a fake value).
 7. UI text is never hardcoded. Add keys to BOTH `frontend/messages/ar.json` and `frontend/messages/en.json`.
 8. Layout must work in RTL and LTR: use Tailwind logical classes (`ms-`, `me-`, `ps-`, `pe-`, `text-start`, `text-end`), never `ml-`, `mr-`, `left-`, `right-`.
@@ -59,7 +61,9 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 
 ## Commands
 - Backend: `cd backend && npm install && npm run dev` | tests: `npm test`
-- DB change (Role 2): edit schema, then `npx prisma migrate dev --name <what_changed>`
+- DB change (Role 2): edit schema, then `cd backend && npm run prisma:migrate -- --name <what_changed>`
+  (not bare `npx prisma migrate dev` - our `.env` is at the repo root, which the Prisma CLI does not read. See `docs/DATABASE.md`)
+- Seed reference data + first ADMIN: `cd backend && npm run db:seed`
 - Frontend: `cd frontend && cp .env.example .env.local && npm install && npm run dev`
 - Analytics: `cd analytics && pip install -r requirements.txt && uvicorn app.main:app --reload`
 - Everything backend-side via Docker: `docker compose up --build`

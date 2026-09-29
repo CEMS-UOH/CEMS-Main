@@ -69,9 +69,10 @@ Then open a new terminal. Linux/macOS, CI, and Vercel are not affected.
 
 ## One-time setup (Leader / Role 2 / Role 8)
 - Leader: create `develop` from `main`; on GitHub enable branch protection on `main` and `develop` (require PR + passing CI).
-- Role 2: the Supabase project already exists. Put `DATABASE_URL` and `DIRECT_URL` in `.env`, then in `backend/` run
-  `npx prisma migrate dev --name init` (creates the 8 tables) and check them in Supabase's Table Editor. Commit the generated `prisma/migrations/` folder.
-  Tip: if the direct connection fails with error P1001, use the Session pooler string for `DIRECT_URL`.
+- Role 2: **done.** The 8 tables are migrated and Row Level Security is enabled on all of them
+  (no policies - deny by default over Supabase's public Data API). Run `cd backend && npm run db:seed`
+  to load the 5 categories, 3 venues and the first ADMIN account. See `docs/DATABASE.md` for the
+  migration workflow, the RLS decision and the P1001 tip.
 - Role 4: run `npx shadcn@latest init` once inside `frontend/` and commit, so everyone shares the same UI component setup.
 - Role 8: connect Vercel to `frontend/`, set up the DigitalOcean droplet, run `docker compose up -d --build` there (see `docker-compose.yml`).
 
