@@ -200,19 +200,24 @@ Renewal is automatic via the `certbot.timer` systemd unit. Verify with:
 sudo certbot renew --dry-run
 ```
 
-### One code change this requires
+### Why the proxy headers matter
 
 The session cookie is set with `secure: isProduction` (`backend/src/lib/session.js`). Behind a
-proxy, Express only treats a request as secure if it trusts `X-Forwarded-Proto`. Add this to
-`backend/src/app.js` before deploying, or the browser will reject the cookie:
+proxy, Express only treats a request as secure if it trusts `X-Forwarded-Proto` — otherwise it
+sees plain `http`, refuses to send a `secure` cookie, and login fails silently.
+
+`backend/src/app.js` already handles this:
 
 ```js
-// Behind NGINX on the droplet: trust X-Forwarded-Proto so `secure` cookies work.
 if (isProduction) app.set('trust proxy', 1);
 ```
 
-This is **not** in the code yet — it is deliberately left for the deployment PR, since setting
-it locally would have no effect and could mask problems.
+`1` trusts exactly one hop — the NGINX instance in front of us. Do not raise it: a larger value
+would let a client forge `X-Forwarded-For` and spoof its own IP. If a CDN is ever added in front
+of NGINX, increase it to match the real number of proxies, and no more.
+
+The `proxy_set_header X-Forwarded-Proto $scheme;` line in the NGINX config above is the other
+half of this — both are required.
 
 ---
 
@@ -316,7 +321,9 @@ Nothing in this document has been executed. Before the production deploy, Role 8
    would not start on the Leader's machine during the bootstrap session.
 2. The `apk add --no-cache openssl` line in `backend/Dockerfile` is actually required (it is
    Prisma's documented requirement on Alpine, but it was added without a build to confirm).
-3. `app.set('trust proxy', 1)` is added, or `Secure` cookies will not be set behind NGINX.
-4. The `ports:` entries in `docker-compose.yml` are bound to `127.0.0.1`.
-5. `docker compose exec backend npx prisma migrate deploy` works inside the image — the image
+3. The `ports:` entries in `docker-compose.yml` are bound to `127.0.0.1` (still open — left for
+   Role 8, who owns that file).
+4. `docker compose exec backend npx prisma migrate deploy` works inside the image — the image
    deliberately ships the Prisma CLI as a runtime dependency for this.
+5. `Set-Cookie` on a real login through NGINX carries `Secure` and `Domain=.<domain>`, which
+   confirms `trust proxy` and `COOKIE_DOMAIN` are both working.
