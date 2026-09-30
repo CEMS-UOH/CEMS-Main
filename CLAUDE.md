@@ -28,6 +28,8 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 | `backend/src/modules/admin` | Role 2 |
 | `backend/src/modules/organizer` | Role 3 |
 | `backend/src/modules/chatbot` | Role 3 |
+| `frontend/lib`, `frontend/components` (shared) | Role 1 + Role 4 (agree before changing) |
+| `frontend/app/[locale]/{login,register,me}` (foundation auth) | Role 1 (Leader) |
 | `frontend/app/[locale]/(attendee)`, AI chat UI | Role 4 |
 | `frontend/app/[locale]/(organizer)`, `(admin)`, dashboard, notifications UI | Role 5 |
 | `analytics/` | Role 6 |
@@ -36,16 +38,21 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 | Architecture decisions, PR review, this file | Role 1 (Leader) |
 
 ## Rules for AI-assisted coding
-1. Before writing anything, search the repo for existing code (especially `backend/src/lib` and `frontend/components`). Reuse it. Do not create a second helper that does the same thing.
+1. Before writing anything, search the repo for existing code (especially `backend/src/lib`, `backend/src/middleware`, `frontend/lib` and `frontend/components`). Reuse it. Do not create a second helper that does the same thing.
 2. **Never edit `backend/prisma/schema.prisma`** unless you are Role 2. Need a new column or table? Write the exact change you need in the PR description or ask Role 2.
 3. Never create a new `PrismaClient`. Always `require('../../lib/prisma')`.
 4. Every API response uses `ok()` / `fail()` from `backend/src/lib/response.js`:
    `{ success: true, data }` or `{ success: false, error: { message, code } }`. Throw `HttpError` for expected errors.
 5. Validate all request input in the controller. Never trust the client. Passwords are hashed with bcrypt; sessions use JWT (NFRs).
+   Authorization lives in the API, not in the database - RLS is enabled with no policies purely as a
+   second safety net over Supabase's public Data API. See `docs/DATABASE.md` before changing it.
 6. Never commit secrets. `.env` is git-ignored. Add new variables to `.env.example` (with a fake value).
 7. UI text is never hardcoded. Add keys to BOTH `frontend/messages/ar.json` and `frontend/messages/en.json`.
 8. Layout must work in RTL and LTR: use Tailwind logical classes (`ms-`, `me-`, `ps-`, `pe-`, `text-start`, `text-end`), never `ml-`, `mr-`, `left-`, `right-`.
 9. The browser talks only to our backend, never directly to the database, and never to the Claude API.
+   Use `frontend/lib/api.ts` for every call - never a bare `fetch`. It sets `credentials: "include"`
+   (required for the session cookie) and unwraps the `ok()`/`fail()` envelope. Show errors by the
+   `code` the API returns, translated through the `Errors` namespace in `messages/*.json`.
 10. Do not refactor, rename, or reformat code you do not own. Keep changes small and focused on your task.
 11. Add or update tests for what you build (`backend/tests`). Use `jest.mock('../src/lib/prisma', ...)` like `health.test.js`.
 12. If a requirement is unclear or your task seems to touch other roles' code: stop and ask. Do not guess.
@@ -59,7 +66,9 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 
 ## Commands
 - Backend: `cd backend && npm install && npm run dev` | tests: `npm test`
-- DB change (Role 2): edit schema, then `npx prisma migrate dev --name <what_changed>`
+- DB change (Role 2): edit schema, then `cd backend && npm run prisma:migrate -- --name <what_changed>`
+  (not bare `npx prisma migrate dev` - our `.env` is at the repo root, which the Prisma CLI does not read. See `docs/DATABASE.md`)
+- Seed reference data + first ADMIN: `cd backend && npm run db:seed`
 - Frontend: `cd frontend && cp .env.example .env.local && npm install && npm run dev`
 - Analytics: `cd analytics && pip install -r requirements.txt && uvicorn app.main:app --reload`
 - Everything backend-side via Docker: `docker compose up --build`
