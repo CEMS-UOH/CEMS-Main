@@ -110,13 +110,12 @@ docker compose up -d --build
 
 `docker-compose.yml` defines two services, both reading `env_file: .env`:
 
-- `backend` → publishes `5000:5000`
-- `analytics` → publishes `8000:8000`
+- `backend` → `127.0.0.1:5000:5000`
+- `analytics` → `127.0.0.1:8000:8000`
 
-> **Hardening to do (Role 8):** those `ports:` entries bind to `0.0.0.0`, so without the UFW
-> rules above they would be publicly reachable. Change them to `"127.0.0.1:5000:5000"` and
-> `"127.0.0.1:8000:8000"` so they are only reachable from the host, and drop the analytics
-> mapping entirely once NGINX does not need it.
+Both are bound to **loopback**, not `0.0.0.0`, so neither is reachable from outside the droplet
+even if UFW is misconfigured. NGINX reaches the backend over `127.0.0.1:5000`. The analytics
+mapping can be dropped entirely once nothing on the host needs to call it directly.
 
 ### Migrations
 
@@ -321,9 +320,7 @@ Nothing in this document has been executed. Before the production deploy, Role 8
    would not start on the Leader's machine during the bootstrap session.
 2. The `apk add --no-cache openssl` line in `backend/Dockerfile` is actually required (it is
    Prisma's documented requirement on Alpine, but it was added without a build to confirm).
-3. The `ports:` entries in `docker-compose.yml` are bound to `127.0.0.1` (still open — left for
-   Role 8, who owns that file).
-4. `docker compose exec backend npx prisma migrate deploy` works inside the image — the image
+3. `docker compose exec backend npx prisma migrate deploy` works inside the image — the image
    deliberately ships the Prisma CLI as a runtime dependency for this.
-5. `Set-Cookie` on a real login through NGINX carries `Secure` and `Domain=.<domain>`, which
+4. `Set-Cookie` on a real login through NGINX carries `Secure` and `Domain=.<domain>`, which
    confirms `trust proxy` and `COOKIE_DOMAIN` are both working.

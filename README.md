@@ -124,22 +124,24 @@ Honest list of what the foundation does **not** do yet. None of these block the 
    Editor shows tables as empty** even when they hold rows, because it reads through the Data
    API. Use `cd backend && npm run prisma:studio` or the SQL Editor. Supabase's linter will
    also keep reporting `rls_enabled_no_policy` at INFO severity. See `docs/DATABASE.md`.
-8. **Test accounts are still in the database** (`phase3.*`, `phase4.*`, `phase5.*` at
-   `example.com`). Delete them before the final submission.
-9. The Prisma seed is configured via `package.json#prisma`, which Prisma deprecates and will
+8. The Prisma seed is configured via `package.json#prisma`, which Prisma deprecates and will
    remove in Prisma 7. We are on Prisma 6; migrating to `prisma.config.ts` is a later chore.
 
 **Dependencies and tooling**
-10. `npm audit` reports **1 high + 1 moderate** in the frontend (`postcss`, pulled in by Next
-    15.5.26). The only fix is Next 16, which contradicts our pinned Next 15 stack, so we are
-    accepting it for now.
-11. `npm audit` reports **3 high** in the backend, all inside the `prisma` **CLI**
-    devDependency (`@prisma/config` -> `deepmerge-ts`). Not in the runtime path - it cannot be
-    reached by a request.
-12. **Windows only:** `next-intl` depends on `@swc/core`, whose native loader refuses to run if
+9. `npm audit` reports **1 high + 1 moderate** in the frontend (`postcss`, pulled in by Next
+   15.5.26). The only fix is Next 16, which contradicts our pinned Next 15 stack, so we are
+   accepting it for now.
+10. `npm audit` reports **3 high** in the backend, all inside the `prisma` CLI
+    (`@prisma/config` -> `deepmerge-ts`, a stack-exhaustion issue). The CLI is a **runtime**
+    dependency, not a devDependency - the Docker image needs it for `prisma generate` at build
+    time and `prisma migrate deploy` on the server - so it does ship in the production image.
+    Nothing a request can reach executes it: it is a command-line tool, invoked only by us.
+    Moving it back to devDependencies would break the image (see `docs/DEPLOY.md`); a
+    multi-stage build that generates the client and then drops the CLI is the real fix.
+11. **Windows only:** `next-intl` depends on `@swc/core`, whose native loader refuses to run if
     an untrusted account can write to the directory tree it caches its binary in. See the
     Windows note under "Get started".
-13. **Docker images are not build-verified.** `backend/Dockerfile` was fixed (the `prisma` CLI
+12. **Docker images are not build-verified.** `backend/Dockerfile` was fixed (the `prisma` CLI
     moved into `dependencies`, and `openssl` added for Prisma's query engine on Alpine), but
     Docker Desktop would not start during the bootstrap session, so neither image has actually
     been built. `docker compose config` validates, and both services are declared correctly.
@@ -147,9 +149,9 @@ Honest list of what the foundation does **not** do yet. None of these block the 
     verified".
 
 **Scope**
-14. The official NFR mentions a **React Native** mobile app; we build a responsive web app
+13. The official NFR mentions a **React Native** mobile app; we build a responsive web app
     instead (open decision #1).
-15. No E2E tests yet (Playwright is planned for Sprint 6). Backend has 26 Jest/Supertest tests;
+14. No E2E tests yet (Playwright is planned for Sprint 6). Backend has 26 Jest/Supertest tests;
     the frontend has none.
 
 ## Roles
