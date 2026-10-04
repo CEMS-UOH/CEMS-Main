@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCEMS Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!--
+  SCEMS clickable prototype - Role 7 (UI/UX).
+  A design reference for Roles 4 and 5, NOT application code. No backend, all data is fake and lives in memory.
+  Follows docs/DESIGN-SYSTEM.md and docs/SRS.md. Open this file directly in a browser.
+-->
+<style>
+:root {
+  --navy: #1B2A4A; --navy-light: #253659; --navy-dark: #111B30;
+  --teal: #2A9D8F; --teal-dark: #1E7268; --teal-darker: #185E56; --teal-light: #3AB5A5; --teal-bg: #E6F5F3;
+  --gray-50: #F8F9FA; --gray-100: #F1F3F5; --gray-200: #E9ECEF; --gray-300: #DEE2E6; --gray-400: #CED4DA;
+  --gray-500: #ADB5BD; --gray-600: #6C757D; --gray-700: #495057; --gray-800: #343A40;
+  --success: #2ECC71; --success-bg: #D4F5E2; --success-fg: #1A7A40;
+  --warning: #F39C12; --warning-bg: #FEF3CD; --warning-fg: #856404;
+  --danger: #E74C3C; --danger-strong: #C0392B; --danger-bg: #FDE8E8; --danger-fg: #A12D2D;
+  --info-bg: #E8ECF3;
+  --radius: 12px; --radius-sm: 8px; --shadow: 0 2px 12px rgba(27,42,74,0.10); --tr: 0.18s ease;
+  --font: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+.ic { width: 1em; height: 1em; flex-shrink: 0; vertical-align: -0.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic.fill { fill: currentColor; stroke: none; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--gray-50); color: var(--gray-800); font-size: 14px; line-height: 1.6; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+/* Prototype controls (not part of the product UI) */
+.proto-bar { background: #fff; border-bottom: 2px dashed var(--gray-300); padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12px; color: var(--gray-600); }
+.proto-bar strong { color: var(--gray-700); }
+.proto-bar select { padding: 3px 8px; border: 1px solid var(--gray-300); border-radius: 6px; background: #fff; font-size: 12px; }
+.proto-bar .seg { display: inline-flex; border: 1px solid var(--gray-300); border-radius: 6px; overflow: hidden; }
+.proto-bar .seg button { border: 0; background: #fff; padding: 3px 10px; font-size: 12px; }
+.proto-bar .seg button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+
+/* App chrome */
+.topbar { background: var(--navy); color: #fff; height: 56px; display: flex; align-items: center; gap: 12px; padding-inline: 16px; position: sticky; top: 0; z-index: 20; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; background: none; border: 0; color: #fff; }
+.brand-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--teal-dark); display: grid; place-items: center; font-weight: 800; }
+.nav { display: flex; gap: 4px; margin-inline-start: 12px; overflow-x: auto; }
+.nav button { background: none; border: 0; color: #C9D2E3; padding: 6px 12px; border-radius: 8px; white-space: nowrap; font-size: 13px; }
+.nav button:hover { background: var(--navy-light); color: #fff; }
+.nav button[aria-current="page"] { background: var(--navy-light); color: #fff; box-shadow: inset 0 -2px 0 var(--teal); }
+.top-actions { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+.icon-btn { position: relative; background: rgba(255,255,255,.12); border: 0; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; }
+.icon-btn .count { position: absolute; top: -2px; inset-inline-end: -2px; background: var(--danger-strong); color: #fff; font-size: 10px; min-width: 17px; height: 17px; border-radius: 9px; display: grid; place-items: center; padding-inline: 4px; }
+.lang-toggle { background: rgba(255,255,255,.12); border: 0; color: #fff; padding: 5px 12px; border-radius: 999px; font-size: 12px; }
+.menu-btn { display: none; }
+@media (max-width: 860px) {
+  .nav { display: none; position: absolute; top: 56px; inset-inline: 0; background: var(--navy); flex-direction: column; padding: 8px; margin: 0; }
+  .nav.open { display: flex; }
+  .menu-btn { display: grid; }
+  .user-chip .name { display: none; }
+}
+.user-chip { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--teal-bg); color: var(--teal-dark); display: inline-grid; place-items: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+
+main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.page-head h1 { font-size: 20px; color: var(--navy); }
+.page-head p { color: var(--gray-600); font-size: 13px; }
+.fr { display: inline-block; font-size: 10px; font-weight: 600; color: var(--teal-dark); background: var(--teal-bg); padding: 1px 8px; border-radius: 999px; margin-inline-start: 6px; vertical-align: middle; }
+.back { background: none; border: 0; color: var(--teal-dark); font-weight: 600; margin-bottom: 12px; display: inline-flex; gap: 4px; align-items: center; }
+.flip { display: inline-block; }
+[dir="ltr"] .flip { transform: scaleX(-1); }
+
+/* Components */
+.card { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+.card + .card { margin-top: 16px; }
+.card h2 { font-size: 16px; color: var(--navy); margin-bottom: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid transparent; border-radius: var(--radius-sm); padding: 8px 18px; font-size: 13px; font-weight: 600; transition: background var(--tr); white-space: nowrap; }
+.btn-primary { background: var(--teal-dark); color: #fff; }
+.btn-primary:hover { background: var(--teal-darker); }
+.btn-secondary { background: transparent; border-color: var(--teal-dark); color: var(--teal-dark); }
+.btn-secondary:hover { background: var(--teal-bg); }
+.btn-navy { background: var(--navy); color: #fff; }
+.btn-navy:hover { background: var(--navy-dark); }
+.btn-danger { background: var(--danger-strong); color: #fff; }
+.btn-ghost { background: none; color: var(--gray-700); border-color: var(--gray-300); }
+.btn-ghost:hover { background: var(--gray-100); }
+.btn-sm { padding: 4px 12px; font-size: 12px; }
+.btn-block { width: 100%; padding: 11px 18px; font-size: 14px; }
+.btn:disabled { background: var(--gray-200); color: var(--gray-600); border-color: transparent; cursor: not-allowed; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; }
+.field .hint { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
+.field .err { font-size: 12px; color: var(--danger-fg); margin-top: 4px; }
+.input, select.input, textarea.input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); background: #fff; font-size: 13px; transition: border-color var(--tr); }
+.input:focus { border-color: var(--teal); outline: none; }
+.input.invalid { border-color: var(--danger); }
+textarea.input { min-height: 96px; resize: vertical; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.b-teal { background: var(--teal-bg); color: var(--teal-dark); }
+.b-success { background: var(--success-bg); color: var(--success-fg); }
+.b-warning { background: var(--warning-bg); color: var(--warning-fg); }
+.b-danger { background: var(--danger-bg); color: var(--danger-fg); }
+.b-info { background: var(--info-bg); color: var(--navy); }
+.b-gray { background: var(--gray-200); color: var(--gray-600); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 5px 14px; border-radius: 999px; border: 1.5px solid var(--gray-300); background: #fff; color: var(--gray-600); font-size: 12px; }
+.chip[aria-pressed="true"] { background: var(--teal-bg); border-color: var(--teal-dark); color: var(--teal-dark); font-weight: 600; }
+.search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--gray-300); border-radius: 999px; padding: 6px 16px; }
+.search:focus-within { border-color: var(--teal); }
+.search input { border: 0; outline: 0; flex: 1; background: transparent; padding: 4px 0; min-width: 0; }
+.search button { background: none; border: 0; color: var(--gray-600); font-size: 12px; }
+.progress { height: 6px; background: var(--gray-200); border-radius: 999px; overflow: hidden; }
+.progress > span { display: block; height: 100%; border-radius: 999px; }
+.muted { color: var(--gray-600); font-size: 13px; }
+.small { font-size: 12px; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spread { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.g4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.stack > * + * { margin-top: 12px; }
+.open-note { border: 1.5px dashed var(--warning); background: #FFFBEB; color: var(--warning-fg); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; margin-bottom: 16px; }
+.open-note strong { color: #6B4F00; }
+
+/* Event card */
+.ev { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; text-align: start; transition: box-shadow var(--tr); padding: 0; }
+.ev:hover { box-shadow: var(--shadow); }
+.ev-banner { height: 104px; position: relative; overflow: hidden; color: #fff; display: flex; align-items: flex-end; padding: 12px 14px; }
+.ev-banner .bg-ic { position: absolute; inset-inline-end: -14px; bottom: -22px; font-size: 112px; opacity: .16; stroke-width: 1.5; }
+.ev-banner .badge { position: absolute; top: 10px; inset-inline-end: 10px; }
+.datebox { background: rgba(255,255,255,.95); color: var(--navy); border-radius: 8px; padding: 4px 10px; text-align: center; line-height: 1.15; position: relative; }
+.datebox b { display: block; font-size: 18px; }
+.datebox span { font-size: 11px; color: var(--gray-600); }
+.ev-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.ev-title { font-weight: 700; color: var(--navy); font-size: 15px; }
+.meta { display: flex; gap: 6px; align-items: center; color: var(--gray-600); font-size: 12px; }
+.cat-workshop { background: var(--teal-dark); }
+.cat-seminar { background: var(--navy-light); }
+.cat-competition { background: #8A4B22; }
+.cat-cultural { background: #5B4A7A; }
+.cat-sports { background: #2E6B4F; }
+.cat-other { background: var(--gray-700); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--gray-200); border-radius: var(--radius); background: #fff; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: start; font-size: 12px; color: var(--gray-600); font-weight: 600; background: var(--gray-50); padding: 10px 14px; border-bottom: 1px solid var(--gray-200); white-space: nowrap; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+
+/* Stat */
+.stat { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 16px; }
+.stat .v { font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1.2; }
+.stat .l { font-size: 12px; color: var(--gray-600); }
+
+/* Info tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.tile { background: var(--gray-50); border-radius: var(--radius-sm); padding: 10px 12px; }
+.tile .l { font-size: 11px; color: var(--gray-600); }
+.tile .v { font-weight: 600; color: var(--gray-800); }
+
+/* QR */
+.qr { width: 168px; height: 168px; margin: 0 auto; padding: 10px; background: #fff; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); display: grid; grid-template-columns: repeat(21, 1fr); }
+.qr i { display: block; }
+.qr i.on { background: var(--gray-800); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--gray-200); margin-bottom: 16px; overflow-x: auto; }
+.tabs button { background: none; border: 0; padding: 8px 14px; color: var(--gray-600); font-weight: 600; font-size: 13px; border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--teal-dark); border-bottom-color: var(--teal-dark); }
+
+/* Booking row */
+.bk { display: flex; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--gray-200); border-inline-start: 4px solid var(--teal); border-radius: var(--radius-sm); padding: 12px 14px; flex-wrap: wrap; }
+.bk.past, .bk.cancelled { border-inline-start-color: var(--gray-400); }
+.bk .ico { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; color: #fff; flex-shrink: 0; }
+.bk .info { flex: 1; min-width: 180px; }
+
+/* Stepper */
+.steps { display: flex; gap: 8px; margin-bottom: 20px; }
+.step { flex: 1; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--gray-600); }
+.step .n { width: 28px; height: 28px; border-radius: 50%; background: var(--gray-200); display: grid; place-items: center; font-weight: 700; flex-shrink: 0; }
+.step.active .n { background: var(--teal-dark); color: #fff; }
+.step.done .n { background: var(--success-bg); color: var(--success-fg); }
+.step.active { color: var(--navy); font-weight: 600; }
+.step::after { content: ""; flex: 1; height: 2px; background: var(--gray-200); }
+.step:last-child::after { display: none; }
+
+/* Notifications */
+.nt { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--gray-100); }
+.nt:last-child { border-bottom: 0; }
+.nt .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-400); margin-top: 7px; flex-shrink: 0; }
+.nt.unread .dot { background: var(--teal); }
+.nt.unread .t { font-weight: 700; }
+
+/* Bars */
+.bars { display: flex; align-items: flex-end; gap: 10px; height: 180px; padding-top: 10px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.bar { width: 100%; max-width: 44px; background: var(--teal); border-radius: 4px 4px 0 0; }
+.bar.pred { background: repeating-linear-gradient(45deg, var(--teal-bg), var(--teal-bg) 4px, #fff 4px, #fff 8px); border: 1.5px dashed var(--teal-dark); }
+.bar-col .l { font-size: 11px; color: var(--gray-600); }
+.bar-col .v { font-size: 11px; font-weight: 600; color: var(--gray-700); }
+.hbar { display: grid; grid-template-columns: 110px 1fr 44px; gap: 10px; align-items: center; font-size: 13px; margin-bottom: 10px; }
+
+/* Chat */
+.chat { display: flex; flex-direction: column; height: min(640px, calc(100vh - 210px)); padding: 0; overflow: hidden; }
+.chat-head { background: var(--navy); color: #fff; padding: 12px 16px; display: flex; gap: 10px; align-items: center; }
+.chat-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--gray-50); }
+.bubble { max-width: 75%; padding: 9px 13px; border-radius: 16px; font-size: 13px; white-space: pre-line; }
+.bubble.bot { background: #fff; border: 1px solid var(--gray-200); align-self: flex-start; border-start-start-radius: 4px; }
+.bubble.user { background: var(--teal-dark); color: #fff; align-self: flex-end; border-start-end-radius: 4px; }
+.chat-foot { padding: 12px; border-top: 1px solid var(--gray-200); background: #fff; }
+
+/* Empty / skeleton */
+.empty { text-align: center; padding: 48px 16px; }
+.empty .ico { font-size: 44px; margin-bottom: 8px; color: var(--gray-400); }
+.icon-btn { font-size: 18px; }
+.bk .ico .ic { stroke-width: 1.75; }
+.meta .ic { color: var(--gray-500); }
+.empty h3 { color: var(--navy); font-size: 16px; margin-bottom: 4px; }
+.empty p { color: var(--gray-600); font-size: 13px; margin-bottom: 16px; }
+.sk { background: linear-gradient(90deg, var(--gray-200), var(--gray-100), var(--gray-200)); background-size: 200% 100%; animation: sk 1.2s infinite; border-radius: var(--radius); }
+@keyframes sk { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Modal + toast */
+.modal-back { position: fixed; inset: 0; background: rgba(17,27,48,.45); display: grid; place-items: center; z-index: 50; padding: 16px; }
+.modal { background: #fff; border-radius: var(--radius); max-width: 440px; width: 100%; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+.modal h3 { color: var(--navy); margin-bottom: 8px; font-size: 17px; }
+.modal .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.toast { position: fixed; bottom: 20px; inset-inline-start: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 13px; z-index: 60; box-shadow: var(--shadow); }
+[dir="rtl"] .toast { transform: translateX(50%); }
+
+/* Auth */
+.auth { max-width: 420px; margin: 32px auto; }
+.auth .logo { width: 56px; height: 56px; border-radius: 14px; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 26px; font-weight: 800; margin: 0 auto 12px; }
+.auth h1 { text-align: center; color: var(--navy); font-size: 20px; }
+.auth .sub { text-align: center; color: var(--gray-600); font-size: 13px; margin-bottom: 20px; }
+.alert { border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; margin-bottom: 16px; }
+.alert-danger { background: var(--danger-bg); color: var(--danger-fg); }
+.alert-success { background: var(--success-bg); color: var(--success-fg); }
+.layout-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 900px) { .layout-2 { grid-template-columns: 2fr 1fr; } }
+.dropzone { border: 2px dashed var(--gray-300); border-radius: var(--radius-sm); padding: 24px; text-align: center; color: var(--gray-600); font-size: 13px; background: var(--gray-50); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="proto-bar" id="protoBar"></div>
+<div id="app"></div>
+<div id="layer"></div>
+
+<script>
+'use strict';
+// ---------------------------------------------------------------- i18n
+// Arabic terms match frontend/messages/ar.json (حاضر / منظم / مشرف, error messages).
+const T = {
+  ar: {
+    product: 'نظام إدارة فعاليات الحرم الجامعي الذكي', short: 'SCEMS', uni: 'جامعة حائل', notesToggle: 'ملاحظات المراجعة', switchLang: 'English',
+    protoTitle: 'عناصر التحكم في النموذج الأولي', protoNote: 'ليست جزءًا من الواجهة', role: 'الدور', screen: 'الشاشة', loggedOut: 'غير مسجل',
+    ATTENDEE: 'حاضر', ORGANIZER: 'منظم', ADMIN: 'مشرف',
+    nav_feed: 'الفعاليات', nav_bookings: 'حجوزاتي', nav_chat: 'المساعد الذكي', nav_orgEvents: 'فعالياتي', nav_create: 'إنشاء فعالية',
+    nav_dash: 'لوحة التحكم', nav_users: 'المستخدمون', nav_cats: 'التصنيفات', nav_analytics: 'التحليلات', nav_broadcast: 'إشعار عام',
+    notifications: 'الإشعارات', menu: 'القائمة', logout: 'تسجيل الخروج',
+    login: 'تسجيل الدخول', loginSub: 'أدخل بياناتك للوصول إلى حسابك', email: 'البريد الإلكتروني', password: 'كلمة المرور',
+    noAccount: 'ليس لديك حساب؟', registerLink: 'إنشاء حساب', register: 'إنشاء حساب', registerSub: 'أنشئ حسابًا للتسجيل في الفعاليات',
+    fullName: 'الاسم الكامل', passwordHint: '8 أحرف على الأقل', submitRegister: 'إنشاء الحساب', haveAccount: 'لديك حساب بالفعل؟',
+    registered: 'تم إنشاء حسابك بنجاح. يمكنك تسجيل الدخول الآن.', loginAs: 'سيتم الدخول بدور: ',
+    E_INVALID_EMAIL: 'أدخل بريدًا إلكترونيًا صحيحًا', E_WEAK_PASSWORD: 'يجب أن تكون كلمة المرور 8 أحرف على الأقل', E_INVALID_NAME: 'الاسم الكامل مطلوب',
+    E_INVALID_CREDENTIALS: 'البريد الإلكتروني أو كلمة المرور غير صحيحة', E_REQUIRED: 'هذا الحقل مطلوب', E_CAPACITY: 'السعة يجب أن تكون بين 1 وسعة القاعة',
+    E_DATE: 'اختر موعدًا في المستقبل', E_TIME_ORDER: 'وقت الانتهاء يجب أن يكون بعد وقت البدء',
+    open1: 'قرار مفتوح', openFR01: 'هل يقتصر التسجيل على بريد الجامعة؟ (OPEN-2). الحقل يقبل أي بريد حاليًا.',
+    openFeedback: 'لا يوجد متطلب وظيفي يغطي التقييم حتى الآن (OPEN-3). الشاشة للمراجعة فقط.',
+    openScanner: 'هل الماسح صفحة داخل تطبيق الويب تستخدم كاميرا الجوال؟ (OPEN-4)',
+    openForgot: 'رابط "نسيت كلمة المرور" محذوف إلى أن يُتخذ قرار (OPEN-3).',
+    feedTitle: 'الفعاليات القادمة', feedSub: 'اكتشف الفعاليات المعتمدة واحجز مقعدك', searchPh: 'ابحث باسم الفعالية…', clear: 'مسح',
+    all: 'الكل', filters: 'تصفية', date: 'التاريخ', venue: 'القاعة', anyDate: 'أي وقت', thisWeek: 'هذا الأسبوع', thisMonth: 'هذا الشهر',
+    anyVenue: 'كل القاعات', results: n => `${n} فعالية`, noResults: 'لا توجد فعاليات مطابقة', noResultsSub: 'جرّب كلمة أخرى أو امسح عوامل التصفية.',
+    clearFilters: 'مسح التصفية', open: 'متاح', almost: 'شبه ممتلئ', full: 'ممتلئ', seatsLeft: n => `${n} مقعد متبقٍ`, booked: 'محجوز',
+    back: 'رجوع', details: 'تفاصيل الفعالية', when: 'الموعد', where: 'المكان', organizer: 'المنظم', remaining: 'المقاعد المتبقية',
+    capacity: 'السعة', bookNow: 'احجز مقعدك', alreadyBooked: 'لديك حجز في هذه الفعالية', viewTicket: 'عرض التذكرة', fullMsg: 'الفعالية ممتلئة. لا يمكن الحجز.',
+    confirmBookT: 'تأكيد الحجز', confirmBookB: e => `هل تريد حجز مقعد في "${e}"؟`, confirm: 'تأكيد', cancel: 'إلغاء', close: 'إغلاق',
+    bookedTitle: 'تم تأكيد الحجز', bookedSub: 'أرسلنا لك إشعار التأكيد. اعرض رمز QR عند الدخول.', bookingCode: 'رمز الحجز',
+    qrNote: 'صورة توضيحية، الرمز الحقيقي يولّده الخادم', myBookings: 'حجوزاتي', upcoming: 'القادمة', past: 'السابقة', cancelled: 'الملغاة',
+    cancelBooking: 'إلغاء الحجز', cancelBookT: 'إلغاء الحجز', cancelBookB: e => `سيتم إلغاء حجزك في "${e}" وإتاحة المقعد لغيرك. لا يمكن التراجع.`,
+    keep: 'الإبقاء على الحجز', bookingCancelled: 'تم إلغاء الحجز', ticket: 'التذكرة', rate: 'قيّم الفعالية', rated: 'تم التقييم', attended: 'حضرت',
+    noBookings: 'لا توجد حجوزات هنا', noBookingsSub: 'تصفح الفعاليات واحجز مقعدك الأول.', browse: 'تصفح الفعاليات',
+    fbTitle: 'تقييم الفعالية', fbOverall: 'التقييم العام', fbComment: 'تعليق (اختياري)', fbSubmit: 'إرسال التقييم', fbThanks: 'شكرًا لتقييمك',
+    stars: n => `${n} من 5`,
+    ntTitle: 'الإشعارات', markAll: 'تحديد الكل كمقروء', noNt: 'لا توجد إشعارات',
+    chatTitle: 'المساعد الذكي', chatSub: 'يعمل بواسطة Claude عبر خادم SCEMS', online: 'متصل', chatPh: 'اكتب سؤالك…', send: 'إرسال',
+    chatHello: 'مرحبًا! يمكنني مساعدتك في العثور على فعالية، أو عرض حجوزاتك، أو حجز مقعد بعد موافقتك.',
+    qBook: 'احجز لي فعالية', qMine: 'حجوزاتي', qHelp: 'مساعدة',
+    chatSuggest: e => `أقرب فعالية فيها مقاعد متاحة: "${e}". هل تريد حجزها؟`, chatConfirmBtn: 'نعم، احجز', chatNo: 'لا، شكرًا',
+    chatDone: c => `تم الحجز. رمز حجزك ${c}.`, chatMine: list => list.length ? `حجوزاتك القادمة:\n${list.join('\n')}` : 'لا توجد لديك حجوزات قادمة.',
+    chatHelp: 'جرّب: "ورش العمل"، أو "حجوزاتي"، أو "احجز لي فعالية". لن أحجز أي شيء دون موافقتك.',
+    chatFound: list => list.length ? `وجدت:\n${list.join('\n')}` : 'لم أجد فعالية مطابقة. جرّب كلمة أخرى.', chatDeclined: 'حسنًا، لم يتم حجز أي شيء.',
+    orgTitle: 'فعالياتي', orgSub: 'أدر فعالياتك وتابع الحجوزات', total: 'إجمالي الفعاليات', active: 'المعتمدة', pending: 'بانتظار الاعتماد', totalBookings: 'إجمالي الحجوزات',
+    event: 'الفعالية', status: 'الحالة', bookings: 'الحجوزات', actions: 'الإجراءات', attendeesBtn: 'الحضور', edit: 'تعديل', delete: 'حذف',
+    PENDING: 'بانتظار الاعتماد', APPROVED: 'معتمدة', REJECTED: 'مرفوضة', CANCELLED: 'ملغاة',
+    deleteEvT: 'حذف الفعالية', deleteEvB: e => `سيتم حذف "${e}" وإلغاء كل حجوزاتها. لا يمكن التراجع.`, evDeleted: 'تم حذف الفعالية',
+    noOrgEvents: 'لم تنشئ أي فعالية بعد', noOrgEventsSub: 'أنشئ فعاليتك الأولى وأرسلها للاعتماد.',
+    createTitle: 'إنشاء فعالية', editTitle: 'تعديل الفعالية', createSub: 'ستُرسل الفعالية للمشرف لاعتمادها قبل نشرها',
+    s1: 'المعلومات', s2: 'الموعد والمكان', s3: 'المراجعة', titleAr: 'العنوان (عربي)', titleEn: 'العنوان (إنجليزي)', descAr: 'الوصف (عربي)', descEn: 'الوصف (إنجليزي)',
+    category: 'التصنيف', choose: 'اختر…', startsAt: 'يبدأ', endsAt: 'ينتهي', capHint: c => `الحد الأعلى لهذه القاعة: ${c}`,
+    image: 'صورة الفعالية', dropzone: 'اسحب صورة هنا أو اضغط للاختيار (JPG/PNG، حتى 5MB)', next: 'التالي', prev: 'السابق',
+    submitForApproval: 'إرسال للاعتماد', saveChanges: 'حفظ التعديلات', submitted: 'تم الإرسال. الفعالية بانتظار اعتماد المشرف.', saved: 'تم حفظ التعديلات',
+    attTitle: 'قائمة الحضور', registeredN: 'المسجلون', checkedIn: 'تم التحضير', notYet: 'لم يحضر بعد', checkInTime: 'وقت التحضير',
+    scanTitle: 'تحضير بـ QR', scanPh: 'رمز الحجز مثل SCEMS-7K2Q9A', scanBtn: 'تحضير', simulate: 'محاكاة مسح',
+    scanOk: n => `تم تحضير ${n}`, scanDup: n => `${n} تم تحضيره مسبقًا`, scanBad: 'رمز غير صالح لهذه الفعالية', searchAtt: 'ابحث بالاسم أو البريد…', exportCsv: 'تصدير CSV',
+    noAtt: 'لا يوجد مسجلون بعد',
+    dashTitle: 'لوحة التحكم', dashSub: 'نظرة عامة على النظام', users: 'المستخدمون', approvals: 'طلبات الاعتماد', noApprovals: 'لا توجد طلبات بانتظار الاعتماد',
+    approve: 'اعتماد', reject: 'رفض', rejectT: 'رفض الفعالية', rejectB: e => `سيتم رفض "${e}" وإشعار المنظم.`, approvedMsg: 'تم اعتماد الفعالية ونشرها', rejectedMsg: 'تم رفض الفعالية',
+    allEvents: 'كل الفعاليات', by: 'بواسطة',
+    usersTitle: 'إدارة المستخدمين', usersSub: 'أنشئ حسابات المنظمين والمشرفين، وفعّل أو عطّل الحسابات', allRoles: 'كل الأدوار', name: 'الاسم',
+    activeS: 'نشط', inactiveS: 'معطل', deactivate: 'تعطيل', activate: 'تفعيل', deactT: 'تعطيل الحساب', deactB: n => `لن يتمكن ${n} من تسجيل الدخول حتى يُعاد تفعيل الحساب.`,
+    newAccount: 'حساب جديد', createAccount: 'إنشاء حساب', accountCreated: 'تم إنشاء الحساب', you: '(أنت)', deleteUserT: 'حذف المستخدم', deleteUserB: n => `سيتم حذف حساب ${n} نهائيًا مع حجوزاته.`,
+    userDeleted: 'تم حذف المستخدم',
+    catsTitle: 'التصنيفات', catsSub: 'تصنيفات الفعاليات المستخدمة في التصفية', nameAr: 'الاسم (عربي)', nameEn: 'الاسم (إنجليزي)', add: 'إضافة', save: 'حفظ',
+    eventsN: n => `${n} فعالية`, catInUse: 'لا يمكن حذف تصنيف مرتبط بفعاليات', catDeleted: 'تم حذف التصنيف', catSaved: 'تم حفظ التصنيف', deleteCatT: 'حذف التصنيف', deleteCatB: n => `سيتم حذف تصنيف "${n}".`,
+    anTitle: 'التحليلات', anSub: 'من خدمة التحليلات (Role 6)', attRate: 'نسبة الحضور', avgRating: 'متوسط التقييم', monthEvents: 'فعاليات هذا الشهر', bookingsMonthly: 'الحجوزات الشهرية',
+    byCategory: 'الفعاليات حسب التصنيف', prediction: 'الحضور المتوقع للفعاليات القادمة', predicted: 'متوقع', predNote: 'نموذج بسيط (متوسط مرجح) على فعاليات مشابهة سابقة',
+    actualVsReg: 'المسجلون مقابل الحاضرين', registeredL: 'مسجل', attendedL: 'حاضر',
+    bcTitle: 'إشعار عام', bcSub: 'يُرسل إلى كل المستخدمين النشطين', audience: 'المستلمون', bcTitleF: 'عنوان الإشعار', bcBody: 'نص الإشعار', bcSend: 'إرسال للجميع',
+    bcConfirmT: 'إرسال إشعار عام', bcConfirmB: n => `سيصل هذا الإشعار إلى ${n} مستخدم.`, bcSent: 'تم إرسال الإشعار', preview: 'معاينة', recent: 'الإشعارات العامة السابقة',
+    nfTitle: 'الصفحة غير موجودة', nfSub: 'الرابط الذي فتحته غير صحيح أو تم حذفه.', home: 'الصفحة الرئيسية',
+    errTitle: 'تعذّر تحميل البيانات', errSub: 'تعذّر الاتصال بالخادم. تحقق من اتصالك وحاول مرة أخرى.', retry: 'إعادة المحاولة',
+    loadingDemo: 'حالة التحميل', errorDemo: 'حالة الخطأ', states: 'حالات الشاشة', normal: 'عادي',
+  },
+  en: {
+    product: 'Smart Campus Event Manager System', short: 'SCEMS', uni: 'University of Ha\'il', notesToggle: 'Review notes', switchLang: 'العربية',
+    protoTitle: 'Prototype controls', protoNote: 'not part of the UI', role: 'Role', screen: 'Screen', loggedOut: 'Logged out',
+    ATTENDEE: 'Attendee', ORGANIZER: 'Organizer', ADMIN: 'Admin',
+    nav_feed: 'Events', nav_bookings: 'My bookings', nav_chat: 'AI assistant', nav_orgEvents: 'My events', nav_create: 'Create event',
+    nav_dash: 'Dashboard', nav_users: 'Users', nav_cats: 'Categories', nav_analytics: 'Analytics', nav_broadcast: 'Broadcast',
+    notifications: 'Notifications', menu: 'Menu', logout: 'Log out',
+    login: 'Log in', loginSub: 'Enter your details to access your account', email: 'Email', password: 'Password',
+    noAccount: "Don't have an account?", registerLink: 'Create an account', register: 'Create an account', registerSub: 'Create an account to register for events',
+    fullName: 'Full name', passwordHint: 'At least 8 characters', submitRegister: 'Create account', haveAccount: 'Already have an account?',
+    registered: 'Your account was created. You can log in now.', loginAs: 'Logging in as: ',
+    E_INVALID_EMAIL: 'Enter a valid email address', E_WEAK_PASSWORD: 'Password must be at least 8 characters', E_INVALID_NAME: 'Full name is required',
+    E_INVALID_CREDENTIALS: 'Incorrect email or password', E_REQUIRED: 'This field is required', E_CAPACITY: 'Capacity must be between 1 and the venue capacity',
+    E_DATE: 'Pick a date in the future', E_TIME_ORDER: 'End time must be after start time',
+    open1: 'Open decision', openFR01: 'Restrict sign-up to the university email? (OPEN-2) The field accepts any email for now.',
+    openFeedback: 'No functional requirement covers feedback yet (OPEN-3). This screen is for review only.',
+    openScanner: 'Is the scanner a page in the web app using the phone camera? (OPEN-4)',
+    openForgot: '"Forgot password" link is removed until decided (OPEN-3).',
+    feedTitle: 'Upcoming events', feedSub: 'Discover approved events and book your seat', searchPh: 'Search by event name…', clear: 'Clear',
+    all: 'All', filters: 'Filters', date: 'Date', venue: 'Venue', anyDate: 'Any time', thisWeek: 'This week', thisMonth: 'This month',
+    anyVenue: 'All venues', results: n => `${n} event${n === 1 ? '' : 's'}`, noResults: 'No events matched', noResultsSub: 'Try another word or clear the filters.',
+    clearFilters: 'Clear filters', open: 'Open', almost: 'Almost full', full: 'Full', seatsLeft: n => `${n} seat${n === 1 ? '' : 's'} left`, booked: 'Booked',
+    back: 'Back', details: 'Event details', when: 'When', where: 'Where', organizer: 'Organizer', remaining: 'Seats left',
+    capacity: 'Capacity', bookNow: 'Book a seat', alreadyBooked: 'You have a booking for this event', viewTicket: 'View ticket', fullMsg: 'This event is full. Booking is closed.',
+    confirmBookT: 'Confirm booking', confirmBookB: e => `Book a seat at "${e}"?`, confirm: 'Confirm', cancel: 'Cancel', close: 'Close',
+    bookedTitle: 'Booking confirmed', bookedSub: 'We sent you a confirmation. Show the QR code at the entrance.', bookingCode: 'Booking code',
+    qrNote: 'Illustration only. The real code comes from the server.', myBookings: 'My bookings', upcoming: 'Upcoming', past: 'Past', cancelled: 'Cancelled',
+    cancelBooking: 'Cancel booking', cancelBookT: 'Cancel booking', cancelBookB: e => `Your booking for "${e}" will be cancelled and the seat released. This cannot be undone.`,
+    keep: 'Keep booking', bookingCancelled: 'Booking cancelled', ticket: 'Ticket', rate: 'Rate event', rated: 'Rated', attended: 'Attended',
+    noBookings: 'No bookings here', noBookingsSub: 'Browse events and book your first seat.', browse: 'Browse events',
+    fbTitle: 'Rate the event', fbOverall: 'Overall rating', fbComment: 'Comment (optional)', fbSubmit: 'Submit rating', fbThanks: 'Thanks for your rating',
+    stars: n => `${n} of 5`,
+    ntTitle: 'Notifications', markAll: 'Mark all as read', noNt: 'No notifications',
+    chatTitle: 'AI assistant', chatSub: 'Powered by Claude through the SCEMS server', online: 'Online', chatPh: 'Type your question…', send: 'Send',
+    chatHello: 'Hi! I can help you find an event, show your bookings, or book a seat once you confirm.',
+    qBook: 'Book me an event', qMine: 'My bookings', qHelp: 'Help',
+    chatSuggest: e => `The nearest event with seats is "${e}". Shall I book it?`, chatConfirmBtn: 'Yes, book it', chatNo: 'No, thanks',
+    chatDone: c => `Booked. Your code is ${c}.`, chatMine: list => list.length ? `Your upcoming bookings:\n${list.join('\n')}` : 'You have no upcoming bookings.',
+    chatHelp: 'Try: "workshops", "my bookings", or "book me an event". I never book without your confirmation.',
+    chatFound: list => list.length ? `I found:\n${list.join('\n')}` : 'No matching event. Try another word.', chatDeclined: 'OK, nothing was booked.',
+    orgTitle: 'My events', orgSub: 'Manage your events and follow bookings', total: 'Total events', active: 'Approved', pending: 'Pending approval', totalBookings: 'Total bookings',
+    event: 'Event', status: 'Status', bookings: 'Bookings', actions: 'Actions', attendeesBtn: 'Attendees', edit: 'Edit', delete: 'Delete',
+    PENDING: 'Pending', APPROVED: 'Approved', REJECTED: 'Rejected', CANCELLED: 'Cancelled',
+    deleteEvT: 'Delete event', deleteEvB: e => `"${e}" will be deleted and all its bookings cancelled. This cannot be undone.`, evDeleted: 'Event deleted',
+    noOrgEvents: "You haven't created an event yet", noOrgEventsSub: 'Create your first event and send it for approval.',
+    createTitle: 'Create event', editTitle: 'Edit event', createSub: 'The event goes to an Admin for approval before it is published',
+    s1: 'Information', s2: 'Time & venue', s3: 'Review', titleAr: 'Title (Arabic)', titleEn: 'Title (English)', descAr: 'Description (Arabic)', descEn: 'Description (English)',
+    category: 'Category', choose: 'Choose…', startsAt: 'Starts', endsAt: 'Ends', capHint: c => `Maximum for this venue: ${c}`,
+    image: 'Event image', dropzone: 'Drop an image here or click to choose (JPG/PNG, up to 5MB)', next: 'Next', prev: 'Previous',
+    submitForApproval: 'Submit for approval', saveChanges: 'Save changes', submitted: 'Submitted. The event is waiting for Admin approval.', saved: 'Changes saved',
+    attTitle: 'Attendee list', registeredN: 'Registered', checkedIn: 'Checked in', notYet: 'Not yet', checkInTime: 'Check-in time',
+    scanTitle: 'QR check-in', scanPh: 'Booking code e.g. SCEMS-7K2Q9A', scanBtn: 'Check in', simulate: 'Simulate scan',
+    scanOk: n => `${n} checked in`, scanDup: n => `${n} is already checked in`, scanBad: 'Invalid code for this event', searchAtt: 'Search by name or email…', exportCsv: 'Export CSV',
+    noAtt: 'No registrations yet',
+    dashTitle: 'Dashboard', dashSub: 'System overview', users: 'Users', approvals: 'Approval requests', noApprovals: 'No events waiting for approval',
+    approve: 'Approve', reject: 'Reject', rejectT: 'Reject event', rejectB: e => `"${e}" will be rejected and the Organizer notified.`, approvedMsg: 'Event approved and published', rejectedMsg: 'Event rejected',
+    allEvents: 'All events', by: 'by',
+    usersTitle: 'User management', usersSub: 'Create Organizer and Admin accounts, activate or deactivate accounts', allRoles: 'All roles', name: 'Name',
+    activeS: 'Active', inactiveS: 'Inactive', deactivate: 'Deactivate', activate: 'Activate', deactT: 'Deactivate account', deactB: n => `${n} will not be able to log in until the account is reactivated.`,
+    newAccount: 'New account', createAccount: 'Create account', accountCreated: 'Account created', you: '(you)', deleteUserT: 'Delete user', deleteUserB: n => `${n}'s account and bookings will be permanently deleted.`,
+    userDeleted: 'User deleted',
+    catsTitle: 'Categories', catsSub: 'Event categories used in filtering', nameAr: 'Name (Arabic)', nameEn: 'Name (English)', add: 'Add', save: 'Save',
+    eventsN: n => `${n} event${n === 1 ? '' : 's'}`, catInUse: 'A category with events cannot be deleted', catDeleted: 'Category deleted', catSaved: 'Category saved', deleteCatT: 'Delete category', deleteCatB: n => `Category "${n}" will be deleted.`,
+    anTitle: 'Analytics', anSub: 'From the analytics service (Role 6)', attRate: 'Attendance rate', avgRating: 'Average rating', monthEvents: 'Events this month', bookingsMonthly: 'Monthly bookings',
+    byCategory: 'Events by category', prediction: 'Predicted turnout for upcoming events', predicted: 'Predicted', predNote: 'Simple model (weighted average) over similar past events',
+    actualVsReg: 'Registered vs attended', registeredL: 'Registered', attendedL: 'Attended',
+    bcTitle: 'Broadcast', bcSub: 'Sent to every active user', audience: 'Recipients', bcTitleF: 'Title', bcBody: 'Message', bcSend: 'Send to everyone',
+    bcConfirmT: 'Send broadcast', bcConfirmB: n => `This notification will reach ${n} users.`, bcSent: 'Broadcast sent', preview: 'Preview', recent: 'Previous broadcasts',
+    nfTitle: 'Page not found', nfSub: 'The link you opened is wrong or was removed.', home: 'Home',
+    errTitle: "Couldn't load the data", errSub: 'Could not reach the server. Check your connection and try again.', retry: 'Try again',
+    loadingDemo: 'Loading state', errorDemo: 'Error state', states: 'Screen state', normal: 'Normal',
+  },
+};
+
+// ---------------------------------------------------------------- fake data (mirrors backend/prisma/seed.js)
+const DAY = 864e5;
+const today = new Date(); today.setHours(0, 0, 0, 0);
+const at = (days, h, m = 0) => new Date(today.getTime() + days * DAY + (h * 60 + m) * 6e4);
+
+const CATS = [
+  { id: 'workshop', ar: 'ورشة عمل', en: 'Workshop', icon: 'wrench' },
+  { id: 'seminar', ar: 'ندوة', en: 'Seminar', icon: 'mic' },
+  { id: 'competition', ar: 'مسابقة', en: 'Competition', icon: 'trophy' },
+  { id: 'cultural', ar: 'ثقافي', en: 'Cultural', icon: 'palette' },
+  { id: 'sports', ar: 'رياضي', en: 'Sports', icon: 'ball' },
+];
+const VENUES = [
+  { id: 'main', ar: 'المسرح الرئيسي، كلية علوم الحاسب', en: 'Main Auditorium, College of Computer Science', capacity: 300 },
+  { id: 'hallA', ar: 'قاعة المحاضرات A، كلية الهندسة', en: 'Lecture Hall A, College of Engineering', capacity: 120 },
+  { id: 'sports', ar: 'المجمع الرياضي، مركز الأنشطة', en: 'Sports Complex, Activities Center', capacity: 500 },
+];
+const USERS = [
+  { id: 'u1', name: 'نورة العتيبي', nameEn: 'Noura Alotaibi', email: 'noura@uoh.edu.sa', role: 'ATTENDEE', isActive: true },
+  { id: 'u2', name: 'فهد الشمري', nameEn: 'Fahad Alshammari', email: 'fahad@uoh.edu.sa', role: 'ORGANIZER', isActive: true },
+  { id: 'u3', name: 'مكتب الفعاليات', nameEn: 'Events Office', email: 'events@uoh.edu.sa', role: 'ADMIN', isActive: true },
+  { id: 'u4', name: 'سلمان الحربي', nameEn: 'Salman Alharbi', email: 'salman@uoh.edu.sa', role: 'ATTENDEE', isActive: true },
+  { id: 'u5', name: 'ريم العنزي', nameEn: 'Reem Alanazi', email: 'reem@uoh.edu.sa', role: 'ATTENDEE', isActive: true },
+  { id: 'u6', name: 'خالد الرشيدي', nameEn: 'Khalid Alrashidi', email: 'khalid@gmail.com', role: 'ATTENDEE', isActive: false },
+  { id: 'u7', name: 'نادي الأمن السيبراني', nameEn: 'Cybersecurity Club', email: 'cyber.club@uoh.edu.sa', role: 'ORGANIZER', isActive: true },
+  { id: 'u8', name: 'لمى السبيعي', nameEn: 'Lama Alsubaie', email: 'lama@uoh.edu.sa', role: 'ATTENDEE', isActive: true },
+];
+const ROLE_USER = { ATTENDEE: 'u1', ORGANIZER: 'u2', ADMIN: 'u3' };
+
+let seq = 100;
+const uid = p => `${p}${++seq}`;
+const code = () => 'SCEMS-' + Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
+
+const S = {
+  lang: 'ar', notes: false, role: null, screen: 'login', params: {}, navOpen: false, state: 'normal',
+  feed: { q: '', cat: 'all', date: 'any', venue: 'any' }, bkTab: 'upcoming', usrRole: 'all', attQ: '',
+  wizard: null, chat: [], loginNotice: null,
+  events: [
+    { id: 'e1', title: { ar: 'ورشة الذكاء الاصطناعي التطبيقي', en: 'Applied AI Workshop' }, desc: { ar: 'ورشة عملية لبناء أول نموذج تعلم آلي باستخدام Python، من تجهيز البيانات حتى التقييم. أحضر حاسبك المحمول.', en: 'A hands-on workshop to build your first machine-learning model in Python, from data preparation to evaluation. Bring your laptop.' }, cat: 'workshop', venue: 'main', startsAt: at(5, 10), endsAt: at(5, 13), capacity: 300, booked: 182, status: 'APPROVED', org: 'u2' },
+    { id: 'e2', title: { ar: 'ندوة الأمن السيبراني في الجامعات', en: 'Cybersecurity on Campus' }, desc: { ar: 'خبراء يناقشون حماية الحسابات الجامعية والتصيّد الاحتيالي، مع جلسة أسئلة مفتوحة.', en: 'Experts discuss protecting university accounts and phishing, followed by an open Q&A.' }, cat: 'seminar', venue: 'hallA', startsAt: at(9, 12), endsAt: at(9, 14), capacity: 120, booked: 96, status: 'APPROVED', org: 'u7' },
+    { id: 'e3', title: { ar: 'هاكاثون حائل الرقمي', en: 'Hail Digital Hackathon' }, desc: { ar: 'تحدٍّ لمدة 24 ساعة لبناء حلول رقمية لخدمات الحرم الجامعي. فرق من 3 إلى 5.', en: 'A 24-hour challenge to build digital solutions for campus services. Teams of 3 to 5.' }, cat: 'competition', venue: 'main', startsAt: at(14, 9), endsAt: at(15, 9), capacity: 100, booked: 100, status: 'APPROVED', org: 'u2' },
+    { id: 'e4', title: { ar: 'أمسية اليوم الوطني', en: 'National Day Evening' }, desc: { ar: 'أمسية ثقافية بفقرات شعرية وعروض تراثية ومعرض صور.', en: 'A cultural evening with poetry, heritage performances and a photo exhibition.' }, cat: 'cultural', venue: 'sports', startsAt: at(20, 19), endsAt: at(20, 22), capacity: 500, booked: 214, status: 'APPROVED', org: 'u7' },
+    { id: 'e5', title: { ar: 'بطولة كرة القدم بين الكليات', en: 'Inter-College Football Cup' }, desc: { ar: 'نهائي بطولة كرة القدم بين كليات الجامعة. الدخول بالحجز فقط.', en: 'The final of the inter-college football cup. Entry by booking only.' }, cat: 'sports', venue: 'sports', startsAt: at(3, 16), endsAt: at(3, 18), capacity: 400, booked: 120, status: 'APPROVED', org: 'u2' },
+    { id: 'e6', title: { ar: 'لقاء المسار المهني', en: 'Career Paths Talk' }, desc: { ar: 'خريجون يشاركون تجاربهم في سوق العمل.', en: 'Graduates share their experience in the job market.' }, cat: 'seminar', venue: 'hallA', startsAt: at(-6, 11), endsAt: at(-6, 12, 30), capacity: 120, booked: 88, status: 'APPROVED', org: 'u2' },
+    { id: 'e7', title: { ar: 'ورشة تصميم تجربة المستخدم', en: 'UX Design Workshop' }, desc: { ar: 'مبادئ تصميم الواجهات وتجربة المستخدم مع تمارين على Figma.', en: 'Interface and UX design principles with Figma exercises.' }, cat: 'workshop', venue: 'hallA', startsAt: at(25, 10), endsAt: at(25, 12), capacity: 60, booked: 0, status: 'PENDING', org: 'u2' },
+    { id: 'e8', title: { ar: 'مسابقة البرمجة السريعة', en: 'Speed Coding Contest' }, desc: { ar: 'مسابقة حل مسائل برمجية خلال ساعتين.', en: 'Solve programming problems in two hours.' }, cat: 'competition', venue: 'hallA', startsAt: at(18, 13), endsAt: at(18, 15), capacity: 80, booked: 0, status: 'PENDING', org: 'u7' },
+    { id: 'e9', title: { ar: 'معرض الألعاب الإلكترونية', en: 'Gaming Expo' }, desc: { ar: 'معرض لألعاب طورها الطلاب.', en: 'An expo of games built by students.' }, cat: 'cultural', venue: 'main', startsAt: at(30, 17), endsAt: at(30, 20), capacity: 250, booked: 0, status: 'REJECTED', org: 'u2' },
+  ],
+  regs: [
+    { id: 'r1', event: 'e2', user: 'u1', status: 'CONFIRMED', code: 'SCEMS-7K2Q9A', checkedInAt: null, createdAt: at(-2, 9) },
+    { id: 'r2', event: 'e6', user: 'u1', status: 'CONFIRMED', code: 'SCEMS-P4HM2X', checkedInAt: at(-6, 10, 52), createdAt: at(-12, 9), rated: false },
+    { id: 'r3', event: 'e5', user: 'u1', status: 'CANCELLED', code: 'SCEMS-ZN8R3C', checkedInAt: null, createdAt: at(-4, 9) },
+    { id: 'r4', event: 'e1', user: 'u4', status: 'CONFIRMED', code: 'SCEMS-L2W9QD', checkedInAt: null, createdAt: at(-1, 9) },
+    { id: 'r5', event: 'e1', user: 'u5', status: 'CONFIRMED', code: 'SCEMS-H6T4MB', checkedInAt: null, createdAt: at(-1, 13) },
+    { id: 'r6', event: 'e1', user: 'u8', status: 'CONFIRMED', code: 'SCEMS-R9C3VK', checkedInAt: null, createdAt: at(-3, 11) },
+    { id: 'r7', event: 'e6', user: 'u4', status: 'CONFIRMED', code: 'SCEMS-B7N2JF', checkedInAt: at(-6, 10, 58), createdAt: at(-10, 9) },
+    { id: 'r8', event: 'e6', user: 'u5', status: 'CONFIRMED', code: 'SCEMS-Q3X8PL', checkedInAt: null, createdAt: at(-9, 9) },
+  ],
+  notifs: [
+    { id: 'n1', user: 'u1', type: 'BOOKING_CONFIRMATION', title: { ar: 'تم تأكيد حجزك', en: 'Booking confirmed' }, body: { ar: 'حجزك في "ندوة الأمن السيبراني في الجامعات" مؤكد.', en: 'Your booking for "Cybersecurity on Campus" is confirmed.' }, isRead: false, createdAt: at(-2, 9) },
+    { id: 'n2', user: 'u1', type: 'BROADCAST', title: { ar: 'تحديث مواعيد الفعاليات', en: 'Event schedule update' }, body: { ar: 'تبدأ فعاليات الفصل الدراسي الأسبوع القادم. تابع صفحة الفعاليات.', en: 'Semester events start next week. Keep an eye on the events page.' }, isRead: true, createdAt: at(-5, 8) },
+    { id: 'n3', user: 'u2', type: 'CAPACITY_FULL', title: { ar: 'اكتملت السعة', en: 'Event is full' }, body: { ar: 'وصلت "هاكاثون حائل الرقمي" إلى الحد الأعلى للحضور.', en: '"Hail Digital Hackathon" reached its maximum capacity.' }, isRead: false, createdAt: at(-1, 15) },
+    { id: 'n4', user: 'u2', type: 'SYSTEM', title: { ar: 'تم رفض فعالية', en: 'Event rejected' }, body: { ar: 'تم رفض "معرض الألعاب الإلكترونية". راجع التفاصيل مع المشرف.', en: '"Gaming Expo" was rejected. Check the details with the Admin.' }, isRead: true, createdAt: at(-3, 10) },
+    { id: 'n5', user: 'u3', type: 'SYSTEM', title: { ar: 'فعاليات بانتظار الاعتماد', en: 'Events waiting for approval' }, body: { ar: 'يوجد فعاليتان جديدتان بانتظار مراجعتك.', en: 'Two new events are waiting for your review.' }, isRead: false, createdAt: at(0, 8) },
+  ],
+  broadcasts: [{ title: { ar: 'تحديث مواعيد الفعاليات', en: 'Event schedule update' }, sent: 6, createdAt: at(-5, 8) }],
+};
+
+// ---------------------------------------------------------------- helpers
+const t = (k, ...a) => { const v = T[S.lang][k]; return typeof v === 'function' ? v(...a) : (v ?? k); };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const L = o => (o && typeof o === 'object') ? (o[S.lang] || o.ar || o.en) : o;
+const loc = () => S.lang === 'ar' ? 'ar-u-ca-gregory-nu-latn' : 'en-GB';
+const fmtDate = d => new Intl.DateTimeFormat(loc(), { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+const fmtTime = d => new Intl.DateTimeFormat(loc(), { hour: 'numeric', minute: '2-digit' }).format(d);
+const fmtDT = d => `${fmtDate(d)} · ${fmtTime(d)}`;
+const fmtN = n => new Intl.NumberFormat(loc()).format(n);
+const cat = id => CATS.find(c => c.id === id);
+const venue = id => VENUES.find(v => v.id === id);
+const user = id => USERS.find(u => u.id === id);
+const uname = u => u ? (S.lang === 'ar' ? u.name : u.nameEn) : '';
+const me = () => user(ROLE_USER[S.role]);
+const ev = id => S.events.find(e => e.id === id);
+const initials = u => { const w = uname(u).split(/\s+/); return S.lang === 'ar' ? w[0][0] : w.map(x => x[0]).slice(0, 2).join(''); };
+const isPast = e => e.startsAt < new Date();
+const capState = e => { const p = e.booked / e.capacity; return p >= 1 ? 'full' : p >= 0.75 ? 'almost' : 'open'; };
+const CAP = { open: ['b-success', 'var(--teal)'], almost: ['b-warning', 'var(--warning)'], full: ['b-danger', 'var(--danger)'] };
+const STATUS_B = { PENDING: 'b-warning', APPROVED: 'b-success', REJECTED: 'b-danger', CANCELLED: 'b-gray' };
+const myReg = eid => S.regs.find(r => r.event === eid && r.user === me()?.id && r.status === 'CONFIRMED');
+const unread = () => S.notifs.filter(n => n.user === me()?.id && !n.isRead).length;
+// Line icons (24px grid, stroke-based) - stand-ins for the shadcn/lucide icon set the frontend will use.
+const ICONS = {
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  ticket: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/>',
+  chart: '<path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+  inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  compass: '<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/>',
+  wifiOff: '<path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20"/>',
+  camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  send: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  message: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  palette: '<circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.55C21.97 6.01 17.46 2 12 2z"/>',
+  ball: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>',
+  tag: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r=".5"/>',
+};
+const ico = (name, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ICONS.tag}</svg>`;
+// FR tags and open-decision notes are review aids; they only show when "Review notes" is on in the prototype bar.
+const fr = (...ids) => S.notes ? ids.map(i => `<span class="fr">FR-${i}</span>`).join('') : '';
+const openNote = key => S.notes ? `<div class="open-note" role="note"><strong>${t('open1')}:</strong> ${t(key)}</div>` : '';
+const dateBox = d => `<div class="datebox"><b>${new Intl.DateTimeFormat(loc(), { day: 'numeric' }).format(d)}</b><span>${new Intl.DateTimeFormat(loc(), { month: 'short' }).format(d)}</span></div>`;
+const catCls = id => ['workshop', 'seminar', 'competition', 'cultural', 'sports'].includes(id) ? `cat-${id}` : 'cat-other';
+
+function notify(userId, type, title, body) {
+  S.notifs.unshift({ id: uid('n'), user: userId, type, title, body, isRead: false, createdAt: new Date() });
+}
+
+// ---------------------------------------------------------------- navigation
+const NAV = {
+  ATTENDEE: [['feed', 'nav_feed'], ['bookings', 'nav_bookings'], ['chat', 'nav_chat']],
+  ORGANIZER: [['orgEvents', 'nav_orgEvents'], ['create', 'nav_create'], ['chat', 'nav_chat']],
+  ADMIN: [['dash', 'nav_dash'], ['users', 'nav_users'], ['cats', 'nav_cats'], ['analytics', 'nav_analytics'], ['broadcast', 'nav_broadcast'], ['chat', 'nav_chat']],
+};
+// Every screen, for the prototype screen picker. [id, role, FR tags]
+const SCREENS = [
+  ['login', null, '02'], ['register', null, '01'],
+  ['feed', 'ATTENDEE', '03, 04'], ['details', 'ATTENDEE', '09, 05'], ['booked', 'ATTENDEE', '05, 06'], ['bookings', 'ATTENDEE', '07, 08'],
+  ['feedback', 'ATTENDEE', 'OPEN-3'], ['notifications', 'ATTENDEE', '06, 15, 21'], ['chat', 'ATTENDEE', '23'],
+  ['orgEvents', 'ORGANIZER', '11, 12'], ['create', 'ORGANIZER', '10, 13, 16'], ['attendees', 'ORGANIZER', '14'],
+  ['dash', 'ADMIN', '17, 22'], ['users', 'ADMIN', '18, 22'], ['cats', 'ADMIN', '19'], ['analytics', 'ADMIN', '20'], ['broadcast', 'ADMIN', '21'],
+  ['notFound', null, '404'],
+];
+const SCREEN_NAMES = {
+  ar: { login: 'تسجيل الدخول', register: 'إنشاء حساب', feed: 'الفعاليات', details: 'تفاصيل الفعالية', booked: 'تأكيد الحجز + QR', bookings: 'حجوزاتي', feedback: 'التقييم', notifications: 'الإشعارات', chat: 'المساعد الذكي', orgEvents: 'فعاليات المنظم', create: 'إنشاء فعالية', attendees: 'الحضور + التحضير', dash: 'لوحة المشرف', users: 'المستخدمون', cats: 'التصنيفات', analytics: 'التحليلات', broadcast: 'إشعار عام', notFound: 'صفحة 404' },
+  en: { login: 'Login', register: 'Register', feed: 'Events feed', details: 'Event details', booked: 'Booking + QR', bookings: 'My bookings', feedback: 'Feedback', notifications: 'Notifications', chat: 'AI assistant', orgEvents: 'Organizer events', create: 'Create event', attendees: 'Attendees + check-in', dash: 'Admin dashboard', users: 'Users', cats: 'Categories', analytics: 'Analytics', broadcast: 'Broadcast', notFound: '404 page' },
+};
+
+function go(screen, params = {}) {
+  const def = SCREENS.find(s => s[0] === screen);
+  if (def && def[1] && S.role !== def[1] && screen !== 'notifications' && screen !== 'chat') S.role = def[1];
+  if ((screen === 'notifications' || screen === 'chat') && !S.role) S.role = 'ATTENDEE';
+  if (screen === 'details' && !params.id) params.id = 'e1';
+  if (screen === 'booked' && !params.reg) params.reg = 'r1';
+  if (screen === 'feedback' && !params.reg) params.reg = 'r2';
+  if (screen === 'attendees' && !params.id) params.id = 'e1';
+  if (screen === 'create' && !params.keep) S.wizard = null;
+  if (screen === 'login' || screen === 'register') S.role = null;
+  S.screen = screen; S.params = params; S.navOpen = false; S.state = 'normal';
+  render(); window.scrollTo(0, 0);
+}
+const home = () => ({ ATTENDEE: 'feed', ORGANIZER: 'orgEvents', ADMIN: 'dash' }[S.role] || 'login');
+
+// ---------------------------------------------------------------- overlays
+function modal({ title, body, confirmLabel, danger, onConfirm, content }) {
+  const layer = document.getElementById('layer');
+  layer.innerHTML = `<div class="modal-back" data-close><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <h3 id="mt">${esc(title)}</h3>${body ? `<p class="muted">${esc(body)}</p>` : ''}${content || ''}
+    <div class="actions"><button class="btn btn-ghost" data-close>${t('cancel')}</button>
+    <button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" id="mOk">${esc(confirmLabel || t('confirm'))}</button></div></div></div>`;
+  const closeM = () => { layer.innerHTML = ''; };
+  layer.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', e => { if (e.target === el) closeM(); }));
+  document.getElementById('mOk').addEventListener('click', () => { if (onConfirm() !== false) closeM(); });
+  const first = layer.querySelector('.modal input, .modal select') || document.getElementById('mOk'); first.focus();
+  layer.querySelector('.modal-back').addEventListener('keydown', e => { if (e.key === 'Escape') closeM(); });
+}
+let toastTimer;
+function toast(msg) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  el.textContent = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), 2600);
+}
+
+// ---------------------------------------------------------------- shared views
+function evCard(e) {
+  const cs = capState(e), left = e.capacity - e.booked, c = cat(e.cat), mine = myReg(e.id);
+  return `<button class="ev" data-go="details" data-id="${e.id}" aria-label="${esc(L(e.title))}">
+    <div class="ev-banner ${catCls(e.cat)}">${ico(c.icon, 'bg-ic')}${dateBox(e.startsAt)}<span class="badge ${mine ? 'b-teal' : CAP[cs][0]}">${mine ? ico('check') + ' ' + t('booked') : t(cs)}</span></div>
+    <div class="ev-body">
+      <span class="badge b-info" style="align-self:flex-start">${esc(L(c))}</span>
+      <div class="ev-title">${esc(L(e.title))}</div>
+      <div class="meta">${ico('calendar')} ${fmtDT(e.startsAt)}</div>
+      <div class="meta">${ico('pin')} ${esc(L(venue(e.venue)))}</div>
+      <div class="progress" role="progressbar" aria-valuenow="${e.booked}" aria-valuemin="0" aria-valuemax="${e.capacity}" aria-label="${t('capacity')}"><span style="width:${Math.min(100, e.booked / e.capacity * 100)}%;background:${CAP[cs][1]}"></span></div>
+      <div class="meta">${t('seatsLeft', fmtN(Math.max(0, left)))} · ${fmtN(e.booked)}/${fmtN(e.capacity)}</div>
+    </div></button>`;
+}
+function empty(icon, title, sub, btn) {
+  return `<div class="card empty"><div class="ico">${ico(icon)}</div><h3>${esc(title)}</h3><p>${esc(sub)}</p>${btn || ''}</div>`;
+}
+function pageHead(title, sub, frs, right = '') {
+  return `<div class="page-head"><div><h1>${esc(title)}${frs ? fr(...frs) : ''}</h1>${sub ? `<p>${esc(sub)}</p>` : ''}</div>${right}</div>`;
+}
+function skeleton() {
+  return `<div class="sk" style="height:28px;width:220px;margin-bottom:20px" aria-hidden="true"></div>
+    <div class="grid g2" aria-busy="true" aria-label="loading">${'<div class="sk" style="height:250px"></div>'.repeat(4)}</div>`;
+}
+function errorView() {
+  return empty('wifiOff', t('errTitle'), t('errSub'), `<button class="btn btn-primary" data-act="retry">${t('retry')}</button>`);
+}
+function qr(seed) {
+  let h = 0; for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const cells = [];
+  for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) {
+    const finder = (a, b) => x >= a && x < a + 7 && y >= b && y < b + 7;
+    let on;
+    if (finder(0, 0) || finder(14, 0) || finder(0, 14)) {
+      const fx = x >= 14 ? x - 14 : x, fy = y >= 14 ? y - 14 : y;
+      on = fx === 0 || fx === 6 || fy === 0 || fy === 6 || (fx >= 2 && fx <= 4 && fy >= 2 && fy <= 4);
+    } else { h = (h * 1103515245 + 12345) >>> 0; on = (h >> 16) % 2 === 0; }
+    cells.push(`<i class="${on ? 'on' : ''}"></i>`);
+  }
+  return `<div class="qr" role="img" aria-label="QR ${esc(seed)}">${cells.join('')}</div>`;
+}
+
+// ---------------------------------------------------------------- screens
+const V = {};
+
+V.login = () => {
+  const as = S.params.as || 'ATTENDEE';
+  return `<div class="auth"><div class="logo" aria-hidden="true">S</div><h1>${t('login')}${fr('02')}</h1><p class="sub">${t('loginSub')}</p>
+  <div class="card"><form id="loginForm" novalidate>
+    ${S.loginNotice ? `<div class="alert alert-success" role="status">${t(S.loginNotice)}</div>` : ''}
+    <div id="loginErr"></div>
+    <div class="field"><label for="le">${t('email')}</label><input class="input" id="le" type="email" autocomplete="email" value="${esc(user(ROLE_USER[as]).email)}"></div>
+    <div class="field"><label for="lp">${t('password')}</label><input class="input" id="lp" type="password" autocomplete="current-password" value="password123"></div>
+    <p class="small muted" style="margin-bottom:12px">${t('loginAs')}<strong>${t(as)}</strong></p>
+    <button class="btn btn-primary btn-block" type="submit">${t('login')}</button>
+  </form>
+  <p class="muted" style="text-align:center;margin-top:16px">${t('noAccount')} <button class="back" style="margin:0" data-go="register">${t('registerLink')}</button></p></div>
+  ${openNote('openForgot')}</div>`;
+};
+V.register = () => `<div class="auth"><div class="logo" aria-hidden="true">S</div><h1>${t('register')}${fr('01')}</h1><p class="sub">${t('registerSub')}</p>
+  <div class="card"><form id="regForm" novalidate>
+    <div class="field"><label for="rn">${t('fullName')} *</label><input class="input" id="rn" autocomplete="name"><div class="err" id="rn-e"></div></div>
+    <div class="field"><label for="re">${t('email')} *</label><input class="input" id="re" type="email" autocomplete="email"><div class="err" id="re-e"></div></div>
+    <div class="field"><label for="rp">${t('password')} *</label><input class="input" id="rp" type="password" autocomplete="new-password"><div class="hint">${t('passwordHint')}</div><div class="err" id="rp-e"></div></div>
+    <button class="btn btn-primary btn-block" type="submit">${t('submitRegister')}</button>
+  </form><p class="muted" style="text-align:center;margin-top:16px">${t('haveAccount')} <button class="back" style="margin:0" data-go="login">${t('login')}</button></p></div>
+  ${openNote('openFR01')}</div>`;
+
+V.feed = () => {
+  const f = S.feed, now = new Date();
+  const list = S.events.filter(e => e.status === 'APPROVED' && !isPast(e))
+    .filter(e => f.cat === 'all' || e.cat === f.cat)
+    .filter(e => f.venue === 'any' || e.venue === f.venue)
+    .filter(e => f.date === 'any' || (e.startsAt - now) <= (f.date === 'week' ? 7 : 31) * DAY)
+    .filter(e => !f.q || (e.title.ar + ' ' + e.title.en).toLowerCase().includes(f.q.toLowerCase()))
+    .sort((a, b) => a.startsAt - b.startsAt);
+  const filtered = f.q || f.cat !== 'all' || f.date !== 'any' || f.venue !== 'any';
+  return pageHead(t('feedTitle'), t('feedSub'), ['03', '04']) + `
+  <div class="stack" style="margin-bottom:20px">
+    <div class="search" role="search">${ico('search')}<label class="sr" for="fq">${t('searchPh')}</label><input id="fq" placeholder="${t('searchPh')}" value="${esc(f.q)}">${f.q ? `<button data-act="clearQ">${t('clear')}</button>` : ''}</div>
+    <div class="chips" role="group" aria-label="${t('category')}"><button class="chip" aria-pressed="${f.cat === 'all'}" data-cat="all">${t('all')}</button>
+      ${CATS.map(c => `<button class="chip" aria-pressed="${f.cat === c.id}" data-cat="${c.id}">${esc(L(c))}</button>`).join('')}</div>
+    <div class="row">
+      <label class="sr" for="fd">${t('date')}</label><select class="input" id="fd" style="width:auto">${[['any', 'anyDate'], ['week', 'thisWeek'], ['month', 'thisMonth']].map(([v, k]) => `<option value="${v}" ${f.date === v ? 'selected' : ''}>${t(k)}</option>`).join('')}</select>
+      <label class="sr" for="fv">${t('venue')}</label><select class="input" id="fv" style="width:auto"><option value="any">${t('anyVenue')}</option>${VENUES.map(v => `<option value="${v.id}" ${f.venue === v.id ? 'selected' : ''}>${esc(L(v))}</option>`).join('')}</select>
+      <span class="muted" aria-live="polite" style="margin-inline-start:auto">${t('results', fmtN(list.length))}</span>
+    </div>
+  </div>
+  ${list.length ? `<div class="grid g2">${list.map(evCard).join('')}</div>`
+    : empty('search', t('noResults'), t('noResultsSub'), filtered ? `<button class="btn btn-secondary" data-act="clearFilters">${t('clearFilters')}</button>` : '')}`;
+};
+
+V.details = () => {
+  const e = ev(S.params.id); if (!e) return V.notFound();
+  const cs = capState(e), left = e.capacity - e.booked, mine = myReg(e.id), c = cat(e.cat);
+  const action = mine ? `<div class="alert alert-success">${ico('check')} ${t('alreadyBooked')}</div><button class="btn btn-secondary btn-block" data-go="booked" data-reg="${mine.id}">${t('viewTicket')}</button>`
+    : cs === 'full' ? `<div class="alert alert-danger" role="status">${t('fullMsg')}</div><button class="btn btn-primary btn-block" disabled>${t('bookNow')}</button>`
+    : `<button class="btn btn-primary btn-block" data-act="book" data-id="${e.id}">${t('bookNow')}</button>`;
+  return `<button class="back" data-go="feed"><span class="flip">→</span> ${t('back')}</button>
+  <div class="ev-banner ${catCls(e.cat)}" style="height:160px;border-radius:var(--radius);margin-bottom:16px">${ico(c.icon, 'bg-ic')}${dateBox(e.startsAt)}<span class="badge ${CAP[cs][0]}">${t(cs)}</span></div>
+  <div class="layout-2"><div class="card">
+    <span class="badge b-info">${esc(L(c))}</span>
+    <h1 style="font-size:22px;color:var(--navy);margin:8px 0">${esc(L(e.title))}${fr('09')}</h1>
+    <p style="margin-bottom:16px">${esc(L(e.desc))}</p>
+    <div class="tiles">
+      <div class="tile"><div class="l">${t('when')}</div><div class="v">${fmtDate(e.startsAt)}</div><div class="small muted">${fmtTime(e.startsAt)} – ${fmtTime(e.endsAt)}</div></div>
+      <div class="tile"><div class="l">${t('where')}</div><div class="v">${esc(L(venue(e.venue)))}</div></div>
+      <div class="tile"><div class="l">${t('organizer')}</div><div class="v">${esc(uname(user(e.org)))}</div></div>
+      <div class="tile"><div class="l">${t('remaining')}</div><div class="v">${fmtN(Math.max(0, left))} / ${fmtN(e.capacity)}</div></div>
+    </div></div>
+    <div class="card" style="align-self:start"><h2>${t('bookNow')}${fr('05')}</h2>
+      <div class="progress" style="margin-bottom:6px"><span style="width:${Math.min(100, e.booked / e.capacity * 100)}%;background:${CAP[cs][1]}"></span></div>
+      <p class="small muted" style="margin-bottom:14px">${t('seatsLeft', fmtN(Math.max(0, left)))}</p>${action}</div></div>`;
+};
+
+V.booked = () => {
+  const r = S.regs.find(x => x.id === S.params.reg); if (!r) return V.notFound();
+  const e = ev(r.event);
+  return `<div style="max-width:440px;margin:0 auto;text-align:center">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--success-bg);color:var(--success-fg);display:grid;place-items:center;font-size:30px;margin:8px auto 12px" aria-hidden="true">${ico('check')}</div>
+    <h1 style="color:var(--navy);font-size:20px">${t('bookedTitle')}${fr('05', '06')}</h1><p class="muted" style="margin-bottom:20px">${t('bookedSub')}</p>
+    <div class="card" style="text-align:center">
+      <div class="ev-title" style="margin-bottom:4px">${esc(L(e.title))}</div>
+      <div class="muted small" style="margin-bottom:16px">${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))}</div>
+      ${qr(r.code)}
+      <div class="small muted" style="margin-top:12px">${t('bookingCode')}</div>
+      <div style="font-family:monospace;font-size:16px;font-weight:700;letter-spacing:1px" dir="ltr">${r.code}</div>
+      <div class="small muted" style="margin-top:8px">${t('qrNote')}</div>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:16px"><button class="btn btn-primary" data-go="bookings">${t('myBookings')}</button><button class="btn btn-secondary" data-go="feed">${t('browse')}</button></div></div>`;
+};
+
+V.bookings = () => {
+  const mine = S.regs.filter(r => r.user === me().id).map(r => ({ r, e: ev(r.event) })).filter(x => x.e);
+  const groups = {
+    upcoming: mine.filter(x => x.r.status === 'CONFIRMED' && !isPast(x.e)),
+    past: mine.filter(x => x.r.status === 'CONFIRMED' && isPast(x.e)),
+    cancelled: mine.filter(x => x.r.status === 'CANCELLED'),
+  };
+  const list = groups[S.bkTab];
+  const row = ({ r, e }) => {
+    const c = cat(e.cat), cls = S.bkTab === 'upcoming' ? '' : S.bkTab;
+    let right = '';
+    if (S.bkTab === 'upcoming') right = `<button class="btn btn-secondary btn-sm" data-go="booked" data-reg="${r.id}">${t('ticket')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg);border-color:var(--danger-bg)" data-act="cancelReg" data-reg="${r.id}">${t('cancelBooking')}</button>`;
+    else if (S.bkTab === 'past') right = (r.checkedInAt ? `<span class="badge b-success">${ico('check')} ${t('attended')}</span>` : '') + (r.rated ? `<span class="badge b-gray">${t('rated')}</span>` : `<button class="btn btn-secondary btn-sm" data-go="feedback" data-reg="${r.id}">${ico('star')} ${t('rate')}</button>`);
+    else right = `<span class="badge b-gray">${t('cancelled')}</span>`;
+    return `<div class="bk ${cls}"><div class="ico ${catCls(e.cat)}" aria-hidden="true">${ico(c.icon)}</div>
+      <div class="info"><div class="ev-title" style="font-size:14px">${esc(L(e.title))}</div><div class="meta">${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))}</div></div>
+      <div class="row">${right}</div></div>`;
+  };
+  return pageHead(t('myBookings'), '', ['07', '08']) + `
+  <div class="tabs" role="tablist">${['upcoming', 'past', 'cancelled'].map(k => `<button role="tab" aria-selected="${S.bkTab === k}" data-tab="${k}">${t(k)} (${fmtN(groups[k].length)})</button>`).join('')}</div>
+  ${list.length ? `<div class="stack">${list.map(row).join('')}</div>` : empty('ticket', t('noBookings'), t('noBookingsSub'), `<button class="btn btn-primary" data-go="feed">${t('browse')}</button>`)}`;
+};
+
+V.feedback = () => {
+  const r = S.regs.find(x => x.id === S.params.reg); if (!r) return V.notFound();
+  const e = ev(r.event), stars = S.params.stars || 0;
+  return `<button class="back" data-go="bookings"><span class="flip">→</span> ${t('back')}</button>
+  <div style="max-width:520px">${openNote('openFeedback')}
+  <div class="card"><h1 style="font-size:18px;color:var(--navy)">${t('fbTitle')}</h1><p class="muted" style="margin-bottom:16px">${esc(L(e.title))} · ${fmtDate(e.startsAt)}</p>
+    <div class="field"><label id="stl">${t('fbOverall')} *</label><div class="row" role="radiogroup" aria-labelledby="stl">
+      ${[1, 2, 3, 4, 5].map(n => `<button role="radio" aria-checked="${stars === n}" aria-label="${t('stars', n)}" data-star="${n}" style="background:none;border:0;font-size:30px;line-height:1;color:${n <= stars ? '#E0A800' : 'var(--gray-300)'}">${ico('star', 'fill')}</button>`).join('')}
+    </div><div class="err" id="st-e"></div></div>
+    <div class="field"><label for="fc">${t('fbComment')}</label><textarea class="input" id="fc" maxlength="500"></textarea></div>
+    <button class="btn btn-primary" data-act="sendFb" data-reg="${r.id}">${t('fbSubmit')}</button></div></div>`;
+};
+
+V.notifications = () => {
+  const list = S.notifs.filter(n => n.user === me().id);
+  const icon = { BOOKING_CONFIRMATION: 'ticket', CAPACITY_FULL: 'chart', BROADCAST: 'megaphone', SYSTEM: 'info' };
+  return pageHead(t('ntTitle'), '', ['06', '15', '21'], list.some(n => !n.isRead) ? `<button class="btn btn-ghost btn-sm" data-act="markAll">${t('markAll')}</button>` : '') +
+    (list.length ? `<div class="card" style="padding:0">${list.map(n => `<div class="nt ${n.isRead ? '' : 'unread'}"><span class="dot" aria-hidden="true"></span><span style="font-size:18px;color:var(--teal-dark)">${ico(icon[n.type])}</span>
+      <div style="flex:1"><div class="t">${esc(L(n.title))}${n.isRead ? '' : `<span class="sr"> (unread)</span>`}</div><div class="muted">${esc(L(n.body))}</div><div class="small muted">${fmtDT(n.createdAt)}</div></div></div>`).join('')}</div>`
+      : empty('bell', t('noNt'), '', ''));
+};
+
+V.chat = () => {
+  if (!S.chat.length) S.chat.push({ from: 'bot', text: t('chatHello') });
+  return pageHead(t('chatTitle'), t('chatSub'), ['23']) + `<div class="card chat" style="max-width:720px">
+    <div class="chat-head"><div class="avatar" style="background:var(--teal-dark);color:#fff;font-size:17px" aria-hidden="true">${ico('message')}</div><div><div style="font-weight:700">${t('chatTitle')}</div><div class="small" style="color:#C9D2E3">● ${t('online')}</div></div></div>
+    <div class="chat-log" id="chatLog" aria-live="polite">${S.chat.map(m => `<div class="bubble ${m.from}">${esc(m.text)}${m.confirm ? `<div class="row" style="margin-top:8px"><button class="btn btn-primary btn-sm" data-act="chatYes" data-id="${m.confirm}">${t('chatConfirmBtn')}</button><button class="btn btn-ghost btn-sm" data-act="chatNo">${t('chatNo')}</button></div>` : ''}</div>`).join('')}</div>
+    <div class="chat-foot"><div class="chips" style="margin-bottom:8px">${(S.role === 'ATTENDEE' ? ['qBook', 'qMine', 'qHelp'] : ['qHelp']).map(k => `<button class="chip" data-quick="${k}">${t(k)}</button>`).join('')}</div>
+      <form id="chatForm" class="row" style="flex-wrap:nowrap"><label class="sr" for="cm">${t('chatPh')}</label><input class="input" id="cm" placeholder="${t('chatPh')}" autocomplete="off"><button class="btn btn-primary" type="submit">${t('send')}</button></form></div></div>`;
+};
+
+V.orgEvents = () => {
+  const mine = S.events.filter(e => e.org === me().id).sort((a, b) => a.startsAt - b.startsAt);
+  const stats = [[t('total'), mine.length], [t('active'), mine.filter(e => e.status === 'APPROVED').length], [t('pending'), mine.filter(e => e.status === 'PENDING').length], [t('totalBookings'), mine.reduce((s, e) => s + e.booked, 0)]];
+  return pageHead(t('orgTitle'), t('orgSub'), ['11', '12'], `<button class="btn btn-primary" data-go="create">${ico('plus')} ${t('nav_create')}</button>`) +
+    `<div class="grid g4" style="margin-bottom:20px">${stats.map(([l, v]) => `<div class="stat"><div class="v">${fmtN(v)}</div><div class="l">${l}</div></div>`).join('')}</div>` +
+    (mine.length ? `<div class="table-wrap"><table><thead><tr><th>${t('event')}</th><th>${t('date')}</th><th>${t('bookings')}</th><th>${t('status')}</th><th>${t('actions')}</th></tr></thead><tbody>
+    ${mine.map(e => `<tr><td><strong>${esc(L(e.title))}</strong><div class="small muted">${esc(L(cat(e.cat)))}</div></td><td style="white-space:nowrap">${fmtDT(e.startsAt)}</td>
+      <td style="min-width:120px">${fmtN(e.booked)}/${fmtN(e.capacity)}<div class="progress"><span style="width:${Math.min(100, e.booked / e.capacity * 100)}%;background:${CAP[capState(e)][1]}"></span></div></td>
+      <td><span class="badge ${STATUS_B[e.status]}">${t(e.status)}</span></td>
+      <td><div class="row" style="flex-wrap:nowrap">${e.status === 'APPROVED' ? `<button class="btn btn-secondary btn-sm" data-go="attendees" data-id="${e.id}">${t('attendeesBtn')}</button>` : ''}
+        ${!isPast(e) ? `<button class="btn btn-ghost btn-sm" data-act="editEv" data-id="${e.id}">${t('edit')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="delEv" data-id="${e.id}">${t('delete')}</button>` : ''}</div></td></tr>`).join('')}
+    </tbody></table></div>` : empty('calendar', t('noOrgEvents'), t('noOrgEventsSub'), `<button class="btn btn-primary" data-go="create">${ico('plus')} ${t('nav_create')}</button>`));
+};
+
+V.create = () => {
+  if (!S.wizard) S.wizard = { step: 1, errors: {}, d: { titleAr: '', titleEn: '', descAr: '', descEn: '', cat: '', venue: '', start: '', end: '', capacity: '' } };
+  const w = S.wizard, d = w.d, er = w.errors, editing = !!w.editId;
+  const f = (id, label, inner) => `<div class="field"><label for="w_${id}">${label} *</label>${inner}${er[id] ? `<div class="err" id="w_${id}-e">${t(er[id])}</div>` : ''}</div>`;
+  const inp = (id, type = 'text', extra = '') => `<input class="input ${er[id] ? 'invalid' : ''}" id="w_${id}" data-w="${id}" type="${type}" value="${esc(d[id])}" ${extra} ${er[id] ? `aria-invalid="true" aria-describedby="w_${id}-e"` : ''}>`;
+  const ta = (id, dir) => `<textarea class="input ${er[id] ? 'invalid' : ''}" id="w_${id}" data-w="${id}" dir="${dir}">${esc(d[id])}</textarea>`;
+  const v = venue(d.venue);
+  let body;
+  if (w.step === 1) body = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px">
+      ${f('titleAr', t('titleAr'), inp('titleAr', 'text', 'dir="rtl"'))}${f('titleEn', t('titleEn'), inp('titleEn', 'text', 'dir="ltr"'))}
+      ${f('descAr', t('descAr'), ta('descAr', 'rtl'))}${f('descEn', t('descEn'), ta('descEn', 'ltr'))}</div>
+      ${f('cat', t('category'), `<select class="input ${er.cat ? 'invalid' : ''}" id="w_cat" data-w="cat"><option value="">${t('choose')}</option>${CATS.map(c => `<option value="${c.id}" ${d.cat === c.id ? 'selected' : ''}>${esc(L(c))}</option>`).join('')}</select>`)}
+      <div class="field"><label>${t('image')} ${fr('16')}</label><div class="dropzone">${ico('image')} ${t('dropzone')}</div></div>`;
+  else if (w.step === 2) body = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px">
+      ${f('start', t('startsAt'), inp('start', 'datetime-local'))}${f('end', t('endsAt'), inp('end', 'datetime-local'))}</div>
+      ${f('venue', t('venue'), `<select class="input ${er.venue ? 'invalid' : ''}" id="w_venue" data-w="venue"><option value="">${t('choose')}</option>${VENUES.map(x => `<option value="${x.id}" ${d.venue === x.id ? 'selected' : ''}>${esc(L(x))}</option>`).join('')}</select>`)}
+      ${f('capacity', `${t('capacity')} ${fr('13')}`, inp('capacity', 'number', `min="1" ${v ? `max="${v.capacity}"` : ''}`))}
+      ${v ? `<div class="hint" style="margin-top:-10px;margin-bottom:12px">${t('capHint', fmtN(v.capacity))}</div>` : ''}`;
+  else body = `<div class="tiles">
+      <div class="tile"><div class="l">${t('titleAr')}</div><div class="v" dir="rtl">${esc(d.titleAr)}</div></div>
+      <div class="tile"><div class="l">${t('titleEn')}</div><div class="v" dir="ltr">${esc(d.titleEn)}</div></div>
+      <div class="tile"><div class="l">${t('category')}</div><div class="v">${esc(L(cat(d.cat)))}</div></div>
+      <div class="tile"><div class="l">${t('venue')}</div><div class="v">${esc(L(v))}</div></div>
+      <div class="tile"><div class="l">${t('when')}</div><div class="v">${fmtDT(new Date(d.start))}</div><div class="small muted">→ ${fmtTime(new Date(d.end))}</div></div>
+      <div class="tile"><div class="l">${t('capacity')}</div><div class="v">${fmtN(+d.capacity)}</div></div></div>
+      ${editing ? '' : `<div class="alert" style="background:var(--info-bg);color:var(--navy);margin-top:16px">${ico('info')} ${t('createSub')}</div>`}`;
+  const steps = ['s1', 's2', 's3'].map((k, i) => `<div class="step ${w.step === i + 1 ? 'active' : w.step > i + 1 ? 'done' : ''}" ${w.step === i + 1 ? 'aria-current="step"' : ''}><span class="n">${w.step > i + 1 ? ico('check') : fmtN(i + 1)}</span>${t(k)}</div>`).join('');
+  return `<button class="back" data-go="orgEvents"><span class="flip">→</span> ${t('back')}</button>` +
+    pageHead(editing ? t('editTitle') : t('createTitle'), editing ? '' : t('createSub'), editing ? ['11'] : ['10', '13', '16']) +
+    `<div class="card" style="max-width:760px"><div class="steps">${steps}</div>${body}
+    <div class="spread" style="margin-top:20px">${w.step > 1 ? `<button class="btn btn-ghost" data-act="wPrev"><span class="flip">→</span> ${t('prev')}</button>` : '<span></span>'}
+    ${w.step < 3 ? `<button class="btn btn-primary" data-act="wNext">${t('next')} <span class="flip">←</span></button>` : `<button class="btn btn-primary" data-act="wSubmit">${editing ? t('saveChanges') : t('submitForApproval')}</button>`}</div></div>`;
+};
+
+V.attendees = () => {
+  const e = ev(S.params.id); if (!e) return V.notFound();
+  const regs = S.regs.filter(r => r.event === e.id && r.status === 'CONFIRMED');
+  const q = S.attQ.toLowerCase();
+  const shown = regs.filter(r => { const u = user(r.user); return !q || (u.name + u.nameEn + u.email).toLowerCase().includes(q); });
+  const inN = regs.filter(r => r.checkedInAt).length;
+  return `<button class="back" data-go="orgEvents"><span class="flip">→</span> ${t('back')}</button>` +
+    pageHead(t('attTitle'), `${L(e.title)} · ${fmtDT(e.startsAt)}`, ['14']) +
+    `<div class="grid g4" style="margin-bottom:20px">
+      <div class="stat"><div class="v">${fmtN(regs.length)}</div><div class="l">${t('registeredN')}</div></div>
+      <div class="stat"><div class="v" style="color:var(--success-fg)">${fmtN(inN)}</div><div class="l">${t('checkedIn')}</div></div>
+      <div class="stat"><div class="v">${fmtN(regs.length - inN)}</div><div class="l">${t('notYet')}</div></div></div>
+    <div class="layout-2"><div>
+      <div class="spread" style="margin-bottom:12px"><div class="search" style="flex:1;min-width:200px">${ico('search')}<label class="sr" for="aq">${t('searchAtt')}</label><input id="aq" placeholder="${t('searchAtt')}" value="${esc(S.attQ)}"></div>
+        <button class="btn btn-ghost btn-sm" data-act="csv">${ico('download')} ${t('exportCsv')}</button></div>
+      ${shown.length ? `<div class="table-wrap"><table><thead><tr><th>${t('name')}</th><th>${t('email')}</th><th>${t('status')}</th><th>${t('checkInTime')}</th></tr></thead><tbody>
+        ${shown.map(r => { const u = user(r.user); return `<tr><td><div class="row" style="flex-wrap:nowrap"><span class="avatar">${esc(initials(u))}</span>${esc(uname(u))}</div></td><td dir="ltr" style="text-align:start">${esc(u.email)}</td>
+        <td>${r.checkedInAt ? `<span class="badge b-success">${ico('check')} ${t('checkedIn')}</span>` : `<span class="badge b-gray">${t('notYet')}</span>`}</td><td>${r.checkedInAt ? fmtTime(r.checkedInAt) : '—'}</td></tr>`; }).join('')}
+      </tbody></table></div>` : empty('users', t('noAtt'), '', '')}
+    </div>
+    <div class="card" style="align-self:start"><h2>${t('scanTitle')}</h2>${openNote('openScanner')}
+      <div style="aspect-ratio:4/3;background:var(--navy);border-radius:var(--radius-sm);display:grid;place-items:center;color:#C9D2E3;margin-bottom:12px;position:relative">
+        <div style="width:55%;aspect-ratio:1;border:3px solid var(--teal-light);border-radius:12px" aria-hidden="true"></div><span class="small" style="position:absolute;bottom:8px">${ico('camera')}</span></div>
+      <form id="scanForm"><label class="sr" for="sc">${t('scanPh')}</label><input class="input" id="sc" dir="ltr" placeholder="${t('scanPh')}" style="margin-bottom:8px">
+        <div class="row"><button class="btn btn-primary" type="submit">${t('scanBtn')}</button><button class="btn btn-secondary" type="button" data-act="simScan" data-id="${e.id}">${t('simulate')}</button></div></form>
+      <div id="scanMsg" aria-live="assertive" style="margin-top:10px"></div></div></div>`;
+};
+
+V.dash = () => {
+  const pending = S.events.filter(e => e.status === 'PENDING');
+  const stats = [[t('users'), USERS.length], [t('active'), S.events.filter(e => e.status === 'APPROVED' && !isPast(e)).length], [t('pending'), pending.length], [t('totalBookings'), S.events.reduce((s, e) => s + e.booked, 0)]];
+  return pageHead(t('dashTitle'), t('dashSub'), ['17', '22']) +
+    `<div class="grid g4" style="margin-bottom:20px">${stats.map(([l, v], i) => `<div class="stat"><div class="v" ${i === 2 && v ? 'style="color:var(--warning-fg)"' : ''}>${fmtN(v)}</div><div class="l">${l}</div></div>`).join('')}</div>
+    <div class="card"><h2>${t('approvals')} (${fmtN(pending.length)})</h2>
+    ${pending.length ? `<div class="stack">${pending.map(e => `<div class="bk" style="border-inline-start-color:var(--warning)"><div class="ico ${catCls(e.cat)}" aria-hidden="true">${ico(cat(e.cat).icon)}</div>
+      <div class="info"><div class="ev-title" style="font-size:14px">${esc(L(e.title))}</div><div class="meta">${esc(L(cat(e.cat)))} · ${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))} · ${t('capacity')} ${fmtN(e.capacity)}</div><div class="small muted">${t('by')} ${esc(uname(user(e.org)))}</div></div>
+      <div class="row"><button class="btn btn-primary btn-sm" data-act="approve" data-id="${e.id}">${ico('check')} ${t('approve')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="reject" data-id="${e.id}">${t('reject')}</button></div></div>`).join('')}</div>`
+      : `<p class="muted">${ico('check')} ${t('noApprovals')}</p>`}</div>
+    <div class="card"><h2>${t('allEvents')}</h2><div class="table-wrap" style="border:0"><table><thead><tr><th>${t('event')}</th><th>${t('organizer')}</th><th>${t('date')}</th><th>${t('status')}</th><th>${t('actions')}</th></tr></thead><tbody>
+    ${[...S.events].sort((a, b) => b.startsAt - a.startsAt).map(e => `<tr><td><strong>${esc(L(e.title))}</strong></td><td>${esc(uname(user(e.org)))}</td><td style="white-space:nowrap">${fmtDate(e.startsAt)}</td>
+      <td><span class="badge ${STATUS_B[e.status]}">${t(e.status)}</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="delEv" data-id="${e.id}">${t('delete')}</button></td></tr>`).join('')}
+    </tbody></table></div></div>`;
+};
+
+V.users = () => {
+  const list = USERS.filter(u => S.usrRole === 'all' || u.role === S.usrRole);
+  const roleB = { ATTENDEE: 'b-teal', ORGANIZER: 'b-info', ADMIN: 'b-warning' };
+  return pageHead(t('usersTitle'), t('usersSub'), ['18', '22'], `<button class="btn btn-primary" data-act="newUser">${ico('plus')} ${t('newAccount')}</button>`) +
+    `<div class="chips" style="margin-bottom:16px">${['all', 'ATTENDEE', 'ORGANIZER', 'ADMIN'].map(r => `<button class="chip" aria-pressed="${S.usrRole === r}" data-urole="${r}">${r === 'all' ? t('allRoles') : t(r)}</button>`).join('')}</div>
+    <div class="table-wrap"><table><thead><tr><th>${t('name')}</th><th>${t('email')}</th><th>${t('role')}</th><th>${t('bookings')}</th><th>${t('status')}</th><th>${t('actions')}</th></tr></thead><tbody>
+    ${list.map(u => { const self = u.id === me().id; return `<tr><td><div class="row" style="flex-wrap:nowrap"><span class="avatar">${esc(initials(u))}</span>${esc(uname(u))} ${self ? `<span class="small muted">${t('you')}</span>` : ''}</div></td>
+      <td dir="ltr" style="text-align:start">${esc(u.email)}</td><td><span class="badge ${roleB[u.role]}">${t(u.role)}</span></td>
+      <td>${fmtN(S.regs.filter(r => r.user === u.id && r.status === 'CONFIRMED').length)}</td>
+      <td><span class="badge ${u.isActive ? 'b-success' : 'b-gray'}">${u.isActive ? t('activeS') : t('inactiveS')}</span></td>
+      <td>${self ? '' : `<div class="row" style="flex-wrap:nowrap"><button class="btn btn-ghost btn-sm" data-act="toggleUser" data-id="${u.id}">${u.isActive ? t('deactivate') : t('activate')}</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="delUser" data-id="${u.id}">${t('delete')}</button></div>`}</td></tr>`; }).join('')}
+    </tbody></table></div>`;
+};
+
+V.cats = () => pageHead(t('catsTitle'), t('catsSub'), ['19']) +
+  `<div class="layout-2"><div class="table-wrap"><table><thead><tr><th>${t('nameAr')}</th><th>${t('nameEn')}</th><th>${t('allEvents')}</th><th>${t('actions')}</th></tr></thead><tbody>
+  ${CATS.map(c => { const n = S.events.filter(e => e.cat === c.id).length; return `<tr><td>${ico(c.icon)} ${esc(c.ar)}</td><td dir="ltr" style="text-align:start">${esc(c.en)}</td><td>${t('eventsN', fmtN(n))}</td>
+    <td><div class="row" style="flex-wrap:nowrap"><button class="btn btn-ghost btn-sm" data-act="editCat" data-id="${c.id}">${t('edit')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="delCat" data-id="${c.id}">${t('delete')}</button></div></td></tr>`; }).join('')}
+  </tbody></table></div>
+  <div class="card" style="align-self:start"><h2>${t('add')}</h2><form id="catForm" novalidate>
+    <div class="field"><label for="ca">${t('nameAr')} *</label><input class="input" id="ca" dir="rtl"></div>
+    <div class="field"><label for="ce">${t('nameEn')} *</label><input class="input" id="ce" dir="ltr"></div><div class="err" id="cat-e" style="margin-bottom:8px"></div>
+    <button class="btn btn-primary" type="submit">${t('add')}</button></form></div></div>`;
+
+V.analytics = () => {
+  const months = S.lang === 'ar' ? ['مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر'] : ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+  const vals = [340, 120, 60, 210, 880, 1240], max = Math.max(...vals);
+  const byCat = CATS.map(c => [c, S.events.filter(e => e.cat === c.id && e.status === 'APPROVED').length]);
+  const totalCat = byCat.reduce((s, [, n]) => s + n, 0) || 1;
+  const upcoming = S.events.filter(e => e.status === 'APPROVED' && !isPast(e)).sort((a, b) => a.startsAt - b.startsAt).slice(0, 4);
+  const pred = e => Math.round(e.booked * ({ workshop: 0.82, seminar: 0.74, competition: 0.9, cultural: 0.68, sports: 0.71 }[e.cat]));
+  const pm = Math.max(...upcoming.map(e => e.capacity), 1);
+  return pageHead(t('anTitle'), t('anSub'), ['20']) +
+    `<div class="grid g4" style="margin-bottom:20px">
+      <div class="stat"><div class="v">${fmtN(76)}%</div><div class="l">${t('attRate')}</div></div>
+      <div class="stat"><div class="v">${fmtN(4.3)}<span class="small muted">/5</span></div><div class="l">${t('avgRating')}</div></div>
+      <div class="stat"><div class="v">${fmtN(S.events.filter(e => e.status === 'APPROVED' && Math.abs(e.startsAt - today) < 31 * DAY).length)}</div><div class="l">${t('monthEvents')}</div></div>
+      <div class="stat"><div class="v">${fmtN(S.events.reduce((s, e) => s + e.booked, 0))}</div><div class="l">${t('totalBookings')}</div></div></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+      <div class="card"><h2>${t('bookingsMonthly')}</h2><div class="bars" role="img" aria-label="${t('bookingsMonthly')}">${vals.map((v, i) => `<div class="bar-col"><span class="v">${fmtN(v)}</span><div class="bar" style="height:${v / max * 100}%"></div><span class="l">${months[i]}</span></div>`).join('')}</div></div>
+      <div class="card"><h2>${t('byCategory')}</h2>${byCat.map(([c, n]) => `<div class="hbar"><span>${esc(L(c))}</span><div class="progress" style="height:10px"><span style="width:${n / totalCat * 100}%;background:var(--teal)"></span></div><span class="small muted">${fmtN(Math.round(n / totalCat * 100))}%</span></div>`).join('')}</div>
+      <div class="card" style="grid-column:1/-1"><h2>${t('prediction')}</h2><p class="small muted" style="margin-bottom:8px">${t('predNote')}</p>
+        <div class="row small" style="margin-bottom:6px"><span style="display:inline-block;width:12px;height:12px;background:var(--teal);border-radius:2px"></span>${t('registeredL')}<span style="display:inline-block;width:12px;height:12px;border:1.5px dashed var(--teal-dark);background:var(--teal-bg);border-radius:2px;margin-inline-start:12px"></span>${t('predicted')}</div>
+        <div class="bars" style="height:200px">${upcoming.map(e => `<div class="bar-col"><div class="row" style="flex-wrap:nowrap;align-items:flex-end;gap:4px;height:100%;width:100%;justify-content:center">
+          <div class="bar" style="height:${e.booked / pm * 100}%" title="${t('registeredL')}: ${e.booked}"></div><div class="bar pred" style="height:${pred(e) / pm * 100}%" title="${t('predicted')}: ${pred(e)}"></div></div>
+          <span class="l" style="text-align:center">${esc(L(e.title)).slice(0, 22)}</span><span class="v">${fmtN(e.booked)} → ${fmtN(pred(e))}</span></div>`).join('')}</div></div></div>`;
+};
+
+V.broadcast = () => {
+  const n = USERS.filter(u => u.isActive).length;
+  return pageHead(t('bcTitle'), t('bcSub'), ['21']) + `<div class="layout-2"><div class="card"><form id="bcForm" novalidate>
+    <div class="field"><label>${t('audience')}</label><div class="badge b-info">${ico('users')} ${fmtN(n)} ${t('users')}</div></div>
+    <div class="field"><label for="bt">${t('bcTitleF')} *</label><input class="input" id="bt" maxlength="80"><div class="err" id="bt-e"></div></div>
+    <div class="field"><label for="bb">${t('bcBody')} *</label><textarea class="input" id="bb" maxlength="500"></textarea><div class="err" id="bb-e"></div></div>
+    <button class="btn btn-primary" type="submit">${ico('megaphone')} ${t('bcSend')}</button></form></div>
+    <div class="card" style="align-self:start"><h2>${t('recent')}</h2>${S.broadcasts.map(b => `<div class="nt" style="padding-inline:0"><span style="color:var(--teal-dark)">${ico('megaphone')}</span><div><div style="font-weight:600">${esc(L(b.title))}</div><div class="small muted">${fmtDT(b.createdAt)} · ${fmtN(b.sent)} ${t('users')}</div></div></div>`).join('')}</div></div>`;
+};
+
+V.notFound = () => empty('compass', t('nfTitle'), t('nfSub'), `<button class="btn btn-primary" data-act="home">${t('home')}</button>`);
+
+// ---------------------------------------------------------------- render
+function render() {
+  const d = document.documentElement;
+  d.lang = S.lang; d.dir = S.lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = `${SCREEN_NAMES[S.lang][S.screen] || ''} · SCEMS Prototype`;
+
+  const pb = document.getElementById('protoBar');
+  pb.innerHTML = `<strong>${t('protoTitle')}</strong><span>(${t('protoNote')})</span>
+    <label>${t('screen')}: <select id="pScreen">${SCREENS.map(([id, role, frs]) => `<option value="${id}" ${S.screen === id ? 'selected' : ''}>${SCREEN_NAMES[S.lang][id]}${role ? ` · ${t(role)}` : ''} (${frs})</option>`).join('')}</select></label>
+    <span class="seg" role="group" aria-label="${t('role')}">${['ATTENDEE', 'ORGANIZER', 'ADMIN'].map(r => `<button aria-pressed="${S.role === r}" data-prole="${r}">${t(r)}</button>`).join('')}</span>
+    <label><input type="checkbox" id="pNotes" ${S.notes ? 'checked' : ''}> ${t('notesToggle')} (FR / OPEN)</label>
+    <label>${t('states')}: <select id="pState">${[['normal', 'normal'], ['loading', 'loadingDemo'], ['error', 'errorDemo']].map(([v, k]) => `<option value="${v}" ${S.state === v ? 'selected' : ''}>${t(k)}</option>`).join('')}</select></label>`;
+
+  const navItems = S.role ? NAV[S.role] : [];
+  const u = me();
+  const top = `<header class="topbar"><button class="brand" data-act="home" aria-label="${t('product')}"><span class="brand-icon" aria-hidden="true">S</span><span style="line-height:1.15;text-align:start">${t('short')}<br><span class="small" style="color:#C9D2E3;font-weight:500">${t('uni')}</span></span></button>
+    ${S.role ? `<button class="icon-btn menu-btn" data-act="menu" aria-expanded="${S.navOpen}" aria-label="${t('menu')}">${ico('menu')}</button>
+    <nav class="nav ${S.navOpen ? 'open' : ''}" aria-label="${t('menu')}">${navItems.map(([id, k]) => `<button data-go="${id}" ${S.screen === id ? 'aria-current="page"' : ''}>${t(k)}</button>`).join('')}</nav>` : ''}
+    <div class="top-actions">
+      ${S.role ? `<button class="icon-btn" data-go="notifications" aria-label="${t('notifications')}${unread() ? ` (${unread()})` : ''}">${ico('bell')}${unread() ? `<span class="count" aria-hidden="true">${fmtN(unread())}</span>` : ''}</button>` : ''}
+      <button class="lang-toggle" data-act="lang" lang="${S.lang === 'ar' ? 'en' : 'ar'}">${t('switchLang')}</button>
+      ${u ? `<div class="user-chip"><span class="avatar" aria-hidden="true">${esc(initials(u))}</span><span class="name">${esc(uname(u))}<br><span class="small" style="color:#C9D2E3">${t(u.role)}</span></span></div>
+      <button class="icon-btn" data-act="logout" aria-label="${t('logout')}" title="${t('logout')}">${ico('logout')}</button>` : ''}
+    </div></header>`;
+
+  const content = S.state === 'loading' ? skeleton() : S.state === 'error' ? errorView() : (V[S.screen] || V.notFound)();
+  document.getElementById('app').innerHTML = top + `<main id="main">${content}</main>`;
+  const log = document.getElementById('chatLog'); if (log) log.scrollTop = log.scrollHeight;
+}
+
+// ---------------------------------------------------------------- actions
+function book(eid) {
+  const e = ev(eid);
+  const r = { id: uid('r'), event: eid, user: me().id, status: 'CONFIRMED', code: code(), checkedInAt: null, createdAt: new Date() };
+  S.regs.push(r); e.booked++;
+  notify(me().id, 'BOOKING_CONFIRMATION', { ar: 'تم تأكيد حجزك', en: 'Booking confirmed' }, { ar: `حجزك في "${e.title.ar}" مؤكد.`, en: `Your booking for "${e.title.en}" is confirmed.` });
+  if (e.booked >= e.capacity) notify(e.org, 'CAPACITY_FULL', { ar: 'اكتملت السعة', en: 'Event is full' }, { ar: `وصلت "${e.title.ar}" إلى الحد الأعلى.`, en: `"${e.title.en}" reached its maximum capacity.` });
+  return r;
+}
+function setErr(id, key) {
+  const el = document.getElementById(id + '-e'), input = document.getElementById(id);
+  if (el) el.textContent = key ? t(key) : '';
+  if (input) { input.classList.toggle('invalid', !!key); key ? input.setAttribute('aria-invalid', 'true') : input.removeAttribute('aria-invalid'); }
+  return !key;
+}
+function validateStep(w) {
+  const d = w.d, e = {};
+  if (w.step === 1) { ['titleAr', 'titleEn', 'descAr', 'descEn', 'cat'].forEach(k => { if (!String(d[k]).trim()) e[k] = 'E_REQUIRED'; }); }
+  if (w.step === 2) {
+    ['start', 'end', 'venue', 'capacity'].forEach(k => { if (!String(d[k]).trim()) e[k] = 'E_REQUIRED'; });
+    if (d.start && new Date(d.start) <= new Date()) e.start = 'E_DATE';
+    if (d.start && d.end && new Date(d.end) <= new Date(d.start)) e.end = 'E_TIME_ORDER';
+    const v = venue(d.venue), c = +d.capacity;
+    if (d.capacity && (!Number.isInteger(c) || c < 1 || (v && c > v.capacity))) e.capacity = 'E_CAPACITY';
+  }
+  w.errors = e; return !Object.keys(e).length;
+}
+const toLocalInput = dt => { const p = n => String(n).padStart(2, '0'); return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}T${p(dt.getHours())}:${p(dt.getMinutes())}`; };
+
+function chatReply(text) {
+  const s = text.toLowerCase();
+  const upcoming = S.events.filter(e => e.status === 'APPROVED' && !isPast(e)).sort((a, b) => a.startsAt - b.startsAt);
+  if (S.role === 'ATTENDEE' && /احجز|حجز لي|book me|book a|^book/.test(s)) {
+    const e = upcoming.find(x => x.booked < x.capacity && !myReg(x.id));
+    return e ? { from: 'bot', text: t('chatSuggest', L(e.title)), confirm: e.id } : { from: 'bot', text: t('chatFound', []) };
+  }
+  if (/حجوزات|my booking|bookings/.test(s)) {
+    const list = S.regs.filter(r => r.user === me().id && r.status === 'CONFIRMED').map(r => ev(r.event)).filter(e => !isPast(e)).map(e => `• ${L(e.title)} (${fmtDate(e.startsAt)})`);
+    return { from: 'bot', text: t('chatMine', list) };
+  }
+  if (/مساعد|help/.test(s)) return { from: 'bot', text: t('chatHelp') };
+  const hit = upcoming.filter(e => { const c = cat(e.cat); return [e.title.ar, e.title.en, c.ar, c.en].some(x => s.split(/\s+/).some(w => w.length > 2 && x.toLowerCase().includes(w.replace(/^ال/, '')))); });
+  return { from: 'bot', text: t('chatFound', hit.map(e => `• ${L(e.title)} (${fmtDate(e.startsAt)})`)) };
+}
+function chatSend(text) {
+  if (!text.trim()) return;
+  S.chat.push({ from: 'user', text }); S.chat.push(chatReply(text)); render();
+  const i = document.getElementById('cm'); if (i) i.focus();
+}
+
+document.addEventListener('click', ev_ => {
+  const el = ev_.target.closest('[data-go],[data-act],[data-cat],[data-tab],[data-prole],[data-urole],[data-star],[data-quick]');
+  if (!el) return;
+  const ds = el.dataset;
+  if (ds.go) return go(ds.go, { id: ds.id, reg: ds.reg });
+  if (ds.cat) { S.feed.cat = ds.cat; return render(); }
+  if (ds.tab) { S.bkTab = ds.tab; return render(); }
+  if (ds.urole) { S.usrRole = ds.urole; return render(); }
+  if (ds.prole) { S.role = ds.prole; S.loginNotice = null; return go(home()); }
+  if (ds.star) { S.params.stars = +ds.star; return render(); }
+  if (ds.quick) return chatSend(t(ds.quick));
+  const id = ds.id;
+  switch (ds.act) {
+    case 'home': return go(home());
+    case 'lang': S.lang = S.lang === 'ar' ? 'en' : 'ar'; S.chat = S.chat.length > 1 ? S.chat : []; return render();
+    case 'menu': S.navOpen = !S.navOpen; return render();
+    case 'logout': S.loginNotice = null; return go('login');
+    case 'retry': S.state = 'normal'; return render();
+    case 'clearQ': S.feed.q = ''; return render();
+    case 'clearFilters': S.feed = { q: '', cat: 'all', date: 'any', venue: 'any' }; return render();
+    case 'book': return modal({ title: t('confirmBookT'), body: t('confirmBookB', L(ev(id).title)), onConfirm: () => { const r = book(id); go('booked', { reg: r.id }); } });
+    case 'cancelReg': {
+      const r = S.regs.find(x => x.id === ds.reg);
+      return modal({ title: t('cancelBookT'), body: t('cancelBookB', L(ev(r.event).title)), confirmLabel: t('cancelBooking'), danger: true, onConfirm: () => { r.status = 'CANCELLED'; ev(r.event).booked--; render(); toast(t('bookingCancelled')); } });
+    }
+    case 'sendFb': {
+      if (!S.params.stars) { document.getElementById('st-e').textContent = t('E_REQUIRED'); return; }
+      S.regs.find(x => x.id === ds.reg).rated = true; S.bkTab = 'past'; go('bookings'); return toast(t('fbThanks'));
+    }
+    case 'markAll': S.notifs.forEach(n => { if (n.user === me().id) n.isRead = true; }); return render();
+    case 'chatYes': {
+      const e = ev(id); S.chat = S.chat.map(m => ({ ...m, confirm: null }));
+      if (myReg(id) || e.booked >= e.capacity) { S.chat.push({ from: 'bot', text: t('fullMsg') }); return render(); }
+      const r = book(id); S.chat.push({ from: 'bot', text: t('chatDone', r.code) }); return render();
+    }
+    case 'chatNo': S.chat = S.chat.map(m => ({ ...m, confirm: null })); S.chat.push({ from: 'bot', text: t('chatDeclined') }); return render();
+    case 'delEv': {
+      const e = ev(id);
+      return modal({ title: t('deleteEvT'), body: t('deleteEvB', L(e.title)), confirmLabel: t('delete'), danger: true, onConfirm: () => {
+        S.regs.filter(r => r.event === id && r.status === 'CONFIRMED').forEach(r => notify(r.user, 'SYSTEM', { ar: 'أُلغيت فعالية', en: 'Event cancelled' }, { ar: `أُلغيت "${e.title.ar}" وأُلغي حجزك.`, en: `"${e.title.en}" was cancelled, and so was your booking.` }));
+        S.events = S.events.filter(x => x.id !== id); S.regs = S.regs.filter(r => r.event !== id); render(); toast(t('evDeleted')); } });
+    }
+    case 'editEv': {
+      const e = ev(id);
+      S.wizard = { step: 1, errors: {}, editId: id, d: { titleAr: e.title.ar, titleEn: e.title.en, descAr: e.desc.ar, descEn: e.desc.en, cat: e.cat, venue: e.venue, start: toLocalInput(e.startsAt), end: toLocalInput(e.endsAt), capacity: String(e.capacity) } };
+      return go('create', { keep: true });
+    }
+    case 'wNext': if (validateStep(S.wizard)) S.wizard.step++; return render();
+    case 'wPrev': S.wizard.errors = {}; S.wizard.step--; return render();
+    case 'wSubmit': {
+      const d = S.wizard.d, data = { title: { ar: d.titleAr.trim(), en: d.titleEn.trim() }, desc: { ar: d.descAr.trim(), en: d.descEn.trim() }, cat: d.cat, venue: d.venue, startsAt: new Date(d.start), endsAt: new Date(d.end), capacity: +d.capacity };
+      if (S.wizard.editId) { Object.assign(ev(S.wizard.editId), data); go('orgEvents'); return toast(t('saved')); }
+      S.events.push({ id: uid('e'), ...data, booked: 0, status: 'PENDING', org: me().id });
+      notify('u3', 'SYSTEM', { ar: 'فعالية جديدة بانتظار الاعتماد', en: 'New event waiting for approval' }, { ar: `"${data.title.ar}" من ${user(me().id).name}.`, en: `"${data.title.en}" by ${user(me().id).nameEn}.` });
+      go('orgEvents'); return toast(t('submitted'));
+    }
+    case 'simScan': {
+      const r = S.regs.find(x => x.event === id && x.status === 'CONFIRMED' && !x.checkedInAt);
+      const msg = r ? (r.checkedInAt = new Date(), t('scanOk', uname(user(r.user)))) : t('noAtt');
+      render(); const m = document.getElementById('scanMsg'); if (m) m.innerHTML = `<div class="alert ${r ? 'alert-success' : 'alert-danger'}">${esc(msg)}</div>`; return;
+    }
+    case 'csv': return toast(t('exportCsv'));
+    case 'approve': case 'reject': {
+      const e = ev(id), ok = ds.act === 'approve';
+      const doIt = () => {
+        e.status = ok ? 'APPROVED' : 'REJECTED';
+        notify(e.org, 'SYSTEM', ok ? { ar: 'تم اعتماد فعاليتك', en: 'Your event was approved' } : { ar: 'تم رفض فعاليتك', en: 'Your event was rejected' }, { ar: `"${e.title.ar}"`, en: `"${e.title.en}"` });
+        render(); toast(t(ok ? 'approvedMsg' : 'rejectedMsg'));
+      };
+      return ok ? doIt() : modal({ title: t('rejectT'), body: t('rejectB', L(e.title)), confirmLabel: t('reject'), danger: true, onConfirm: doIt });
+    }
+    case 'toggleUser': {
+      const u = user(id);
+      if (!u.isActive) { u.isActive = true; return render(); }
+      return modal({ title: t('deactT'), body: t('deactB', uname(u)), confirmLabel: t('deactivate'), danger: true, onConfirm: () => { u.isActive = false; render(); } });
+    }
+    case 'delUser': {
+      const u = user(id);
+      return modal({ title: t('deleteUserT'), body: t('deleteUserB', uname(u)), confirmLabel: t('delete'), danger: true, onConfirm: () => {
+        USERS.splice(USERS.indexOf(u), 1); S.regs.filter(r => r.user === id && r.status === 'CONFIRMED').forEach(r => { const e = ev(r.event); if (e) e.booked--; });
+        S.regs = S.regs.filter(r => r.user !== id); render(); toast(t('userDeleted')); } });
+    }
+    case 'newUser': return modal({ title: t('newAccount'), confirmLabel: t('createAccount'), content: `<div style="margin-top:12px">
+        <div class="field"><label for="nu_n">${t('fullName')} *</label><input class="input" id="nu_n"><div class="err" id="nu_n-e"></div></div>
+        <div class="field"><label for="nu_e">${t('email')} *</label><input class="input" id="nu_e" type="email" dir="ltr"><div class="err" id="nu_e-e"></div></div>
+        <div class="field"><label for="nu_r">${t('role')} *</label><select class="input" id="nu_r"><option value="ORGANIZER">${t('ORGANIZER')}</option><option value="ADMIN">${t('ADMIN')}</option></select></div></div>`,
+      onConfirm: () => {
+        const n = document.getElementById('nu_n').value.trim(), em = document.getElementById('nu_e').value.trim();
+        const ok = setErr('nu_n', n ? null : 'E_INVALID_NAME') & setErr('nu_e', /^\S+@\S+\.\S+$/.test(em) ? null : 'E_INVALID_EMAIL');
+        if (!ok) return false;
+        USERS.push({ id: uid('u'), name: n, nameEn: n, email: em, role: document.getElementById('nu_r').value, isActive: true }); render(); toast(t('accountCreated'));
+      } });
+    case 'editCat': {
+      const c = cat(id);
+      return modal({ title: t('edit'), confirmLabel: t('save'), content: `<div style="margin-top:12px"><div class="field"><label for="ec_a">${t('nameAr')} *</label><input class="input" id="ec_a" dir="rtl" value="${esc(c.ar)}"></div>
+        <div class="field"><label for="ec_e">${t('nameEn')} *</label><input class="input" id="ec_e" dir="ltr" value="${esc(c.en)}"></div><div class="err" id="ec-e"></div></div>`,
+        onConfirm: () => { const a = document.getElementById('ec_a').value.trim(), e = document.getElementById('ec_e').value.trim(); if (!a || !e) { document.getElementById('ec-e').textContent = t('E_REQUIRED'); return false; } c.ar = a; c.en = e; render(); toast(t('catSaved')); } });
+    }
+    case 'delCat': {
+      const c = cat(id);
+      if (S.events.some(e => e.cat === id)) return toast(t('catInUse'));
+      return modal({ title: t('deleteCatT'), body: t('deleteCatB', L(c)), confirmLabel: t('delete'), danger: true, onConfirm: () => { CATS.splice(CATS.indexOf(c), 1); render(); toast(t('catDeleted')); } });
+    }
+  }
+});
+
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.id === 'fq') { S.feed.q = el.value; render(); const n = document.getElementById('fq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+  if (el.id === 'aq') { S.attQ = el.value; render(); const n = document.getElementById('aq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+  if (el.dataset.w) S.wizard.d[el.dataset.w] = el.value;
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.id === 'fd') { S.feed.date = el.value; render(); }
+  if (el.id === 'fv') { S.feed.venue = el.value; render(); }
+  if (el.id === 'pScreen') go(el.value);
+  if (el.id === 'pState') { S.state = el.value; render(); }
+  if (el.id === 'pNotes') { S.notes = el.checked; render(); }
+  if (el.dataset.w === 'venue') { S.wizard.d.venue = el.value; render(); }
+});
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  const id = e.target.id;
+  if (id === 'loginForm') {
+    const em = document.getElementById('le').value.trim(), pw = document.getElementById('lp').value;
+    const u = USERS.find(x => x.email === em);
+    if (!u || pw.length < 8) { document.getElementById('loginErr').innerHTML = `<div class="alert alert-danger" role="alert">${t('E_INVALID_CREDENTIALS')}</div>`; return; }
+    if (!u.isActive) { document.getElementById('loginErr').innerHTML = `<div class="alert alert-danger" role="alert">${esc(T[S.lang] === T.ar ? 'هذا الحساب معطل. تواصل مع الإدارة.' : 'This account is disabled. Contact the administration.')}</div>`; return; }
+    ROLE_USER[u.role] = u.id; S.role = u.role; S.loginNotice = null; return go(home());
+  }
+  if (id === 'regForm') {
+    const n = document.getElementById('rn').value.trim(), em = document.getElementById('re').value.trim(), pw = document.getElementById('rp').value;
+    const ok = setErr('rn', n ? null : 'E_INVALID_NAME') & setErr('re', /^\S+@\S+\.\S+$/.test(em) ? null : 'E_INVALID_EMAIL') & setErr('rp', pw.length >= 8 ? null : 'E_WEAK_PASSWORD');
+    if (!ok) return document.querySelector('.input.invalid').focus();
+    USERS.push({ id: uid('u'), name: n, nameEn: n, email: em, role: 'ATTENDEE', isActive: true });
+    S.loginNotice = 'registered'; go('login'); S.params.as = 'ATTENDEE'; document.getElementById('le').value = em; return;
+  }
+  if (id === 'chatForm') { const i = document.getElementById('cm'); return chatSend(i.value); }
+  if (id === 'scanForm') {
+    const c = document.getElementById('sc').value.trim().toUpperCase();
+    const r = S.regs.find(x => x.event === S.params.id && x.code === c && x.status === 'CONFIRMED');
+    let cls = 'alert-danger', msg = t('scanBad');
+    if (r && r.checkedInAt) msg = t('scanDup', uname(user(r.user)));
+    else if (r) { r.checkedInAt = new Date(); cls = 'alert-success'; msg = t('scanOk', uname(user(r.user))); }
+    render(); document.getElementById('scanMsg').innerHTML = `<div class="alert ${cls}" role="status">${esc(msg)}</div>`; return;
+  }
+  if (id === 'catForm') {
+    const a = document.getElementById('ca').value.trim(), en = document.getElementById('ce').value.trim();
+    if (!a || !en) { document.getElementById('cat-e').textContent = t('E_REQUIRED'); return; }
+    CATS.push({ id: uid('c'), ar: a, en, icon: 'tag' }); render(); return toast(t('catSaved'));
+  }
+  if (id === 'bcForm') {
+    const ti = document.getElementById('bt').value.trim(), bo = document.getElementById('bb').value.trim();
+    const ok = setErr('bt', ti ? null : 'E_REQUIRED') & setErr('bb', bo ? null : 'E_REQUIRED');
+    if (!ok) return;
+    const active = USERS.filter(u => u.isActive);
+    return modal({ title: t('bcConfirmT'), body: t('bcConfirmB', fmtN(active.length)), confirmLabel: t('bcSend'), onConfirm: () => {
+      active.forEach(u => notify(u.id, 'BROADCAST', { ar: ti, en: ti }, { ar: bo, en: bo }));
+      S.broadcasts.unshift({ title: { ar: ti, en: ti }, sent: active.length, createdAt: new Date() }); render(); toast(t('bcSent')); } });
+  }
+});
+
+render();
+</script>
+</body>
+</html>

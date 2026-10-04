@@ -59,7 +59,9 @@ This is the one deliberate change from the GP1 prototype, which used white text 
 
 ## 2. Typography
 
-- Font stack: `'Segoe UI', Tahoma, Arial, sans-serif` (covers Arabic and Latin; already close to `globals.css`).
+- Font: **IBM Plex Sans Arabic** (Google Fonts, covers Arabic and Latin), falling back to `'Segoe UI', Tahoma, Arial, sans-serif`.
+  In Next.js load it with `next/font/google`.
+- Icons: line icons from the shadcn/ui default set (lucide), 2px stroke. No emoji in the UI.
 - Sizes: page title 20px bold navy, section title 16px bold, body 14px, labels and meta 12–13px, badges 11px semibold.
 - Never go below 11px. Arabic needs line-height ≥ 1.5.
 
@@ -155,7 +157,7 @@ For whoever owns `frontend/app/globals.css` (Role 4 with the Leader). Role 7 doe
   --radius-card: 12px;
   --radius-control: 8px;
   --shadow-card: 0 2px 12px rgba(27, 42, 74, 0.10);
-  --font-sans: 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-sans: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
 }
 ```
 
