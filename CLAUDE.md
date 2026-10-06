@@ -25,7 +25,7 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 | `backend/prisma/schema.prisma` | Role 2 ONLY |
 | `backend/src/lib`, `middleware`, `config` (shared code) | Role 2 |
 | `backend/src/modules/attendee` | Role 2 |
-| `backend/src/modules/admin` | Role 2 |
+| `backend/src/modules/admin` | Role 3 for FR-17..FR-22 (Leader override, feature/fr10to23-organizer-admin-chatbot). Normally Role 2. |
 | `backend/src/modules/organizer` | Role 3 |
 | `backend/src/modules/chatbot` | Role 3 |
 | `frontend/lib`, `frontend/components` (shared) | Role 1 + Role 4 (agree before changing) |
