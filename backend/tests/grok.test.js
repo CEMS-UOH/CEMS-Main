@@ -51,6 +51,24 @@ describe('askGrok', () => {
     expect(reply).toBe('42 is the answer.');
   });
 
+  it('skips a leading reasoning item and finds the message item anywhere in output', async () => {
+    // grok-4.7 (a reasoning model) returns a {type:"reasoning"} item alongside the message -
+    // output[0] is not reliably the reply.
+    global.fetch.mockResolvedValueOnce(
+      jsonResponse({
+        status: 'completed',
+        output: [
+          { type: 'reasoning', id: 'r1', content: [] },
+          { type: 'message', role: 'assistant', content: [{ type: 'output_text', text: 'hi' }] },
+        ],
+      })
+    );
+
+    const reply = await call();
+
+    expect(reply).toBe('hi');
+  });
+
   it('throws GrokError without calling fetch when the API key is missing', async () => {
     await expect(call({ apiKey: '' })).rejects.toThrow(GrokError);
     expect(global.fetch).not.toHaveBeenCalled();

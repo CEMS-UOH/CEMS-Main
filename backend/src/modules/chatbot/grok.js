@@ -7,7 +7,10 @@
 //   POST https://api.x.ai/v1/responses
 //   Headers: Content-Type: application/json, Authorization: Bearer <key>
 //   Body:    { model, input: [{ role: "system"|"user"|"assistant", content }], store: false }
-//   Reply:   output[0].content[0].text   (output[0] is {type:"message", role:"assistant", content:[...]})
+//   Reply:   the first {type:"output_text"} content part of the first {type:"message"} item in
+//            `output` - NOT output[0]. Reasoning models (grok-4.7 included) return a
+//            {type:"reasoning"} item ahead of the message, so output[0] is not reliably the
+//            reply.
 //
 // Two deliberate deviations from the example in the docs, both noted in the PR description:
 //   - `store: false` - we already persist the conversation ourselves in ChatSession; there is
@@ -65,7 +68,19 @@ async function askGrok({ apiKey, model, input }) {
     throw new GrokError('Grok returned a non-JSON response');
   }
 
-  const text = body?.output?.[0]?.content?.find((c) => c.type === 'output_text')?.text;
+  // Scan every item in `output`, not just output[0] - a reasoning model can return a
+  // {type:"reasoning"} item before the {type:"message"} one, so the reply is not reliably
+  // the first entry.
+  const messageItems = Array.isArray(body?.output) ? body.output.filter((item) => item?.type === 'message') : [];
+  let text;
+  for (const item of messageItems) {
+    const part = Array.isArray(item.content) ? item.content.find((c) => c?.type === 'output_text') : undefined;
+    if (part) {
+      text = part.text;
+      break;
+    }
+  }
+
   if (typeof text !== 'string' || text.trim() === '') {
     throw new GrokError(`Grok returned no usable text (status: ${body?.status ?? 'unknown'})`);
   }
