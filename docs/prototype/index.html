@@ -36,6 +36,9 @@ button { cursor: pointer; }
 /* Prototype controls (not part of the product UI) */
 .proto-bar { background: #fff; border-bottom: 2px dashed var(--gray-300); padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12px; color: var(--gray-600); }
 .proto-bar strong { color: var(--gray-700); }
+.proto-bar[hidden], .show-bar[hidden] { display: none; }
+.show-bar { position: fixed; bottom: 16px; inset-inline-start: 16px; z-index: 40; background: #fff; border: 1px dashed var(--gray-400); color: var(--gray-600); border-radius: 999px; padding: 6px 14px; font-size: 12px; opacity: .55; }
+.show-bar:hover { opacity: 1; }
 .proto-bar select { padding: 3px 8px; border: 1px solid var(--gray-300); border-radius: 6px; background: #fff; font-size: 12px; }
 .proto-bar .seg { display: inline-flex; border: 1px solid var(--gray-300); border-radius: 6px; overflow: hidden; }
 .proto-bar .seg button { border: 0; background: #fff; padding: 3px 10px; font-size: 12px; }
@@ -233,7 +236,19 @@ tr:last-child td { border-bottom: 0; }
 [dir="rtl"] .toast { transform: translateX(50%); }
 
 /* Auth */
-.auth { max-width: 420px; margin: 32px auto; }
+.auth-wrap { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; max-width: 1000px; margin: 0 auto; }
+.auth-hero { display: none; }
+@media (min-width: 900px) {
+  .auth-wrap { grid-template-columns: 1fr 1fr; min-height: calc(100vh - 140px); }
+  .auth-hero { display: flex; flex-direction: column; justify-content: center; align-self: stretch; margin: 32px 0; background: var(--navy); color: #fff; border-radius: 16px; padding: 40px; position: relative; overflow: hidden; }
+}
+.auth-hero h2 { font-size: 26px; line-height: 1.35; margin-bottom: 10px; }
+.auth-hero p { color: #C9D2E3; margin-bottom: 28px; }
+.auth-hero ul { list-style: none; display: grid; gap: 14px; position: relative; }
+.auth-hero li { display: flex; gap: 12px; align-items: flex-start; }
+.auth-hero li .ic { font-size: 20px; color: var(--teal-light); margin-top: 2px; }
+.auth-hero .deco { position: absolute; inset-inline-end: -40px; bottom: -40px; font-size: 220px; opacity: .07; }
+.auth { max-width: 420px; width: 100%; margin: 32px auto; }
 .auth .logo { width: 56px; height: 56px; border-radius: 14px; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 26px; font-weight: 800; margin: 0 auto 12px; }
 .auth h1 { text-align: center; color: var(--navy); font-size: 20px; }
 .auth .sub { text-align: center; color: var(--gray-600); font-size: 13px; margin-bottom: 20px; }
@@ -257,7 +272,9 @@ tr:last-child td { border-bottom: 0; }
 // Arabic terms match frontend/messages/ar.json (حاضر / منظم / مشرف, error messages).
 const T = {
   ar: {
-    product: 'نظام إدارة فعاليات الحرم الجامعي الذكي', short: 'SCEMS', uni: 'جامعة حائل', notesToggle: 'ملاحظات المراجعة', switchLang: 'English',
+    product: 'نظام إدارة فعاليات الحرم الجامعي الذكي', short: 'SCEMS', uni: 'جامعة حائل', notesToggle: 'ملاحظات المراجعة', presentMode: 'وضع العرض', showControls: 'إظهار عناصر التحكم', eventsCount: 'عدد الفعاليات', usersN: n => `${n} ${{ one: 'مستخدم', two: 'مستخدمان', few: 'مستخدمين', many: 'مستخدمًا', other: 'مستخدم' }[new Intl.PluralRules('ar').select(+String(n).replace(/\D/g, ''))]}`,
+    showingOf: (a, b) => `يعرض ${a} من أصل ${b}`,
+    heroTitle: 'كل فعاليات جامعة حائل في مكان واحد', heroSub: 'اكتشف الفعاليات المعتمدة، واحجز مقعدك في ثوانٍ، وادخل برمز QR.', f1: 'تصفح الفعاليات حسب التصنيف والقاعة والتاريخ', f2: 'احجز مقعدك أو ألغِ حجزك بخطوة واحدة، مع تذكرة QR', f3: 'إشعارات فورية بتأكيد الحجز وبأي تغيير على فعالياتك', switchLang: 'English',
     protoTitle: 'عناصر التحكم في النموذج الأولي', protoNote: 'ليست جزءًا من الواجهة', role: 'الدور', screen: 'الشاشة', loggedOut: 'غير مسجل',
     ATTENDEE: 'حاضر', ORGANIZER: 'منظم', ADMIN: 'مشرف',
     nav_feed: 'الفعاليات', nav_bookings: 'حجوزاتي', nav_chat: 'المساعد الذكي', nav_orgEvents: 'فعالياتي', nav_create: 'إنشاء فعالية',
@@ -332,7 +349,8 @@ const T = {
     loadingDemo: 'حالة التحميل', errorDemo: 'حالة الخطأ', states: 'حالات الشاشة', normal: 'عادي',
   },
   en: {
-    product: 'Smart Campus Event Manager System', short: 'SCEMS', uni: 'University of Ha\'il', notesToggle: 'Review notes', switchLang: 'العربية',
+    product: 'Smart Campus Event Manager System', short: 'SCEMS', uni: 'University of Ha\'il', notesToggle: 'Review notes', presentMode: 'Presentation mode', showControls: 'Show controls', eventsCount: 'Events', usersN: n => `${n} users`, showingOf: (a, b) => `Showing ${a} of ${b} registered`,
+    heroTitle: 'Every University of Ha\'il event in one place', heroSub: 'Discover approved events, book your seat in seconds, and get in with a QR code.', f1: 'Browse events by category, venue and date', f2: 'Book or cancel in one step, with a QR ticket', f3: 'Instant notifications when your booking is confirmed or an event changes', switchLang: 'العربية',
     protoTitle: 'Prototype controls', protoNote: 'not part of the UI', role: 'Role', screen: 'Screen', loggedOut: 'Logged out',
     ATTENDEE: 'Attendee', ORGANIZER: 'Organizer', ADMIN: 'Admin',
     nav_feed: 'Events', nav_bookings: 'My bookings', nav_chat: 'AI assistant', nav_orgEvents: 'My events', nav_create: 'Create event',
@@ -442,7 +460,7 @@ const uid = p => `${p}${++seq}`;
 const code = () => 'SCEMS-' + Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
 
 const S = {
-  lang: 'ar', notes: false, role: null, screen: 'login', params: {}, navOpen: false, state: 'normal',
+  lang: 'ar', notes: false, present: false, role: null, screen: 'login', params: {}, navOpen: false, state: 'normal',
   feed: { cat: 'all', date: '', venue: 'any' }, bkTab: 'upcoming', usrRole: 'all', attQ: '',
   wizard: null, chat: [], loginNotice: null,
   events: [
@@ -657,28 +675,31 @@ function qr(seed) {
 // ---------------------------------------------------------------- screens
 const V = {};
 
+const authHero = () => `<aside class="auth-hero">${ico('calendar', 'deco')}
+  <h2>${t('heroTitle')}</h2><p>${t('heroSub')}</p>
+  <ul>${[['search', 'f1'], ['ticket', 'f2'], ['bell', 'f3']].map(([i, k]) => `<li>${ico(i)}<span>${t(k)}</span></li>`).join('')}</ul></aside>`;
+
 V.login = () => {
   const as = S.params.as || 'ATTENDEE';
-  return `<div class="auth"><div class="logo" aria-hidden="true">S</div><h1>${t('login')}${fr('02')}</h1><p class="sub">${t('loginSub')}</p>
+  return `<div class="auth-wrap">${authHero()}<div class="auth"><div class="logo" aria-hidden="true">S</div><h1>${t('login')}${fr('02')}</h1><p class="sub">${t('loginSub')}</p>
   <div class="card"><form id="loginForm" novalidate>
     ${S.loginNotice ? `<div class="alert alert-success" role="status">${t(S.loginNotice)}</div>` : ''}
     <div id="loginErr"></div>
-    <div class="field"><label for="le">${t('email')}</label><input class="input" id="le" type="email" autocomplete="email" value="${esc(user(ROLE_USER[as]).email)}"></div>
-    <div class="field"><label for="lp">${t('password')}</label><input class="input" id="lp" type="password" autocomplete="current-password" value="password123"></div>
-    <p class="small muted" style="margin-bottom:12px">${t('loginAs')}<strong>${t(as)}</strong></p>
+    <div class="field"><label for="le">${t('email')}</label><input class="input" id="le" type="email" dir="ltr" autocomplete="email" value="${esc(user(ROLE_USER[as]).email)}"></div>
+    <div class="field"><label for="lp">${t('password')}</label><input class="input" id="lp" type="password" dir="ltr" autocomplete="current-password" value="password123"></div>
     <button class="btn btn-primary btn-block" type="submit">${t('login')}</button>
   </form>
   <p class="muted" style="text-align:center;margin-top:16px">${t('noAccount')} <button class="back" style="margin:0" data-go="register">${t('registerLink')}</button></p></div>
-  ${openNote('openForgot')}</div>`;
+  ${openNote('openForgot')}</div></div>`;
 };
-V.register = () => `<div class="auth"><div class="logo" aria-hidden="true">S</div><h1>${t('register')}${fr('01')}</h1><p class="sub">${t('registerSub')}</p>
+V.register = () => `<div class="auth-wrap">${authHero()}<div class="auth"><div class="logo" aria-hidden="true">S</div><h1>${t('register')}${fr('01')}</h1><p class="sub">${t('registerSub')}</p>
   <div class="card"><form id="regForm" novalidate>
     <div class="field"><label for="rn">${t('fullName')} *</label><input class="input" id="rn" autocomplete="name"><div class="err" id="rn-e"></div></div>
-    <div class="field"><label for="re">${t('email')} *</label><input class="input" id="re" type="email" autocomplete="email"><div class="err" id="re-e"></div></div>
-    <div class="field"><label for="rp">${t('password')} *</label><input class="input" id="rp" type="password" autocomplete="new-password"><div class="hint">${t('passwordHint')}</div><div class="err" id="rp-e"></div></div>
+    <div class="field"><label for="re">${t('email')} *</label><input class="input" id="re" type="email" dir="ltr" autocomplete="email"><div class="err" id="re-e"></div></div>
+    <div class="field"><label for="rp">${t('password')} *</label><input class="input" id="rp" type="password" dir="ltr" autocomplete="new-password"><div class="hint">${t('passwordHint')}</div><div class="err" id="rp-e"></div></div>
     <button class="btn btn-primary btn-block" type="submit">${t('submitRegister')}</button>
   </form><p class="muted" style="text-align:center;margin-top:16px">${t('haveAccount')} <button class="back" style="margin:0" data-go="login">${t('login')}</button></p></div>
-  ${openNote('openFR01')}</div>`;
+  ${openNote('openFR01')}</div></div>`;
 
 V.feed = () => {
   const f = S.feed, now = new Date();
@@ -861,24 +882,26 @@ V.attendees = () => {
   const regs = S.regs.filter(r => r.event === e.id && r.status === 'CONFIRMED');
   const q = S.attQ.toLowerCase();
   const shown = regs.filter(r => { const u = user(r.user); return !q || (u.name + u.nameEn + u.email).toLowerCase().includes(q); });
-  const inN = regs.filter(r => r.checkedInAt).length;
+  // The demo only has a few named registrations; totals follow the event's seat count so the numbers match the cards.
+  const total = Math.max(e.booked, regs.length);
+  const inN = regs.filter(r => r.checkedInAt).length + (isPast(e) ? Math.round((total - regs.length) * 0.8) : 0);
   return `<button class="back" data-go="orgEvents"><span class="flip">→</span> ${t('back')}</button>` +
     pageHead(t('attTitle'), `${evT(e)} · ${fmtDT(e.startsAt)}`, ['14']) +
     `<div class="grid g4" style="margin-bottom:20px">
-      <div class="stat"><div class="v">${fmtN(regs.length)}</div><div class="l">${t('registeredN')}</div></div>
+      <div class="stat"><div class="v">${fmtN(total)}</div><div class="l">${t('registeredN')}</div></div>
       <div class="stat"><div class="v" style="color:var(--success-fg)">${fmtN(inN)}</div><div class="l">${t('checkedIn')}</div></div>
-      <div class="stat"><div class="v">${fmtN(regs.length - inN)}</div><div class="l">${t('notYet')}</div></div></div>
+      <div class="stat"><div class="v">${fmtN(total - inN)}</div><div class="l">${t('notYet')}</div></div></div>
     <div class="layout-2"><div>
       <div class="spread" style="margin-bottom:12px"><div class="search" style="flex:1;min-width:200px">${ico('search')}<label class="sr" for="aq">${t('searchAtt')}</label><input id="aq" placeholder="${t('searchAtt')}" value="${esc(S.attQ)}"></div>
         <button class="btn btn-ghost btn-sm" data-act="csv">${ico('download')} ${t('exportCsv')}</button></div>
       ${shown.length ? `<div class="table-wrap"><table><thead><tr><th>${t('name')}</th><th>${t('email')}</th><th>${t('status')}</th><th>${t('checkInTime')}</th></tr></thead><tbody>
         ${shown.map(r => { const u = user(r.user); return `<tr><td><div class="row" style="flex-wrap:nowrap"><span class="avatar">${esc(initials(u))}</span>${esc(uname(u))}</div></td><td dir="ltr" style="text-align:start">${esc(u.email)}</td>
         <td>${r.checkedInAt ? `<span class="badge b-success">${ico('check')} ${t('checkedIn')}</span>` : `<span class="badge b-gray">${t('notYet')}</span>`}</td><td>${r.checkedInAt ? fmtTime(r.checkedInAt) : '—'}</td></tr>`; }).join('')}
-      </tbody></table></div>` : empty('users', t('noAtt'), '', '')}
+      </tbody></table></div>${total > shown.length ? `<p class="small muted" style="margin-top:8px">${t('showingOf', fmtN(shown.length), fmtN(total))}</p>` : ''}` : empty('users', t('noAtt'), '', '')}
     </div>
     <div class="card" style="align-self:start"><h2>${t('scanTitle')}</h2>${openNote('openScanner')}
-      <div style="aspect-ratio:4/3;background:var(--navy);border-radius:var(--radius-sm);display:grid;place-items:center;color:#C9D2E3;margin-bottom:12px;position:relative">
-        <div style="width:55%;aspect-ratio:1;border:3px solid var(--teal-light);border-radius:12px" aria-hidden="true"></div><span class="small" style="position:absolute;bottom:8px">${ico('camera')}</span></div>
+      <div style="aspect-ratio:4/3;max-height:240px;width:100%;background:var(--navy);border-radius:var(--radius-sm);display:grid;place-items:center;color:#C9D2E3;margin-bottom:12px;position:relative">
+        <div style="height:70%;aspect-ratio:1;border:3px solid var(--teal-light);border-radius:12px" aria-hidden="true"></div><span class="small" style="position:absolute;bottom:8px">${ico('camera')}</span></div>
       <form id="scanForm"><label class="sr" for="sc">${t('scanPh')}</label><input class="input" id="sc" dir="ltr" placeholder="${t('scanPh')}" style="margin-bottom:8px">
         <div class="row"><button class="btn btn-primary" type="submit">${t('scanBtn')}</button><button class="btn btn-secondary" type="button" data-act="simScan" data-id="${e.id}">${t('simulate')}</button></div></form>
       <div id="scanMsg" aria-live="assertive" style="margin-top:10px"></div></div></div>`;
@@ -916,7 +939,7 @@ V.users = () => {
 };
 
 V.cats = () => pageHead(t('catsTitle'), t('catsSub'), ['19']) +
-  `<div class="layout-2"><div class="table-wrap"><table><thead><tr><th>${t('nameAr')}</th><th>${t('nameEn')}</th><th>${t('allEvents')}</th><th>${t('actions')}</th></tr></thead><tbody>
+  `<div class="layout-2"><div class="table-wrap"><table><thead><tr><th>${t('nameAr')}</th><th>${t('nameEn')}</th><th>${t('eventsCount')}</th><th>${t('actions')}</th></tr></thead><tbody>
   ${CATS.map(c => { const n = S.events.filter(e => e.cat === c.id).length; return `<tr><td>${ico(c.icon)} ${esc(c.ar)}</td><td dir="ltr" style="text-align:start">${esc(c.en)}</td><td>${t('eventsN', fmtN(n))}</td>
     <td><div class="row" style="flex-wrap:nowrap"><button class="btn btn-ghost btn-sm" data-act="editCat" data-id="${c.id}">${t('edit')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="delCat" data-id="${c.id}">${t('delete')}</button></div></td></tr>`; }).join('')}
   </tbody></table></div>
@@ -952,11 +975,11 @@ V.analytics = () => {
 V.broadcast = () => {
   const n = USERS.filter(u => u.isActive).length;
   return pageHead(t('bcTitle'), t('bcSub'), ['21']) + `<div class="layout-2"><div class="card"><form id="bcForm" novalidate>
-    <div class="field"><label>${t('audience')}</label><div class="badge b-info">${ico('users')} ${fmtN(n)} ${t('users')}</div></div>
+    <div class="field"><label>${t('audience')}</label><div class="badge b-info">${ico('users')} ${t('usersN', fmtN(n))}</div></div>
     <div class="field"><label for="bt">${t('bcTitleF')} *</label><input class="input" id="bt" maxlength="80"><div class="err" id="bt-e"></div></div>
     <div class="field"><label for="bb">${t('bcBody')} *</label><textarea class="input" id="bb" maxlength="500"></textarea><div class="err" id="bb-e"></div></div>
     <button class="btn btn-primary" type="submit">${ico('megaphone')} ${t('bcSend')}</button></form></div>
-    <div class="card" style="align-self:start"><h2>${t('recent')}</h2>${S.broadcasts.map(b => `<div class="nt" style="padding-inline:0"><span style="color:var(--teal-dark)">${ico('megaphone')}</span><div><div style="font-weight:600">${esc(L(b.title))}</div><div class="small muted">${fmtDT(b.createdAt)} · ${fmtN(b.sent)} ${t('users')}</div></div></div>`).join('')}</div></div>`;
+    <div class="card" style="align-self:start"><h2>${t('recent')}</h2>${S.broadcasts.map(b => `<div class="nt" style="padding-inline:0"><span style="color:var(--teal-dark)">${ico('megaphone')}</span><div><div style="font-weight:600">${esc(L(b.title))}</div><div class="small muted">${fmtDT(b.createdAt)} · ${t('usersN', fmtN(b.sent))}</div></div></div>`).join('')}</div></div>`;
 };
 
 V.notFound = () => empty('compass', t('nfTitle'), t('nfSub'), `<button class="btn btn-primary" data-act="home">${t('home')}</button>`);
@@ -972,7 +995,17 @@ function render() {
     <label>${t('screen')}: <select id="pScreen">${SCREENS.map(([id, role, frs]) => `<option value="${id}" ${S.screen === id ? 'selected' : ''}>${SCREEN_NAMES[S.lang][id]}${role ? ` · ${t(role)}` : ''} (${frs})</option>`).join('')}</select></label>
     <span class="seg" role="group" aria-label="${t('role')}">${['ATTENDEE', 'ORGANIZER', 'ADMIN'].map(r => `<button aria-pressed="${S.role === r}" data-prole="${r}">${t(r)}</button>`).join('')}</span>
     <label><input type="checkbox" id="pNotes" ${S.notes ? 'checked' : ''}> ${t('notesToggle')} (FR / OPEN)</label>
-    <label>${t('states')}: <select id="pState">${[['normal', 'normal'], ['loading', 'loadingDemo'], ['error', 'errorDemo']].map(([v, k]) => `<option value="${v}" ${S.state === v ? 'selected' : ''}>${t(k)}</option>`).join('')}</select></label>`;
+    <label>${t('states')}: <select id="pState">${[['normal', 'normal'], ['loading', 'loadingDemo'], ['error', 'errorDemo']].map(([v, k]) => `<option value="${v}" ${S.state === v ? 'selected' : ''}>${t(k)}</option>`).join('')}</select></label>
+    <button class="btn btn-navy btn-sm" data-act="present" style="margin-inline-start:auto">${t('presentMode')}</button>`;
+  pb.hidden = S.present;
+  let fab = document.getElementById('showBar');
+  if (S.present && !fab) { fab = document.createElement('button'); fab.id = 'showBar'; fab.className = 'show-bar'; fab.dataset.act = 'present'; document.body.appendChild(fab); }
+  if (fab) { fab.hidden = !S.present; fab.textContent = t('showControls'); }
+  // Deep link to the current screen, e.g. index.html#s=feed&lang=en (handy for the demo and for screenshots).
+  const h = new URLSearchParams({ s: S.screen, lang: S.lang });
+  if (S.params.id) h.set('id', S.params.id);
+  if (S.present) h.set('present', '1');
+  history.replaceState(null, '', '#' + h);
 
   const navItems = S.role ? NAV[S.role] : [];
   const u = me();
@@ -1059,6 +1092,7 @@ document.addEventListener('click', ev_ => {
     case 'menu': S.navOpen = !S.navOpen; return render();
     case 'logout': S.loginNotice = null; return go('login');
     case 'retry': S.state = 'normal'; return render();
+    case 'present': S.present = !S.present; return render();
     case 'clearDate': S.feed.date = ''; return render();
     case 'clearFilters': S.feed = { cat: 'all', date: '', venue: 'any' }; return render();
     case 'book': return modal({ title: t('confirmBookT'), body: t('confirmBookB', evT(ev(id))), onConfirm: () => { const r = book(id); go('booked', { reg: r.id }); } });
@@ -1203,7 +1237,14 @@ document.addEventListener('submit', e => {
   }
 });
 
-render();
+// Start from the deep link if there is one: #s=<screen>&lang=ar|en&id=<event>&present=1
+{
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('lang') === 'en') S.lang = 'en';
+  if (h.get('present') === '1') S.present = true;
+  const s = h.get('s');
+  if (s && SCREENS.some(x => x[0] === s)) go(s, { id: h.get('id') || undefined }); else render();
+}
 </script>
 </body>
 </html>
