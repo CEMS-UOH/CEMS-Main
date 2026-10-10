@@ -303,7 +303,9 @@ const T = {
     deleteEvT: 'حذف الفعالية', deleteEvB: e => `سيتم حذف "${e}" وإلغاء كل حجوزاتها. لا يمكن التراجع.`, evDeleted: 'تم حذف الفعالية',
     noOrgEvents: 'لم تنشئ أي فعالية بعد', noOrgEventsSub: 'أنشئ فعاليتك الأولى وأرسلها للاعتماد.',
     createTitle: 'إنشاء فعالية', editTitle: 'تعديل الفعالية', createSub: 'ستُرسل الفعالية للمشرف لاعتمادها قبل نشرها',
-    s1: 'المعلومات', s2: 'الموعد والمكان', s3: 'المراجعة', evTitle: 'عنوان الفعالية', evDesc: 'وصف الفعالية', oneLangHint: 'يظهر العنوان والوصف كما تكتبهما، بنفس اللغة، في الواجهتين العربية والإنجليزية.',
+    s1: 'المعلومات', s2: 'الموعد والمكان', s3: 'المراجعة', evTitle: 'عنوان الفعالية', evDesc: 'وصف الفعالية', enOptional: 'نسخة إنجليزية (اختياري)', titleEnL: 'العنوان بالإنجليزية', descEnL: 'الوصف بالإنجليزية',
+    enHint: 'يظهر للزوار الذين يستخدمون الواجهة الإنجليزية. إذا تركته فارغًا يظهر العنوان والوصف الأساسيان.',
+    openEnTitle: 'مقترح: حقلان اختياريان titleEn وdescriptionEn يحتاجان موافقة الليدر وتعديل قاعدة البيانات من Role 2 (OPEN-6).', oneLangHint: 'يظهر العنوان والوصف كما تكتبهما، بنفس اللغة، في الواجهتين العربية والإنجليزية.',
     category: 'التصنيف', choose: 'اختر…', startsAt: 'يبدأ', endsAt: 'ينتهي', capHint: c => `الحد الأعلى لهذه القاعة: ${c}`,
     image: 'صورة الفعالية', dropzone: 'اسحب صورة هنا أو اضغط للاختيار (JPG/PNG، حتى 5MB)', next: 'التالي', prev: 'السابق',
     submitForApproval: 'إرسال للاعتماد', saveChanges: 'حفظ التعديلات', submitted: 'تم الإرسال. الفعالية بانتظار اعتماد المشرف.', saved: 'تم حفظ التعديلات',
@@ -376,7 +378,9 @@ const T = {
     deleteEvT: 'Delete event', deleteEvB: e => `"${e}" will be deleted and all its bookings cancelled. This cannot be undone.`, evDeleted: 'Event deleted',
     noOrgEvents: "You haven't created an event yet", noOrgEventsSub: 'Create your first event and send it for approval.',
     createTitle: 'Create event', editTitle: 'Edit event', createSub: 'The event goes to an Admin for approval before it is published',
-    s1: 'Information', s2: 'Time & venue', s3: 'Review', evTitle: 'Event title', evDesc: 'Event description', oneLangHint: 'The title and description appear exactly as you write them, in both the Arabic and English interface.',
+    s1: 'Information', s2: 'Time & venue', s3: 'Review', evTitle: 'Event title', evDesc: 'Event description', enOptional: 'English version (optional)', titleEnL: 'Title in English', descEnL: 'Description in English',
+    enHint: 'Shown to visitors using the English interface. Leave it empty to show the main title and description.',
+    openEnTitle: 'Proposal: two optional fields, titleEn and descriptionEn, need the Leader\'s OK and a schema change by Role 2 (OPEN-6).', oneLangHint: 'The title and description appear exactly as you write them, in both the Arabic and English interface.',
     category: 'Category', choose: 'Choose…', startsAt: 'Starts', endsAt: 'Ends', capHint: c => `Maximum for this venue: ${c}`,
     image: 'Event image', dropzone: 'Drop an image here or click to choose (JPG/PNG, up to 5MB)', next: 'Next', prev: 'Previous',
     submitForApproval: 'Submit for approval', saveChanges: 'Save changes', submitted: 'Submitted. The event is waiting for Admin approval.', saved: 'Changes saved',
@@ -474,7 +478,12 @@ const S = {
 
 // Event content is written once by the Organizer, in one language (the API returns a single `title`).
 // The UI never translates it, so most demo events are Arabic and one is English.
-S.events.forEach(e => { const lang = e.id === 'e3' ? 'en' : 'ar'; e.title = e.title[lang]; e.desc = e.desc[lang]; });
+// With the OPEN-6 proposal some Organizers also fill the optional English fields (here e1, e2, e5); the rest fall back.
+S.events.forEach(e => {
+  const lang = e.id === 'e3' ? 'en' : 'ar', withEn = ['e1', 'e2', 'e5'].includes(e.id);
+  if (withEn) { e.titleEn = e.title.en; e.descEn = e.desc.en; }
+  e.title = e.title[lang]; e.desc = e.desc[lang];
+});
 // An event the Organizer cancelled after Noura booked it (booking.event.status = CANCELLED in the API).
 S.events.push({ id: 'e10', title: 'رحلة علمية إلى مركز الملك عبدالعزيز الثقافي', desc: 'رحلة ليوم واحد لطلاب كلية علوم الحاسب.', cat: 'cultural', venue: 'main', startsAt: at(11, 8), endsAt: at(11, 16), capacity: 40, booked: 0, status: 'CANCELLED', org: 'u7' });
 S.regs.push({ id: 'r9', event: 'e10', user: 'u1', status: 'CONFIRMED', code: 'SCEMS-T5KD7W', checkedInAt: null, createdAt: at(-8, 9) });
@@ -488,6 +497,9 @@ const fmtDate = d => new Intl.DateTimeFormat(loc(), { weekday: 'short', day: 'nu
 const fmtTime = d => new Intl.DateTimeFormat(loc(), { hour: 'numeric', minute: '2-digit' }).format(d);
 const fmtDT = d => `${fmtDate(d)} · ${fmtTime(d)}`;
 const fmtN = n => new Intl.NumberFormat(loc()).format(n);
+// OPEN-6 proposal: optional English title/description. The English UI uses them when present, else the main text.
+const evT = e => (S.lang === 'en' && e.titleEn) ? e.titleEn : e.title;
+const evD = e => (S.lang === 'en' && e.descEn) ? e.descEn : e.desc;
 const cat = id => CATS.find(c => c.id === id);
 const venue = id => VENUES.find(v => v.id === id);
 const user = id => USERS.find(u => u.id === id);
@@ -603,11 +615,11 @@ function toast(msg) {
 // ---------------------------------------------------------------- shared views
 function evCard(e) {
   const cs = capState(e), left = e.capacity - e.booked, c = cat(e.cat), mine = myReg(e.id);
-  return `<button class="ev" data-go="details" data-id="${e.id}" aria-label="${esc(L(e.title))}">
+  return `<button class="ev" data-go="details" data-id="${e.id}" aria-label="${esc(evT(e))}">
     <div class="ev-banner ${catCls(e.cat)}">${ico(c.icon, 'bg-ic')}${dateBox(e.startsAt)}<span class="badge ${mine ? 'b-teal' : CAP[cs][0]}">${mine ? ico('check') + ' ' + t('booked') : t(cs)}</span></div>
     <div class="ev-body">
       <span class="badge b-info" style="align-self:flex-start">${esc(L(c))}</span>
-      <div class="ev-title">${esc(L(e.title))}</div>
+      <div class="ev-title">${esc(evT(e))}</div>
       <div class="meta">${ico('calendar')} ${fmtDT(e.startsAt)}</div>
       <div class="meta">${ico('pin')} ${esc(L(venue(e.venue)))}</div>
       <div class="progress" role="progressbar" aria-valuenow="${e.booked}" aria-valuemin="0" aria-valuemax="${e.capacity}" aria-label="${t('capacity')}"><span style="width:${Math.min(100, e.booked / e.capacity * 100)}%;background:${CAP[cs][1]}"></span></div>
@@ -704,8 +716,8 @@ V.details = () => {
   <div class="ev-banner ${catCls(e.cat)}" style="height:160px;border-radius:var(--radius);margin-bottom:16px">${ico(c.icon, 'bg-ic')}${dateBox(e.startsAt)}<span class="badge ${CAP[cs][0]}">${t(cs)}</span></div>
   <div class="layout-2"><div class="card">
     <span class="badge b-info">${esc(L(c))}</span>
-    <h1 class="bidi" style="font-size:22px;color:var(--navy);margin:8px 0">${esc(L(e.title))}${fr('09')}</h1>
-    <p class="bidi" style="margin-bottom:16px">${esc(L(e.desc))}</p>
+    <h1 class="bidi" style="font-size:22px;color:var(--navy);margin:8px 0">${esc(evT(e))}${fr('09')}</h1>
+    <p class="bidi" style="margin-bottom:16px">${esc(evD(e))}</p>
     <div class="tiles">
       <div class="tile"><div class="l">${t('when')}</div><div class="v">${fmtDate(e.startsAt)}</div><div class="small muted">${fmtTime(e.startsAt)} – ${fmtTime(e.endsAt)}</div></div>
       <div class="tile"><div class="l">${t('where')}</div><div class="v">${esc(L(venue(e.venue)))}</div></div>
@@ -724,7 +736,7 @@ V.booked = () => {
     <div style="width:64px;height:64px;border-radius:50%;background:var(--success-bg);color:var(--success-fg);display:grid;place-items:center;font-size:30px;margin:8px auto 12px" aria-hidden="true">${ico('check')}</div>
     <h1 style="color:var(--navy);font-size:20px">${t('bookedTitle')}${fr('05', '06')}</h1><p class="muted" style="margin-bottom:20px">${t('bookedSub')}</p>
     <div class="card" style="text-align:center">
-      <div class="ev-title" style="margin-bottom:4px">${esc(L(e.title))}</div>
+      <div class="ev-title" style="margin-bottom:4px">${esc(evT(e))}</div>
       <div class="muted small" style="margin-bottom:16px">${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))}</div>
       ${qr(r.code)}
       <div class="small muted" style="margin-top:12px">${t('bookingCode')}</div>
@@ -749,7 +761,7 @@ V.bookings = () => {
     else if (S.bkTab === 'past') right = (r.checkedInAt ? `<span class="badge b-success">${ico('check')} ${t('attended')}</span>` : '') + (r.rated ? `<span class="badge b-gray">${t('rated')}</span>` : `<button class="btn btn-secondary btn-sm" data-go="feedback" data-reg="${r.id}">${ico('star')} ${t('rate')}</button>`);
     else right = e.status === 'CANCELLED' ? `<span class="badge b-danger">${t('orgCancelled')}</span>` : `<span class="badge b-gray">${t('youCancelled')}</span>`;
     return `<div class="bk ${cls}"><div class="ico ${catCls(e.cat)}" aria-hidden="true">${ico(c.icon)}</div>
-      <div class="info"><div class="ev-title" style="font-size:14px">${esc(L(e.title))}</div><div class="meta">${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))}</div></div>
+      <div class="info"><div class="ev-title" style="font-size:14px">${esc(evT(e))}</div><div class="meta">${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))}</div></div>
       <div class="row">${right}</div></div>`;
   };
   return pageHead(t('myBookings'), '', ['07', '08']) + `
@@ -762,7 +774,7 @@ V.feedback = () => {
   const e = ev(r.event), stars = S.params.stars || 0;
   return `<button class="back" data-go="bookings"><span class="flip">→</span> ${t('back')}</button>
   <div style="max-width:520px">${openNote('openFeedback')}
-  <div class="card"><h1 style="font-size:18px;color:var(--navy)">${t('fbTitle')}</h1><p class="muted" style="margin-bottom:16px">${esc(L(e.title))} · ${fmtDate(e.startsAt)}</p>
+  <div class="card"><h1 style="font-size:18px;color:var(--navy)">${t('fbTitle')}</h1><p class="muted" style="margin-bottom:16px">${esc(evT(e))} · ${fmtDate(e.startsAt)}</p>
     <div class="field"><label id="stl">${t('fbOverall')} *</label><div class="row" role="radiogroup" aria-labelledby="stl">
       ${[1, 2, 3, 4, 5].map(n => `<button role="radio" aria-checked="${stars === n}" aria-label="${t('stars', n)}" data-star="${n}" style="background:none;border:0;font-size:30px;line-height:1;color:${n <= stars ? '#E0A800' : 'var(--gray-300)'}">${ico('star', 'fill')}</button>`).join('')}
     </div><div class="err" id="st-e"></div></div>
@@ -794,7 +806,7 @@ V.orgEvents = () => {
   return pageHead(t('orgTitle'), t('orgSub'), ['11', '12'], `<button class="btn btn-primary" data-go="create">${ico('plus')} ${t('nav_create')}</button>`) +
     `<div class="grid g4" style="margin-bottom:20px">${stats.map(([l, v]) => `<div class="stat"><div class="v">${fmtN(v)}</div><div class="l">${l}</div></div>`).join('')}</div>` +
     (mine.length ? `<div class="table-wrap"><table><thead><tr><th>${t('event')}</th><th>${t('date')}</th><th>${t('bookings')}</th><th>${t('status')}</th><th>${t('actions')}</th></tr></thead><tbody>
-    ${mine.map(e => `<tr><td><strong>${esc(L(e.title))}</strong><div class="small muted">${esc(L(cat(e.cat)))}</div></td><td style="white-space:nowrap">${fmtDT(e.startsAt)}</td>
+    ${mine.map(e => `<tr><td><strong>${esc(evT(e))}</strong><div class="small muted">${esc(L(cat(e.cat)))}</div></td><td style="white-space:nowrap">${fmtDT(e.startsAt)}</td>
       <td style="min-width:120px">${fmtN(e.booked)}/${fmtN(e.capacity)}<div class="progress"><span style="width:${Math.min(100, e.booked / e.capacity * 100)}%;background:${CAP[capState(e)][1]}"></span></div></td>
       <td><span class="badge ${STATUS_B[e.status]}">${t(e.status)}</span></td>
       <td><div class="row" style="flex-wrap:nowrap">${e.status === 'APPROVED' ? `<button class="btn btn-secondary btn-sm" data-go="attendees" data-id="${e.id}">${t('attendeesBtn')}</button>` : ''}
@@ -803,7 +815,7 @@ V.orgEvents = () => {
 };
 
 V.create = () => {
-  if (!S.wizard) S.wizard = { step: 1, errors: {}, d: { title: '', desc: '', cat: '', venue: '', start: '', end: '', capacity: '' } };
+  if (!S.wizard) S.wizard = { step: 1, errors: {}, d: { title: '', desc: '', titleEn: '', descEn: '', cat: '', venue: '', start: '', end: '', capacity: '' } };
   const w = S.wizard, d = w.d, er = w.errors, editing = !!w.editId;
   const f = (id, label, inner) => `<div class="field"><label for="w_${id}">${label} *</label>${inner}${er[id] ? `<div class="err" id="w_${id}-e">${t(er[id])}</div>` : ''}</div>`;
   const inp = (id, type = 'text', extra = '') => `<input class="input ${er[id] ? 'invalid' : ''}" id="w_${id}" data-w="${id}" type="${type}" value="${esc(d[id])}" ${extra} ${er[id] ? `aria-invalid="true" aria-describedby="w_${id}-e"` : ''}>`;
@@ -812,7 +824,14 @@ V.create = () => {
   let body;
   if (w.step === 1) body = `<div>
       ${f('title', t('evTitle'), inp('title', 'text', 'dir="auto" maxlength="120"'))}
-      ${f('desc', t('evDesc'), ta('desc', 'auto'))}</div><p class="hint" style="margin:-8px 0 16px">${t('oneLangHint')}</p>
+      ${f('desc', t('evDesc'), ta('desc', 'auto'))}</div>
+      <details class="card" style="padding:12px 16px;box-shadow:none;margin-bottom:16px" ${d.titleEn || d.descEn ? 'open' : ''}>
+        <summary style="cursor:pointer;font-weight:600;color:var(--teal-dark)">${t('enOptional')}</summary>
+        ${openNote('openEnTitle')}
+        <p class="hint" style="margin:8px 0 12px">${t('enHint')}</p>
+        <div class="field"><label for="w_titleEn">${t('titleEnL')}</label><input class="input" id="w_titleEn" data-w="titleEn" dir="ltr" maxlength="120" value="${esc(d.titleEn)}"></div>
+        <div class="field" style="margin-bottom:0"><label for="w_descEn">${t('descEnL')}</label><textarea class="input" id="w_descEn" data-w="descEn" dir="ltr">${esc(d.descEn)}</textarea></div>
+      </details>
       ${f('cat', t('category'), `<select class="input ${er.cat ? 'invalid' : ''}" id="w_cat" data-w="cat"><option value="">${t('choose')}</option>${CATS.map(c => `<option value="${c.id}" ${d.cat === c.id ? 'selected' : ''}>${esc(L(c))}</option>`).join('')}</select>`)}
       <div class="field"><label>${t('image')} ${fr('16')}</label><div class="dropzone">${ico('image')} ${t('dropzone')}</div></div>`;
   else if (w.step === 2) body = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px">
@@ -822,6 +841,7 @@ V.create = () => {
       ${v ? `<div class="hint" style="margin-top:-10px;margin-bottom:12px">${t('capHint', fmtN(v.capacity))}</div>` : ''}`;
   else body = `<div class="tiles">
       <div class="tile" style="grid-column:1/-1"><div class="l">${t('evTitle')}</div><div class="v" dir="auto">${esc(d.title)}</div></div>
+      ${d.titleEn.trim() ? `<div class="tile" style="grid-column:1/-1"><div class="l">${t('titleEnL')}</div><div class="v" dir="ltr">${esc(d.titleEn)}</div></div>` : ''}
 
       <div class="tile"><div class="l">${t('category')}</div><div class="v">${esc(L(cat(d.cat)))}</div></div>
       <div class="tile"><div class="l">${t('venue')}</div><div class="v">${esc(L(v))}</div></div>
@@ -843,7 +863,7 @@ V.attendees = () => {
   const shown = regs.filter(r => { const u = user(r.user); return !q || (u.name + u.nameEn + u.email).toLowerCase().includes(q); });
   const inN = regs.filter(r => r.checkedInAt).length;
   return `<button class="back" data-go="orgEvents"><span class="flip">→</span> ${t('back')}</button>` +
-    pageHead(t('attTitle'), `${L(e.title)} · ${fmtDT(e.startsAt)}`, ['14']) +
+    pageHead(t('attTitle'), `${evT(e)} · ${fmtDT(e.startsAt)}`, ['14']) +
     `<div class="grid g4" style="margin-bottom:20px">
       <div class="stat"><div class="v">${fmtN(regs.length)}</div><div class="l">${t('registeredN')}</div></div>
       <div class="stat"><div class="v" style="color:var(--success-fg)">${fmtN(inN)}</div><div class="l">${t('checkedIn')}</div></div>
@@ -871,11 +891,11 @@ V.dash = () => {
     `<div class="grid g4" style="margin-bottom:20px">${stats.map(([l, v], i) => `<div class="stat"><div class="v" ${i === 2 && v ? 'style="color:var(--warning-fg)"' : ''}>${fmtN(v)}</div><div class="l">${l}</div></div>`).join('')}</div>
     <div class="card"><h2>${t('approvals')} (${fmtN(pending.length)})</h2>
     ${pending.length ? `<div class="stack">${pending.map(e => `<div class="bk" style="border-inline-start-color:var(--warning)"><div class="ico ${catCls(e.cat)}" aria-hidden="true">${ico(cat(e.cat).icon)}</div>
-      <div class="info"><div class="ev-title" style="font-size:14px">${esc(L(e.title))}</div><div class="meta">${esc(L(cat(e.cat)))} · ${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))} · ${t('capacity')} ${fmtN(e.capacity)}</div><div class="small muted">${t('by')} ${esc(uname(user(e.org)))}</div></div>
+      <div class="info"><div class="ev-title" style="font-size:14px">${esc(evT(e))}</div><div class="meta">${esc(L(cat(e.cat)))} · ${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))} · ${t('capacity')} ${fmtN(e.capacity)}</div><div class="small muted">${t('by')} ${esc(uname(user(e.org)))}</div></div>
       <div class="row"><button class="btn btn-primary btn-sm" data-act="approve" data-id="${e.id}">${ico('check')} ${t('approve')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="reject" data-id="${e.id}">${t('reject')}</button></div></div>`).join('')}</div>`
       : `<p class="muted">${ico('check')} ${t('noApprovals')}</p>`}</div>
     <div class="card"><h2>${t('allEvents')}</h2><div class="table-wrap" style="border:0"><table><thead><tr><th>${t('event')}</th><th>${t('organizer')}</th><th>${t('date')}</th><th>${t('status')}</th><th>${t('actions')}</th></tr></thead><tbody>
-    ${[...S.events].sort((a, b) => b.startsAt - a.startsAt).map(e => `<tr><td><strong>${esc(L(e.title))}</strong></td><td>${esc(uname(user(e.org)))}</td><td style="white-space:nowrap">${fmtDate(e.startsAt)}</td>
+    ${[...S.events].sort((a, b) => b.startsAt - a.startsAt).map(e => `<tr><td><strong>${esc(evT(e))}</strong></td><td>${esc(uname(user(e.org)))}</td><td style="white-space:nowrap">${fmtDate(e.startsAt)}</td>
       <td><span class="badge ${STATUS_B[e.status]}">${t(e.status)}</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg)" data-act="delEv" data-id="${e.id}">${t('delete')}</button></td></tr>`).join('')}
     </tbody></table></div></div>`;
 };
@@ -926,7 +946,7 @@ V.analytics = () => {
         <div class="row small" style="margin-bottom:6px"><span style="display:inline-block;width:12px;height:12px;background:var(--teal);border-radius:2px"></span>${t('registeredL')}<span style="display:inline-block;width:12px;height:12px;border:1.5px dashed var(--teal-dark);background:var(--teal-bg);border-radius:2px;margin-inline-start:12px"></span>${t('predicted')}</div>
         <div class="bars" style="height:200px">${upcoming.map(e => `<div class="bar-col"><div class="row" style="flex-wrap:nowrap;align-items:flex-end;gap:4px;height:100%;width:100%;justify-content:center">
           <div class="bar" style="height:${e.booked / pm * 100}%" title="${t('registeredL')}: ${e.booked}"></div><div class="bar pred" style="height:${pred(e) / pm * 100}%" title="${t('predicted')}: ${pred(e)}"></div></div>
-          <span class="l" style="text-align:center">${esc(L(e.title)).slice(0, 22)}</span><span class="v">${fmtN(e.booked)} → ${fmtN(pred(e))}</span></div>`).join('')}</div></div></div>`;
+          <span class="l" style="text-align:center">${esc(evT(e)).slice(0, 22)}</span><span class="v">${fmtN(e.booked)} → ${fmtN(pred(e))}</span></div>`).join('')}</div></div></div>`;
 };
 
 V.broadcast = () => {
@@ -1005,15 +1025,15 @@ function chatReply(text) {
   const upcoming = S.events.filter(e => e.status === 'APPROVED' && !isPast(e)).sort((a, b) => a.startsAt - b.startsAt);
   if (S.role === 'ATTENDEE' && /احجز|حجز لي|book me|book a|^book/.test(s)) {
     const e = upcoming.find(x => x.booked < x.capacity && !myReg(x.id));
-    return e ? { from: 'bot', text: t('chatSuggest', L(e.title)), confirm: e.id } : { from: 'bot', text: t('chatFound', []) };
+    return e ? { from: 'bot', text: t('chatSuggest', evT(e)), confirm: e.id } : { from: 'bot', text: t('chatFound', []) };
   }
   if (/حجوزات|my booking|bookings/.test(s)) {
-    const list = S.regs.filter(r => r.user === me().id && r.status === 'CONFIRMED').map(r => ev(r.event)).filter(e => !isPast(e)).map(e => `• ${L(e.title)} (${fmtDate(e.startsAt)})`);
+    const list = S.regs.filter(r => r.user === me().id && r.status === 'CONFIRMED').map(r => ev(r.event)).filter(e => !isPast(e)).map(e => `• ${evT(e)} (${fmtDate(e.startsAt)})`);
     return { from: 'bot', text: t('chatMine', list) };
   }
   if (/مساعد|help/.test(s)) return { from: 'bot', text: t('chatHelp') };
   const hit = upcoming.filter(e => { const c = cat(e.cat); return [e.title, c.ar, c.en].some(x => s.split(/\s+/).some(w => w.length > 2 && x.toLowerCase().includes(w.replace(/^ال/, '')))); });
-  return { from: 'bot', text: t('chatFound', hit.map(e => `• ${L(e.title)} (${fmtDate(e.startsAt)})`)) };
+  return { from: 'bot', text: t('chatFound', hit.map(e => `• ${evT(e)} (${fmtDate(e.startsAt)})`)) };
 }
 function chatSend(text) {
   if (!text.trim()) return;
@@ -1041,10 +1061,10 @@ document.addEventListener('click', ev_ => {
     case 'retry': S.state = 'normal'; return render();
     case 'clearDate': S.feed.date = ''; return render();
     case 'clearFilters': S.feed = { cat: 'all', date: '', venue: 'any' }; return render();
-    case 'book': return modal({ title: t('confirmBookT'), body: t('confirmBookB', L(ev(id).title)), onConfirm: () => { const r = book(id); go('booked', { reg: r.id }); } });
+    case 'book': return modal({ title: t('confirmBookT'), body: t('confirmBookB', evT(ev(id))), onConfirm: () => { const r = book(id); go('booked', { reg: r.id }); } });
     case 'cancelReg': {
       const r = S.regs.find(x => x.id === ds.reg);
-      return modal({ title: t('cancelBookT'), body: t('cancelBookB', L(ev(r.event).title)), confirmLabel: t('cancelBooking'), danger: true, onConfirm: () => { r.status = 'CANCELLED'; ev(r.event).booked--; render(); toast(t('bookingCancelled')); } });
+      return modal({ title: t('cancelBookT'), body: t('cancelBookB', evT(ev(r.event))), confirmLabel: t('cancelBooking'), danger: true, onConfirm: () => { r.status = 'CANCELLED'; ev(r.event).booked--; render(); toast(t('bookingCancelled')); } });
     }
     case 'sendFb': {
       if (!S.params.stars) { document.getElementById('st-e').textContent = t('E_REQUIRED'); return; }
@@ -1059,19 +1079,19 @@ document.addEventListener('click', ev_ => {
     case 'chatNo': S.chat = S.chat.map(m => ({ ...m, confirm: null })); S.chat.push({ from: 'bot', text: t('chatDeclined') }); return render();
     case 'delEv': {
       const e = ev(id);
-      return modal({ title: t('deleteEvT'), body: t('deleteEvB', L(e.title)), confirmLabel: t('delete'), danger: true, onConfirm: () => {
+      return modal({ title: t('deleteEvT'), body: t('deleteEvB', evT(e)), confirmLabel: t('delete'), danger: true, onConfirm: () => {
         S.regs.filter(r => r.event === id && r.status === 'CONFIRMED').forEach(r => notify(r.user, 'SYSTEM', { ar: 'أُلغيت فعالية', en: 'Event cancelled' }, { ar: `أُلغيت "${e.title}" وأُلغي حجزك.`, en: `"${e.title}" was cancelled, and so was your booking.` }));
         S.events = S.events.filter(x => x.id !== id); S.regs = S.regs.filter(r => r.event !== id); render(); toast(t('evDeleted')); } });
     }
     case 'editEv': {
       const e = ev(id);
-      S.wizard = { step: 1, errors: {}, editId: id, d: { title: e.title, desc: e.desc, cat: e.cat, venue: e.venue, start: toLocalInput(e.startsAt), end: toLocalInput(e.endsAt), capacity: String(e.capacity) } };
+      S.wizard = { step: 1, errors: {}, editId: id, d: { title: e.title, desc: e.desc, titleEn: e.titleEn || '', descEn: e.descEn || '', cat: e.cat, venue: e.venue, start: toLocalInput(e.startsAt), end: toLocalInput(e.endsAt), capacity: String(e.capacity) } };
       return go('create', { keep: true });
     }
     case 'wNext': if (validateStep(S.wizard)) S.wizard.step++; return render();
     case 'wPrev': S.wizard.errors = {}; S.wizard.step--; return render();
     case 'wSubmit': {
-      const d = S.wizard.d, data = { title: d.title.trim(), desc: d.desc.trim(), cat: d.cat, venue: d.venue, startsAt: new Date(d.start), endsAt: new Date(d.end), capacity: +d.capacity };
+      const d = S.wizard.d, data = { title: d.title.trim(), desc: d.desc.trim(), titleEn: d.titleEn.trim() || null, descEn: d.descEn.trim() || null, cat: d.cat, venue: d.venue, startsAt: new Date(d.start), endsAt: new Date(d.end), capacity: +d.capacity };
       if (S.wizard.editId) { Object.assign(ev(S.wizard.editId), data); go('orgEvents'); return toast(t('saved')); }
       S.events.push({ id: uid('e'), ...data, booked: 0, status: 'PENDING', org: me().id });
       notify('u3', 'SYSTEM', { ar: 'فعالية جديدة بانتظار الاعتماد', en: 'New event waiting for approval' }, { ar: `"${data.title}" من ${user(me().id).name}.`, en: `"${data.title}" by ${user(me().id).nameEn}.` });
@@ -1090,7 +1110,7 @@ document.addEventListener('click', ev_ => {
         notify(e.org, 'SYSTEM', ok ? { ar: 'تم اعتماد فعاليتك', en: 'Your event was approved' } : { ar: 'تم رفض فعاليتك', en: 'Your event was rejected' }, { ar: `"${e.title}"`, en: `"${e.title}"` });
         render(); toast(t(ok ? 'approvedMsg' : 'rejectedMsg'));
       };
-      return ok ? doIt() : modal({ title: t('rejectT'), body: t('rejectB', L(e.title)), confirmLabel: t('reject'), danger: true, onConfirm: doIt });
+      return ok ? doIt() : modal({ title: t('rejectT'), body: t('rejectB', evT(e)), confirmLabel: t('reject'), danger: true, onConfirm: doIt });
     }
     case 'toggleUser': {
       const u = user(id);

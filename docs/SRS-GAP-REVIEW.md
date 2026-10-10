@@ -65,7 +65,7 @@ Checked after Role 2 merged FR-03..FR-09. The prototype was updated to match; th
 |---|---|---|---|
 | 5.1 | Text search box on the events feed | No text search (`category`, `venue`, `date` only), matching FR-04 | Search box removed from the prototype. If wanted, Role 2 adds a `q` parameter first. |
 | 5.2 | "This week" / "This month" date filter | One campus day, `date=YYYY-MM-DD` | Single date picker with an "All dates" reset. |
-| 5.3 | Create-event form asked for Arabic **and** English title/description | One `title` and one `description` | One field each; the text shows as written in both UI languages. |
+| 5.3 | Create-event form asked for Arabic **and** English title/description | One `title` and one `description` | One required field each, shown as written in both UI languages. Proposed: optional English title/description that the English UI prefers when present (**OPEN-6**, needs Role 2). The prototype shows the proposal. |
 | 5.4 | No state for an event the Organizer cancelled | `booking.event.status = CANCELLED` | New badge "Cancelled by organizer" in My bookings → Cancelled. |
 | 5.5 | Generic "full" message | Error codes `EVENT_FULL`, `BOOKING_CLOSED`, … | Wording for all 9 codes in `docs/UX-COPY.md`. |
 

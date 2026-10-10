@@ -67,7 +67,7 @@ Priority from GP1. Status as of `develop` after PR #7 (attendee APIs). "Backend 
 | FR-07 | The system shall allow Attendees to cancel their own booking before the event starts. | Attendee | Medium | Backend done (PR #7) |
 | FR-08 | The system shall provide Attendees with their full booking history. | Attendee | Medium | Backend done (PR #7) |
 | FR-09 | The system shall display event details: description, date, venue and remaining capacity. | Attendee | High | Backend done (PR #7) |
-| FR-10 | The system shall allow Organizers to create events. New events start as `PENDING` until an Admin approves them. | Organizer | High | Planned |
+| FR-10 | The system shall allow Organizers to create events. New events start as `PENDING` until an Admin approves them. An optional English title and description may be added for the English interface. **[OPEN-6]** | Organizer | High | Planned |
 | FR-11 | The system shall allow Organizers to edit their own events. | Organizer | High | Planned |
 | FR-12 | The system shall allow Organizers to delete their own events before the event date. | Organizer | Medium | Planned |
 | FR-13 | The system shall allow Organizers to set a maximum capacity per event. | Organizer | High | Planned |
@@ -136,3 +136,4 @@ SD-04 QR check-in **[OPEN-4]**, SD-05 AI assistant.
 | OPEN-3 | Which FR covers feedback/rating? Keep or drop recommendations, waitlist and password reset? | Leader + supervisor |
 | OPEN-4 | Is the QR scanner a page inside the web app (Organizer, phone camera)? | Leader + Role 3 |
 | OPEN-5 | Is this file the official SRS, or does a separate SRS document exist? | Leader |
+| OPEN-6 | Add optional `titleEn` and `descriptionEn` to `events`, so the English interface can show an English title when the Organizer provides one (falls back to the main title)? Supports GP1's goal of serving external guests. Needs a schema change by Role 2 and an update to the attendee API. Shown in the prototype's Create event form. | Leader + Role 2 |
