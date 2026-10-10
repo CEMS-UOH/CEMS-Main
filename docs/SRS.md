@@ -54,19 +54,19 @@ Check-in is `registrations.checkedInAt`; reports are computed by the analytics s
 
 ## 3. Functional requirements
 
-Priority from GP1. Status as of the `foundation-v1` tag.
+Priority from GP1. Status as of `develop` after PR #7 (attendee APIs). "Backend done" means the API exists; the screens are still to build.
 
 | ID | Requirement | Module | Priority | Status |
 |---|---|---|---|---|
 | FR-01 | The system shall allow users to register an Attendee account using a university email address. **[OPEN-2]** | Attendee | High | Done (any email accepted for now) |
 | FR-02 | The system shall provide secure login for all user roles. | All | High | Done |
-| FR-03 | The system shall display all approved campus events to Attendees. | Attendee | High | Planned |
-| FR-04 | The system shall allow Attendees to filter events by category, date and venue. | Attendee | Medium | Planned |
-| FR-05 | The system shall allow Attendees to book a seat for an available event and receive a QR code. Double booking and overbooking are rejected. | Attendee | High | Planned |
-| FR-06 | The system shall send a booking confirmation notification after a successful booking. | Attendee | High | Planned |
-| FR-07 | The system shall allow Attendees to cancel their own booking before the event starts. | Attendee | Medium | Planned |
-| FR-08 | The system shall provide Attendees with their full booking history. | Attendee | Medium | Planned |
-| FR-09 | The system shall display event details: description, date, venue and remaining capacity. | Attendee | High | Planned |
+| FR-03 | The system shall display all approved campus events to Attendees. | Attendee | High | Backend done (PR #7) |
+| FR-04 | The system shall allow Attendees to filter events by category, venue and day. | Attendee | Medium | Backend done (PR #7) |
+| FR-05 | The system shall allow Attendees to book a seat for an available event and receive a QR code. Double booking and overbooking are rejected. | Attendee | High | Backend done (PR #7) |
+| FR-06 | The system shall send a booking confirmation notification after a successful booking. | Attendee | High | Backend done (PR #7) |
+| FR-07 | The system shall allow Attendees to cancel their own booking before the event starts. | Attendee | Medium | Backend done (PR #7) |
+| FR-08 | The system shall provide Attendees with their full booking history. | Attendee | Medium | Backend done (PR #7) |
+| FR-09 | The system shall display event details: description, date, venue and remaining capacity. | Attendee | High | Backend done (PR #7) |
 | FR-10 | The system shall allow Organizers to create events. New events start as `PENDING` until an Admin approves them. | Organizer | High | Planned |
 | FR-11 | The system shall allow Organizers to edit their own events. | Organizer | High | Planned |
 | FR-12 | The system shall allow Organizers to delete their own events before the event date. | Organizer | Medium | Planned |

@@ -57,6 +57,18 @@ Items marked **Decision** need the Leader or supervisor before the SRS can be ch
 | 4.1 | Navy `#1B2A4A`, Teal `#2A9D8F`, Success `#2ECC71`, Warning `#F39C12`, Danger `#E74C3C` | `globals.css` is a placeholder; no colors defined yet | Keep the palette. Share it with Roles 4 and 5 **before** they build screens so they use the same values. |
 | 4.2 | "All 17 screens were designed in Figma" | Kickoff PDF: Figma skipped before the midterm; screens go straight to code | Say screens are built in code from the GP1 prototype (`SCEMS_UI_Prototype_17_Screens.html`). |
 
+## 5. Design vs. the attendee API (PR #7, `backend/src/modules/attendee/API.md`)
+
+Checked after Role 2 merged FR-03..FR-09. The prototype was updated to match; these are the decisions that came out of it.
+
+| # | Design had | API does | Resolution |
+|---|---|---|---|
+| 5.1 | Text search box on the events feed | No text search (`category`, `venue`, `date` only), matching FR-04 | Search box removed from the prototype. If wanted, Role 2 adds a `q` parameter first. |
+| 5.2 | "This week" / "This month" date filter | One campus day, `date=YYYY-MM-DD` | Single date picker with an "All dates" reset. |
+| 5.3 | Create-event form asked for Arabic **and** English title/description | One `title` and one `description` | One field each; the text shows as written in both UI languages. |
+| 5.4 | No state for an event the Organizer cancelled | `booking.event.status = CANCELLED` | New badge "Cancelled by organizer" in My bookings → Cancelled. |
+| 5.5 | Generic "full" message | Error codes `EVENT_FULL`, `BOOKING_CLOSED`, … | Wording for all 9 codes in `docs/UX-COPY.md`. |
+
 ---
 
 ## Next steps

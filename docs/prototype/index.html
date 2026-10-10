@@ -135,6 +135,7 @@ textarea.input { min-height: 96px; resize: vertical; }
 .datebox span { font-size: 11px; color: var(--gray-600); }
 .ev-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .ev-title { font-weight: 700; color: var(--navy); font-size: 15px; }
+.ev-title, .bidi { unicode-bidi: plaintext; text-align: start; }
 .meta { display: flex; gap: 6px; align-items: center; color: var(--gray-600); font-size: 12px; }
 .cat-workshop { background: var(--teal-dark); }
 .cat-seminar { background: var(--navy-light); }
@@ -269,13 +270,14 @@ const T = {
     E_INVALID_EMAIL: 'أدخل بريدًا إلكترونيًا صحيحًا', E_WEAK_PASSWORD: 'يجب أن تكون كلمة المرور 8 أحرف على الأقل', E_INVALID_NAME: 'الاسم الكامل مطلوب',
     E_INVALID_CREDENTIALS: 'البريد الإلكتروني أو كلمة المرور غير صحيحة', E_REQUIRED: 'هذا الحقل مطلوب', E_CAPACITY: 'السعة يجب أن تكون بين 1 وسعة القاعة',
     E_DATE: 'اختر موعدًا في المستقبل', E_TIME_ORDER: 'وقت الانتهاء يجب أن يكون بعد وقت البدء',
+    E_EVENT_FULL: 'اكتمل عدد المقاعد في هذه الفعالية.', E_BOOKING_CLOSED: 'انتهى الحجز لأن الفعالية بدأت.', orgCancelled: 'ألغاها المنظم', youCancelled: 'ألغيت الحجز',
     open1: 'قرار مفتوح', openFR01: 'هل يقتصر التسجيل على بريد الجامعة؟ (OPEN-2). الحقل يقبل أي بريد حاليًا.',
     openFeedback: 'لا يوجد متطلب وظيفي يغطي التقييم حتى الآن (OPEN-3). الشاشة للمراجعة فقط.',
     openScanner: 'هل الماسح صفحة داخل تطبيق الويب تستخدم كاميرا الجوال؟ (OPEN-4)',
     openForgot: 'رابط "نسيت كلمة المرور" محذوف إلى أن يُتخذ قرار (OPEN-3).',
     feedTitle: 'الفعاليات القادمة', feedSub: 'اكتشف الفعاليات المعتمدة واحجز مقعدك', searchPh: 'ابحث باسم الفعالية…', clear: 'مسح',
-    all: 'الكل', filters: 'تصفية', date: 'التاريخ', venue: 'القاعة', anyDate: 'أي وقت', thisWeek: 'هذا الأسبوع', thisMonth: 'هذا الشهر',
-    anyVenue: 'كل القاعات', results: n => `${n} فعالية`, noResults: 'لا توجد فعاليات مطابقة', noResultsSub: 'جرّب كلمة أخرى أو امسح عوامل التصفية.',
+    all: 'الكل', filters: 'تصفية', date: 'التاريخ', venue: 'القاعة', anyDate: 'كل التواريخ',
+    anyVenue: 'كل القاعات', results: n => `${n} فعالية`, noResults: 'لا توجد فعاليات مطابقة', noResultsSub: 'جرّب تاريخًا أو تصنيفًا آخر، أو امسح التصفية.',
     clearFilters: 'مسح التصفية', open: 'متاح', almost: 'شبه ممتلئ', full: 'ممتلئ', seatsLeft: n => `${n} مقعد متبقٍ`, booked: 'محجوز',
     back: 'رجوع', details: 'تفاصيل الفعالية', when: 'الموعد', where: 'المكان', organizer: 'المنظم', remaining: 'المقاعد المتبقية',
     capacity: 'السعة', bookNow: 'احجز مقعدك', alreadyBooked: 'لديك حجز في هذه الفعالية', viewTicket: 'عرض التذكرة', fullMsg: 'الفعالية ممتلئة. لا يمكن الحجز.',
@@ -301,7 +303,7 @@ const T = {
     deleteEvT: 'حذف الفعالية', deleteEvB: e => `سيتم حذف "${e}" وإلغاء كل حجوزاتها. لا يمكن التراجع.`, evDeleted: 'تم حذف الفعالية',
     noOrgEvents: 'لم تنشئ أي فعالية بعد', noOrgEventsSub: 'أنشئ فعاليتك الأولى وأرسلها للاعتماد.',
     createTitle: 'إنشاء فعالية', editTitle: 'تعديل الفعالية', createSub: 'ستُرسل الفعالية للمشرف لاعتمادها قبل نشرها',
-    s1: 'المعلومات', s2: 'الموعد والمكان', s3: 'المراجعة', titleAr: 'العنوان (عربي)', titleEn: 'العنوان (إنجليزي)', descAr: 'الوصف (عربي)', descEn: 'الوصف (إنجليزي)',
+    s1: 'المعلومات', s2: 'الموعد والمكان', s3: 'المراجعة', evTitle: 'عنوان الفعالية', evDesc: 'وصف الفعالية', oneLangHint: 'يظهر العنوان والوصف كما تكتبهما، بنفس اللغة، في الواجهتين العربية والإنجليزية.',
     category: 'التصنيف', choose: 'اختر…', startsAt: 'يبدأ', endsAt: 'ينتهي', capHint: c => `الحد الأعلى لهذه القاعة: ${c}`,
     image: 'صورة الفعالية', dropzone: 'اسحب صورة هنا أو اضغط للاختيار (JPG/PNG، حتى 5MB)', next: 'التالي', prev: 'السابق',
     submitForApproval: 'إرسال للاعتماد', saveChanges: 'حفظ التعديلات', submitted: 'تم الإرسال. الفعالية بانتظار اعتماد المشرف.', saved: 'تم حفظ التعديلات',
@@ -341,13 +343,14 @@ const T = {
     E_INVALID_EMAIL: 'Enter a valid email address', E_WEAK_PASSWORD: 'Password must be at least 8 characters', E_INVALID_NAME: 'Full name is required',
     E_INVALID_CREDENTIALS: 'Incorrect email or password', E_REQUIRED: 'This field is required', E_CAPACITY: 'Capacity must be between 1 and the venue capacity',
     E_DATE: 'Pick a date in the future', E_TIME_ORDER: 'End time must be after start time',
+    E_EVENT_FULL: 'This event is full.', E_BOOKING_CLOSED: 'Booking is closed because the event has started.', orgCancelled: 'Cancelled by organizer', youCancelled: 'You cancelled',
     open1: 'Open decision', openFR01: 'Restrict sign-up to the university email? (OPEN-2) The field accepts any email for now.',
     openFeedback: 'No functional requirement covers feedback yet (OPEN-3). This screen is for review only.',
     openScanner: 'Is the scanner a page in the web app using the phone camera? (OPEN-4)',
     openForgot: '"Forgot password" link is removed until decided (OPEN-3).',
     feedTitle: 'Upcoming events', feedSub: 'Discover approved events and book your seat', searchPh: 'Search by event name…', clear: 'Clear',
-    all: 'All', filters: 'Filters', date: 'Date', venue: 'Venue', anyDate: 'Any time', thisWeek: 'This week', thisMonth: 'This month',
-    anyVenue: 'All venues', results: n => `${n} event${n === 1 ? '' : 's'}`, noResults: 'No events matched', noResultsSub: 'Try another word or clear the filters.',
+    all: 'All', filters: 'Filters', date: 'Date', venue: 'Venue', anyDate: 'All dates',
+    anyVenue: 'All venues', results: n => `${n} event${n === 1 ? '' : 's'}`, noResults: 'No events matched', noResultsSub: 'Try another date or category, or clear the filters.',
     clearFilters: 'Clear filters', open: 'Open', almost: 'Almost full', full: 'Full', seatsLeft: n => `${n} seat${n === 1 ? '' : 's'} left`, booked: 'Booked',
     back: 'Back', details: 'Event details', when: 'When', where: 'Where', organizer: 'Organizer', remaining: 'Seats left',
     capacity: 'Capacity', bookNow: 'Book a seat', alreadyBooked: 'You have a booking for this event', viewTicket: 'View ticket', fullMsg: 'This event is full. Booking is closed.',
@@ -373,7 +376,7 @@ const T = {
     deleteEvT: 'Delete event', deleteEvB: e => `"${e}" will be deleted and all its bookings cancelled. This cannot be undone.`, evDeleted: 'Event deleted',
     noOrgEvents: "You haven't created an event yet", noOrgEventsSub: 'Create your first event and send it for approval.',
     createTitle: 'Create event', editTitle: 'Edit event', createSub: 'The event goes to an Admin for approval before it is published',
-    s1: 'Information', s2: 'Time & venue', s3: 'Review', titleAr: 'Title (Arabic)', titleEn: 'Title (English)', descAr: 'Description (Arabic)', descEn: 'Description (English)',
+    s1: 'Information', s2: 'Time & venue', s3: 'Review', evTitle: 'Event title', evDesc: 'Event description', oneLangHint: 'The title and description appear exactly as you write them, in both the Arabic and English interface.',
     category: 'Category', choose: 'Choose…', startsAt: 'Starts', endsAt: 'Ends', capHint: c => `Maximum for this venue: ${c}`,
     image: 'Event image', dropzone: 'Drop an image here or click to choose (JPG/PNG, up to 5MB)', next: 'Next', prev: 'Previous',
     submitForApproval: 'Submit for approval', saveChanges: 'Save changes', submitted: 'Submitted. The event is waiting for Admin approval.', saved: 'Changes saved',
@@ -436,7 +439,7 @@ const code = () => 'SCEMS-' + Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRS
 
 const S = {
   lang: 'ar', notes: false, role: null, screen: 'login', params: {}, navOpen: false, state: 'normal',
-  feed: { q: '', cat: 'all', date: 'any', venue: 'any' }, bkTab: 'upcoming', usrRole: 'all', attQ: '',
+  feed: { cat: 'all', date: '', venue: 'any' }, bkTab: 'upcoming', usrRole: 'all', attQ: '',
   wizard: null, chat: [], loginNotice: null,
   events: [
     { id: 'e1', title: { ar: 'ورشة الذكاء الاصطناعي التطبيقي', en: 'Applied AI Workshop' }, desc: { ar: 'ورشة عملية لبناء أول نموذج تعلم آلي باستخدام Python، من تجهيز البيانات حتى التقييم. أحضر حاسبك المحمول.', en: 'A hands-on workshop to build your first machine-learning model in Python, from data preparation to evaluation. Bring your laptop.' }, cat: 'workshop', venue: 'main', startsAt: at(5, 10), endsAt: at(5, 13), capacity: 300, booked: 182, status: 'APPROVED', org: 'u2' },
@@ -468,6 +471,13 @@ const S = {
   ],
   broadcasts: [{ title: { ar: 'تحديث مواعيد الفعاليات', en: 'Event schedule update' }, sent: 6, createdAt: at(-5, 8) }],
 };
+
+// Event content is written once by the Organizer, in one language (the API returns a single `title`).
+// The UI never translates it, so most demo events are Arabic and one is English.
+S.events.forEach(e => { const lang = e.id === 'e3' ? 'en' : 'ar'; e.title = e.title[lang]; e.desc = e.desc[lang]; });
+// An event the Organizer cancelled after Noura booked it (booking.event.status = CANCELLED in the API).
+S.events.push({ id: 'e10', title: 'رحلة علمية إلى مركز الملك عبدالعزيز الثقافي', desc: 'رحلة ليوم واحد لطلاب كلية علوم الحاسب.', cat: 'cultural', venue: 'main', startsAt: at(11, 8), endsAt: at(11, 16), capacity: 40, booked: 0, status: 'CANCELLED', org: 'u7' });
+S.regs.push({ id: 'r9', event: 'e10', user: 'u1', status: 'CONFIRMED', code: 'SCEMS-T5KD7W', checkedInAt: null, createdAt: at(-8, 9) });
 
 // ---------------------------------------------------------------- helpers
 const t = (k, ...a) => { const v = T[S.lang][k]; return typeof v === 'function' ? v(...a) : (v ?? k); };
@@ -660,20 +670,21 @@ V.register = () => `<div class="auth"><div class="logo" aria-hidden="true">S</di
 
 V.feed = () => {
   const f = S.feed, now = new Date();
-  const list = S.events.filter(e => e.status === 'APPROVED' && !isPast(e))
+  // Filters mirror GET /api/attendee/events: category, venue and one campus day (FR-04). No text search in the API.
+  const dayStart = f.date ? new Date(f.date + 'T00:00') : null, dayEnd = dayStart ? new Date(dayStart.getTime() + DAY) : null;
+  const list = S.events.filter(e => e.status === 'APPROVED' && e.endsAt > now)
     .filter(e => f.cat === 'all' || e.cat === f.cat)
     .filter(e => f.venue === 'any' || e.venue === f.venue)
-    .filter(e => f.date === 'any' || (e.startsAt - now) <= (f.date === 'week' ? 7 : 31) * DAY)
-    .filter(e => !f.q || (e.title.ar + ' ' + e.title.en).toLowerCase().includes(f.q.toLowerCase()))
+    .filter(e => !dayStart || (e.startsAt < dayEnd && e.endsAt > dayStart))
     .sort((a, b) => a.startsAt - b.startsAt);
-  const filtered = f.q || f.cat !== 'all' || f.date !== 'any' || f.venue !== 'any';
+  const filtered = f.cat !== 'all' || f.date || f.venue !== 'any';
   return pageHead(t('feedTitle'), t('feedSub'), ['03', '04']) + `
   <div class="stack" style="margin-bottom:20px">
-    <div class="search" role="search">${ico('search')}<label class="sr" for="fq">${t('searchPh')}</label><input id="fq" placeholder="${t('searchPh')}" value="${esc(f.q)}">${f.q ? `<button data-act="clearQ">${t('clear')}</button>` : ''}</div>
     <div class="chips" role="group" aria-label="${t('category')}"><button class="chip" aria-pressed="${f.cat === 'all'}" data-cat="all">${t('all')}</button>
       ${CATS.map(c => `<button class="chip" aria-pressed="${f.cat === c.id}" data-cat="${c.id}">${esc(L(c))}</button>`).join('')}</div>
     <div class="row">
-      <label class="sr" for="fd">${t('date')}</label><select class="input" id="fd" style="width:auto">${[['any', 'anyDate'], ['week', 'thisWeek'], ['month', 'thisMonth']].map(([v, k]) => `<option value="${v}" ${f.date === v ? 'selected' : ''}>${t(k)}</option>`).join('')}</select>
+      <label class="sr" for="fd">${t('date')}</label><input type="date" class="input" id="fd" style="width:auto" value="${esc(f.date)}" min="${toLocalInput(new Date()).slice(0, 10)}">
+      ${f.date ? `<button class="btn btn-ghost btn-sm" data-act="clearDate">${t('anyDate')}</button>` : ''}
       <label class="sr" for="fv">${t('venue')}</label><select class="input" id="fv" style="width:auto"><option value="any">${t('anyVenue')}</option>${VENUES.map(v => `<option value="${v.id}" ${f.venue === v.id ? 'selected' : ''}>${esc(L(v))}</option>`).join('')}</select>
       <span class="muted" aria-live="polite" style="margin-inline-start:auto">${t('results', fmtN(list.length))}</span>
     </div>
@@ -686,14 +697,15 @@ V.details = () => {
   const e = ev(S.params.id); if (!e) return V.notFound();
   const cs = capState(e), left = e.capacity - e.booked, mine = myReg(e.id), c = cat(e.cat);
   const action = mine ? `<div class="alert alert-success">${ico('check')} ${t('alreadyBooked')}</div><button class="btn btn-secondary btn-block" data-go="booked" data-reg="${mine.id}">${t('viewTicket')}</button>`
-    : cs === 'full' ? `<div class="alert alert-danger" role="status">${t('fullMsg')}</div><button class="btn btn-primary btn-block" disabled>${t('bookNow')}</button>`
+    : e.startsAt <= new Date() ? `<div class="alert alert-danger" role="status">${t('E_BOOKING_CLOSED')}</div><button class="btn btn-primary btn-block" disabled>${t('bookNow')}</button>`
+    : cs === 'full' ? `<div class="alert alert-danger" role="status">${t('E_EVENT_FULL')}</div><button class="btn btn-primary btn-block" disabled>${t('bookNow')}</button>`
     : `<button class="btn btn-primary btn-block" data-act="book" data-id="${e.id}">${t('bookNow')}</button>`;
   return `<button class="back" data-go="feed"><span class="flip">→</span> ${t('back')}</button>
   <div class="ev-banner ${catCls(e.cat)}" style="height:160px;border-radius:var(--radius);margin-bottom:16px">${ico(c.icon, 'bg-ic')}${dateBox(e.startsAt)}<span class="badge ${CAP[cs][0]}">${t(cs)}</span></div>
   <div class="layout-2"><div class="card">
     <span class="badge b-info">${esc(L(c))}</span>
-    <h1 style="font-size:22px;color:var(--navy);margin:8px 0">${esc(L(e.title))}${fr('09')}</h1>
-    <p style="margin-bottom:16px">${esc(L(e.desc))}</p>
+    <h1 class="bidi" style="font-size:22px;color:var(--navy);margin:8px 0">${esc(L(e.title))}${fr('09')}</h1>
+    <p class="bidi" style="margin-bottom:16px">${esc(L(e.desc))}</p>
     <div class="tiles">
       <div class="tile"><div class="l">${t('when')}</div><div class="v">${fmtDate(e.startsAt)}</div><div class="small muted">${fmtTime(e.startsAt)} – ${fmtTime(e.endsAt)}</div></div>
       <div class="tile"><div class="l">${t('where')}</div><div class="v">${esc(L(venue(e.venue)))}</div></div>
@@ -725,9 +737,9 @@ V.booked = () => {
 V.bookings = () => {
   const mine = S.regs.filter(r => r.user === me().id).map(r => ({ r, e: ev(r.event) })).filter(x => x.e);
   const groups = {
-    upcoming: mine.filter(x => x.r.status === 'CONFIRMED' && !isPast(x.e)),
-    past: mine.filter(x => x.r.status === 'CONFIRMED' && isPast(x.e)),
-    cancelled: mine.filter(x => x.r.status === 'CANCELLED'),
+    upcoming: mine.filter(x => x.r.status === 'CONFIRMED' && x.e.status !== 'CANCELLED' && !isPast(x.e)),
+    past: mine.filter(x => x.r.status === 'CONFIRMED' && x.e.status !== 'CANCELLED' && isPast(x.e)),
+    cancelled: mine.filter(x => x.r.status === 'CANCELLED' || x.e.status === 'CANCELLED'),
   };
   const list = groups[S.bkTab];
   const row = ({ r, e }) => {
@@ -735,7 +747,7 @@ V.bookings = () => {
     let right = '';
     if (S.bkTab === 'upcoming') right = `<button class="btn btn-secondary btn-sm" data-go="booked" data-reg="${r.id}">${t('ticket')}</button><button class="btn btn-ghost btn-sm" style="color:var(--danger-fg);border-color:var(--danger-bg)" data-act="cancelReg" data-reg="${r.id}">${t('cancelBooking')}</button>`;
     else if (S.bkTab === 'past') right = (r.checkedInAt ? `<span class="badge b-success">${ico('check')} ${t('attended')}</span>` : '') + (r.rated ? `<span class="badge b-gray">${t('rated')}</span>` : `<button class="btn btn-secondary btn-sm" data-go="feedback" data-reg="${r.id}">${ico('star')} ${t('rate')}</button>`);
-    else right = `<span class="badge b-gray">${t('cancelled')}</span>`;
+    else right = e.status === 'CANCELLED' ? `<span class="badge b-danger">${t('orgCancelled')}</span>` : `<span class="badge b-gray">${t('youCancelled')}</span>`;
     return `<div class="bk ${cls}"><div class="ico ${catCls(e.cat)}" aria-hidden="true">${ico(c.icon)}</div>
       <div class="info"><div class="ev-title" style="font-size:14px">${esc(L(e.title))}</div><div class="meta">${fmtDT(e.startsAt)} · ${esc(L(venue(e.venue)))}</div></div>
       <div class="row">${right}</div></div>`;
@@ -791,16 +803,16 @@ V.orgEvents = () => {
 };
 
 V.create = () => {
-  if (!S.wizard) S.wizard = { step: 1, errors: {}, d: { titleAr: '', titleEn: '', descAr: '', descEn: '', cat: '', venue: '', start: '', end: '', capacity: '' } };
+  if (!S.wizard) S.wizard = { step: 1, errors: {}, d: { title: '', desc: '', cat: '', venue: '', start: '', end: '', capacity: '' } };
   const w = S.wizard, d = w.d, er = w.errors, editing = !!w.editId;
   const f = (id, label, inner) => `<div class="field"><label for="w_${id}">${label} *</label>${inner}${er[id] ? `<div class="err" id="w_${id}-e">${t(er[id])}</div>` : ''}</div>`;
   const inp = (id, type = 'text', extra = '') => `<input class="input ${er[id] ? 'invalid' : ''}" id="w_${id}" data-w="${id}" type="${type}" value="${esc(d[id])}" ${extra} ${er[id] ? `aria-invalid="true" aria-describedby="w_${id}-e"` : ''}>`;
   const ta = (id, dir) => `<textarea class="input ${er[id] ? 'invalid' : ''}" id="w_${id}" data-w="${id}" dir="${dir}">${esc(d[id])}</textarea>`;
   const v = venue(d.venue);
   let body;
-  if (w.step === 1) body = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px">
-      ${f('titleAr', t('titleAr'), inp('titleAr', 'text', 'dir="rtl"'))}${f('titleEn', t('titleEn'), inp('titleEn', 'text', 'dir="ltr"'))}
-      ${f('descAr', t('descAr'), ta('descAr', 'rtl'))}${f('descEn', t('descEn'), ta('descEn', 'ltr'))}</div>
+  if (w.step === 1) body = `<div>
+      ${f('title', t('evTitle'), inp('title', 'text', 'dir="auto" maxlength="120"'))}
+      ${f('desc', t('evDesc'), ta('desc', 'auto'))}</div><p class="hint" style="margin:-8px 0 16px">${t('oneLangHint')}</p>
       ${f('cat', t('category'), `<select class="input ${er.cat ? 'invalid' : ''}" id="w_cat" data-w="cat"><option value="">${t('choose')}</option>${CATS.map(c => `<option value="${c.id}" ${d.cat === c.id ? 'selected' : ''}>${esc(L(c))}</option>`).join('')}</select>`)}
       <div class="field"><label>${t('image')} ${fr('16')}</label><div class="dropzone">${ico('image')} ${t('dropzone')}</div></div>`;
   else if (w.step === 2) body = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px">
@@ -809,8 +821,8 @@ V.create = () => {
       ${f('capacity', `${t('capacity')} ${fr('13')}`, inp('capacity', 'number', `min="1" ${v ? `max="${v.capacity}"` : ''}`))}
       ${v ? `<div class="hint" style="margin-top:-10px;margin-bottom:12px">${t('capHint', fmtN(v.capacity))}</div>` : ''}`;
   else body = `<div class="tiles">
-      <div class="tile"><div class="l">${t('titleAr')}</div><div class="v" dir="rtl">${esc(d.titleAr)}</div></div>
-      <div class="tile"><div class="l">${t('titleEn')}</div><div class="v" dir="ltr">${esc(d.titleEn)}</div></div>
+      <div class="tile" style="grid-column:1/-1"><div class="l">${t('evTitle')}</div><div class="v" dir="auto">${esc(d.title)}</div></div>
+
       <div class="tile"><div class="l">${t('category')}</div><div class="v">${esc(L(cat(d.cat)))}</div></div>
       <div class="tile"><div class="l">${t('venue')}</div><div class="v">${esc(L(v))}</div></div>
       <div class="tile"><div class="l">${t('when')}</div><div class="v">${fmtDT(new Date(d.start))}</div><div class="small muted">→ ${fmtTime(new Date(d.end))}</div></div>
@@ -964,8 +976,8 @@ function book(eid) {
   const e = ev(eid);
   const r = { id: uid('r'), event: eid, user: me().id, status: 'CONFIRMED', code: code(), checkedInAt: null, createdAt: new Date() };
   S.regs.push(r); e.booked++;
-  notify(me().id, 'BOOKING_CONFIRMATION', { ar: 'تم تأكيد حجزك', en: 'Booking confirmed' }, { ar: `حجزك في "${e.title.ar}" مؤكد.`, en: `Your booking for "${e.title.en}" is confirmed.` });
-  if (e.booked >= e.capacity) notify(e.org, 'CAPACITY_FULL', { ar: 'اكتملت السعة', en: 'Event is full' }, { ar: `وصلت "${e.title.ar}" إلى الحد الأعلى.`, en: `"${e.title.en}" reached its maximum capacity.` });
+  notify(me().id, 'BOOKING_CONFIRMATION', { ar: 'تم تأكيد حجزك', en: 'Booking confirmed' }, { ar: `حجزك في "${e.title}" مؤكد.`, en: `Your booking for "${e.title}" is confirmed.` });
+  if (e.booked >= e.capacity) notify(e.org, 'CAPACITY_FULL', { ar: 'اكتملت السعة', en: 'Event is full' }, { ar: `وصلت "${e.title}" إلى الحد الأعلى.`, en: `"${e.title}" reached its maximum capacity.` });
   return r;
 }
 function setErr(id, key) {
@@ -976,7 +988,7 @@ function setErr(id, key) {
 }
 function validateStep(w) {
   const d = w.d, e = {};
-  if (w.step === 1) { ['titleAr', 'titleEn', 'descAr', 'descEn', 'cat'].forEach(k => { if (!String(d[k]).trim()) e[k] = 'E_REQUIRED'; }); }
+  if (w.step === 1) { ['title', 'desc', 'cat'].forEach(k => { if (!String(d[k]).trim()) e[k] = 'E_REQUIRED'; }); }
   if (w.step === 2) {
     ['start', 'end', 'venue', 'capacity'].forEach(k => { if (!String(d[k]).trim()) e[k] = 'E_REQUIRED'; });
     if (d.start && new Date(d.start) <= new Date()) e.start = 'E_DATE';
@@ -1000,7 +1012,7 @@ function chatReply(text) {
     return { from: 'bot', text: t('chatMine', list) };
   }
   if (/مساعد|help/.test(s)) return { from: 'bot', text: t('chatHelp') };
-  const hit = upcoming.filter(e => { const c = cat(e.cat); return [e.title.ar, e.title.en, c.ar, c.en].some(x => s.split(/\s+/).some(w => w.length > 2 && x.toLowerCase().includes(w.replace(/^ال/, '')))); });
+  const hit = upcoming.filter(e => { const c = cat(e.cat); return [e.title, c.ar, c.en].some(x => s.split(/\s+/).some(w => w.length > 2 && x.toLowerCase().includes(w.replace(/^ال/, '')))); });
   return { from: 'bot', text: t('chatFound', hit.map(e => `• ${L(e.title)} (${fmtDate(e.startsAt)})`)) };
 }
 function chatSend(text) {
@@ -1027,8 +1039,8 @@ document.addEventListener('click', ev_ => {
     case 'menu': S.navOpen = !S.navOpen; return render();
     case 'logout': S.loginNotice = null; return go('login');
     case 'retry': S.state = 'normal'; return render();
-    case 'clearQ': S.feed.q = ''; return render();
-    case 'clearFilters': S.feed = { q: '', cat: 'all', date: 'any', venue: 'any' }; return render();
+    case 'clearDate': S.feed.date = ''; return render();
+    case 'clearFilters': S.feed = { cat: 'all', date: '', venue: 'any' }; return render();
     case 'book': return modal({ title: t('confirmBookT'), body: t('confirmBookB', L(ev(id).title)), onConfirm: () => { const r = book(id); go('booked', { reg: r.id }); } });
     case 'cancelReg': {
       const r = S.regs.find(x => x.id === ds.reg);
@@ -1048,21 +1060,21 @@ document.addEventListener('click', ev_ => {
     case 'delEv': {
       const e = ev(id);
       return modal({ title: t('deleteEvT'), body: t('deleteEvB', L(e.title)), confirmLabel: t('delete'), danger: true, onConfirm: () => {
-        S.regs.filter(r => r.event === id && r.status === 'CONFIRMED').forEach(r => notify(r.user, 'SYSTEM', { ar: 'أُلغيت فعالية', en: 'Event cancelled' }, { ar: `أُلغيت "${e.title.ar}" وأُلغي حجزك.`, en: `"${e.title.en}" was cancelled, and so was your booking.` }));
+        S.regs.filter(r => r.event === id && r.status === 'CONFIRMED').forEach(r => notify(r.user, 'SYSTEM', { ar: 'أُلغيت فعالية', en: 'Event cancelled' }, { ar: `أُلغيت "${e.title}" وأُلغي حجزك.`, en: `"${e.title}" was cancelled, and so was your booking.` }));
         S.events = S.events.filter(x => x.id !== id); S.regs = S.regs.filter(r => r.event !== id); render(); toast(t('evDeleted')); } });
     }
     case 'editEv': {
       const e = ev(id);
-      S.wizard = { step: 1, errors: {}, editId: id, d: { titleAr: e.title.ar, titleEn: e.title.en, descAr: e.desc.ar, descEn: e.desc.en, cat: e.cat, venue: e.venue, start: toLocalInput(e.startsAt), end: toLocalInput(e.endsAt), capacity: String(e.capacity) } };
+      S.wizard = { step: 1, errors: {}, editId: id, d: { title: e.title, desc: e.desc, cat: e.cat, venue: e.venue, start: toLocalInput(e.startsAt), end: toLocalInput(e.endsAt), capacity: String(e.capacity) } };
       return go('create', { keep: true });
     }
     case 'wNext': if (validateStep(S.wizard)) S.wizard.step++; return render();
     case 'wPrev': S.wizard.errors = {}; S.wizard.step--; return render();
     case 'wSubmit': {
-      const d = S.wizard.d, data = { title: { ar: d.titleAr.trim(), en: d.titleEn.trim() }, desc: { ar: d.descAr.trim(), en: d.descEn.trim() }, cat: d.cat, venue: d.venue, startsAt: new Date(d.start), endsAt: new Date(d.end), capacity: +d.capacity };
+      const d = S.wizard.d, data = { title: d.title.trim(), desc: d.desc.trim(), cat: d.cat, venue: d.venue, startsAt: new Date(d.start), endsAt: new Date(d.end), capacity: +d.capacity };
       if (S.wizard.editId) { Object.assign(ev(S.wizard.editId), data); go('orgEvents'); return toast(t('saved')); }
       S.events.push({ id: uid('e'), ...data, booked: 0, status: 'PENDING', org: me().id });
-      notify('u3', 'SYSTEM', { ar: 'فعالية جديدة بانتظار الاعتماد', en: 'New event waiting for approval' }, { ar: `"${data.title.ar}" من ${user(me().id).name}.`, en: `"${data.title.en}" by ${user(me().id).nameEn}.` });
+      notify('u3', 'SYSTEM', { ar: 'فعالية جديدة بانتظار الاعتماد', en: 'New event waiting for approval' }, { ar: `"${data.title}" من ${user(me().id).name}.`, en: `"${data.title}" by ${user(me().id).nameEn}.` });
       go('orgEvents'); return toast(t('submitted'));
     }
     case 'simScan': {
@@ -1075,7 +1087,7 @@ document.addEventListener('click', ev_ => {
       const e = ev(id), ok = ds.act === 'approve';
       const doIt = () => {
         e.status = ok ? 'APPROVED' : 'REJECTED';
-        notify(e.org, 'SYSTEM', ok ? { ar: 'تم اعتماد فعاليتك', en: 'Your event was approved' } : { ar: 'تم رفض فعاليتك', en: 'Your event was rejected' }, { ar: `"${e.title.ar}"`, en: `"${e.title.en}"` });
+        notify(e.org, 'SYSTEM', ok ? { ar: 'تم اعتماد فعاليتك', en: 'Your event was approved' } : { ar: 'تم رفض فعاليتك', en: 'Your event was rejected' }, { ar: `"${e.title}"`, en: `"${e.title}"` });
         render(); toast(t(ok ? 'approvedMsg' : 'rejectedMsg'));
       };
       return ok ? doIt() : modal({ title: t('rejectT'), body: t('rejectB', L(e.title)), confirmLabel: t('reject'), danger: true, onConfirm: doIt });
@@ -1117,7 +1129,6 @@ document.addEventListener('click', ev_ => {
 
 document.addEventListener('input', e => {
   const el = e.target;
-  if (el.id === 'fq') { S.feed.q = el.value; render(); const n = document.getElementById('fq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
   if (el.id === 'aq') { S.attQ = el.value; render(); const n = document.getElementById('aq'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
   if (el.dataset.w) S.wizard.d[el.dataset.w] = el.value;
 });
