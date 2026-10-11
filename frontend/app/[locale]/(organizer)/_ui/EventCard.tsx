@@ -27,8 +27,9 @@ export default function EventCard({ event, deleting, onDelete }: Props) {
 
   return (
     <Card className="flex min-w-0 flex-col gap-4 text-start">
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="type-h3 min-w-0 text-text [overflow-wrap:anywhere]">
+      {/* The status chip drops below the title when there is no room for both. */}
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+        <h2 className="type-h3 min-w-0 flex-1 basis-44 text-text [overflow-wrap:anywhere]">
           {event.title}
         </h2>
         <EventStatusBadge status={event.status} />

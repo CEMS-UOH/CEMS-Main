@@ -56,14 +56,10 @@ function Header() {
           {session.status === 'loading' ? (
             <span className="h-9 w-24 animate-pulse rounded-lg bg-background" aria-hidden />
           ) : user ? (
-            <Button
-              href="/me"
-              variant="secondary"
-              size="sm"
-              icon={<UserIcon />}
-              className="max-w-32 sm:max-w-48"
-            >
-              <span className="truncate">{user.fullName}</span>
+            // On a phone the button is just the person icon (the name stays available to
+            // screen readers), which leaves the header's width to the product name.
+            <Button href="/me" variant="secondary" size="sm" icon={<UserIcon />} className="sm:max-w-48">
+              <span className="truncate max-sm:sr-only">{user.fullName}</span>
             </Button>
           ) : (
             <Button href="/login" size="sm">

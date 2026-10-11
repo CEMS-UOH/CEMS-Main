@@ -164,8 +164,16 @@ html[dir='ltr'] {
   --text-base--line-height: 1.6;
 }
 
-* {
-  border-color: var(--color-border);
+/* Default border colour for anything that draws a border. It lives in the base layer on
+   purpose: written outside a layer it outranks every Tailwind utility, so border-primary,
+   border-danger and friends silently did nothing (no red outline on an invalid field, no
+   underline on the active tab). */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
 }
 
 /* People who ask for less motion get none of the decorative kind. The loading spinner keeps

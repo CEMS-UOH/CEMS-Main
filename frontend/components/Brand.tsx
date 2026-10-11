@@ -22,7 +22,10 @@ type Props = {
 
 export default function Brand({ name, href, compact = false }: Props) {
   return (
-    <Link href={href} className={`group flex min-w-0 items-center gap-2.5 rounded-lg ${FOCUS_RING}`}>
+    <Link
+      href={href}
+      className={`group flex items-center gap-2.5 rounded-lg ${compact ? 'max-sm:shrink-0 sm:min-w-0' : 'min-w-0'} ${FOCUS_RING}`}
+    >
       <span
         aria-hidden
         className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-white shadow-[var(--shadow-card)] transition-colors duration-150 group-hover:bg-primary-dark"

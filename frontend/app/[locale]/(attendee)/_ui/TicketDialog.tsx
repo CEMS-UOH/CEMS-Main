@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
 import type { Booking } from '../_lib/attendee-api';
 import { useEventDates } from '../_lib/format';
-import { FOCUS_RING } from '@/components/styles';
 import { CalendarIcon, CheckIcon, CloseIcon, PinIcon, TicketIcon } from '@/components/Icons';
 import QrCode from './QrCode';
 
@@ -51,14 +50,14 @@ export default function TicketDialog({ booking, onClose }: Props) {
               <TicketIcon className="size-5 text-primary" />
               {t('title')}
             </h2>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
+              icon={<CloseIcon className="size-5" />}
               onClick={() => ref.current?.close()}
               aria-label={t('close')}
-              className={`grid size-9 cursor-pointer place-items-center rounded-lg text-text-muted transition-colors duration-150 hover:bg-primary-light hover:text-primary-dark ${FOCUS_RING}`}
-            >
-              <CloseIcon className="size-5" />
-            </button>
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
