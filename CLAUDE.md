@@ -14,7 +14,9 @@ Three user roles: Attendee, Organizer, Admin. 23 functional requirements (FR-01.
 - Frontend: Next.js 15 (App Router) + TypeScript + Tailwind CSS 4 + next-intl (Arabic RTL default, English LTR). Deployed on Vercel.
 - Backend: Node.js + Express (CommonJS) + Prisma 6 -> Supabase Postgres. Deployed on DigitalOcean (Docker).
 - Analytics: Python (FastAPI, pandas, scikit-learn). Deployed with the backend.
-- AI assistant (FR-23): Anthropic Claude API, called from the backend only (never from the browser).
+- AI assistant (FR-23): Grok (xAI) API, called from the backend only (never from the browser).
+  Changed from the Anthropic Claude API named here originally - Leader override for
+  feature/fr10to23-organizer-admin-chatbot, see backend/src/modules/chatbot/API.md.
 - Tests: Jest + Supertest (backend), Playwright (E2E, later), Postman (API).
 
 ## Repo map and OWNERSHIP
@@ -25,7 +27,7 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 | `backend/prisma/schema.prisma` | Role 2 ONLY |
 | `backend/src/lib`, `middleware`, `config` (shared code) | Role 2 |
 | `backend/src/modules/attendee` | Role 2 |
-| `backend/src/modules/admin` | Role 2 |
+| `backend/src/modules/admin` | Role 3 for FR-17..FR-22 (Leader override, feature/fr10to23-organizer-admin-chatbot). Normally Role 2. |
 | `backend/src/modules/organizer` | Role 3 |
 | `backend/src/modules/chatbot` | Role 3 |
 | `frontend/lib`, `frontend/components` (shared) | Role 1 + Role 4 (agree before changing) |
@@ -49,7 +51,7 @@ Work only inside the folder you own. If your task needs a change elsewhere, stop
 6. Never commit secrets. `.env` is git-ignored. Add new variables to `.env.example` (with a fake value).
 7. UI text is never hardcoded. Add keys to BOTH `frontend/messages/ar.json` and `frontend/messages/en.json`.
 8. Layout must work in RTL and LTR: use Tailwind logical classes (`ms-`, `me-`, `ps-`, `pe-`, `text-start`, `text-end`), never `ml-`, `mr-`, `left-`, `right-`.
-9. The browser talks only to our backend, never directly to the database, and never to the Claude API.
+9. The browser talks only to our backend, never directly to the database, and never to the AI provider (Grok/xAI, FR-23).
    Use `frontend/lib/api.ts` for every call - never a bare `fetch`. It sets `credentials: "include"`
    (required for the session cookie) and unwraps the `ok()`/`fail()` envelope. Show errors by the
    `code` the API returns, translated through the `Errors` namespace in `messages/*.json`.
