@@ -48,6 +48,61 @@
     "ORGANIZER": "Organizer",
     "ADMIN": "Admin"
   },
+  "Dashboard": {
+    "productName": "Smart Campus Event Manager System",
+    "skipToContent": "Skip to content",
+    "navLabel": {
+      "ORGANIZER": "Organizer sections",
+      "ADMIN": "Admin sections"
+    },
+    "logout": "Log out",
+    "loggingOut": "Logging out…",
+    "checkingSession": "Checking your session…",
+    "goToLogin": "Go to log in",
+    "noAccessTitle": "This area is not available for your account",
+    "noAccess": {
+      "ORGANIZER": "The organizer dashboard is only for Organizer accounts.",
+      "ADMIN": "The admin dashboard is only for Admin accounts."
+    },
+    "goHome": {
+      "ADMIN": "Go to the admin dashboard",
+      "ORGANIZER": "Go to the organizer dashboard",
+      "ATTENDEE": "Go to my account"
+    },
+    "loading": "Loading…",
+    "retry": "Try again",
+    "pagination": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page, number} of {total, number}",
+    "all": "All",
+    "filterStatus": "Status",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "confirmDelete": "Yes, delete",
+    "required": "This field is required",
+    "starts": "Starts",
+    "ends": "Ends",
+    "venue": "Venue",
+    "noVenue": "No venue yet",
+    "category": "Category",
+    "organizer": "Organizer",
+    "campusTimeHint": "Campus time (Riyadh, UTC+3)",
+    "eventStatus": {
+      "PENDING": "Pending approval",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "bookingStatus": {
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    }
+  },
   "Errors": {
     "INVALID_EMAIL": "Enter a valid email address",
     "WEAK_PASSWORD": "Password must be at least 8 characters",
@@ -58,6 +113,32 @@
     "UNAUTHENTICATED": "Your session has ended. Please log in again.",
     "FORBIDDEN": "You do not have permission to perform this action",
     "NETWORK": "Cannot reach the server. Check your connection and try again.",
-    "UNKNOWN": "Something went wrong. Please try again."
+    "UNKNOWN": "Something went wrong. Please try again.",
+    "INVALID_TITLE": "Enter a title of up to 200 characters",
+    "INVALID_DESCRIPTION": "Enter a description",
+    "INVALID_DATES": "Check the start and end: the start must be in the future and before the end",
+    "INVALID_CAPACITY": "Capacity must be a whole number, 1 or more",
+    "INVALID_CATEGORY": "Choose a category from the list",
+    "INVALID_VENUE": "Choose a venue from the list",
+    "INVALID_IMAGE_URL": "The image link must start with http:// or https://",
+    "INVALID_ATTACHMENTS": "Use up to 10 attachment links that start with http:// or https://",
+    "INVALID_BODY": "Enter a message of up to 2000 characters",
+    "INVALID_ROLE": "Choose a valid role",
+    "INVALID_FILTER": "That filter is not valid. Reset it and try again.",
+    "INVALID_PAGINATION": "That page does not exist. Go back to the first page.",
+    "CAPACITY_EXCEEDS_VENUE": "Capacity cannot be higher than the venue holds",
+    "CAPACITY_BELOW_BOOKED": "Capacity cannot be lower than the seats already booked",
+    "EVENT_NOT_FOUND": "This event no longer exists",
+    "EVENT_NOT_EDITABLE": "This event can no longer be edited",
+    "EVENT_ALREADY_STARTED": "This event has already started, so it cannot be changed",
+    "EVENT_HAS_BOOKINGS": "This event has confirmed bookings and cannot be deleted",
+    "EVENT_NOT_PENDING": "This event has already been approved or rejected",
+    "USER_NOT_FOUND": "This account no longer exists",
+    "CANNOT_MODIFY_SELF": "You cannot do this to your own account",
+    "LAST_ADMIN_PROTECTED": "This is the last active admin, so it must stay an active admin",
+    "USER_HAS_DATA": "This account has events, bookings or feedback and cannot be deleted. Deactivate it instead.",
+    "CATEGORY_NOT_FOUND": "This category no longer exists",
+    "CATEGORY_NAME_TAKEN": "A category with this name already exists",
+    "CATEGORY_HAS_EVENTS": "Events still use this category, so it cannot be deleted"
   }
 }
