@@ -25,7 +25,7 @@ It covers 23 functional requirements (FR-01..FR-23) and 16 non-functional requir
 **Supervisor:** Dr. Mohamed Hazber
 
 ## 🚀 Key Features | المميزات الأساسية
-* **AI Assistant (FR-23):** Conversational help for finding events, powered by the Anthropic Claude API.
+* **AI Assistant (FR-23):** Conversational help for finding events, powered by Grok (xAI).
   (مساعد ذكي للبحث عن الفعاليات والإجابة على الاستفسارات)
 * **AI Recommendation:** Personalized event suggestions.
   (توصيات ذكية للفعاليات بناءً على اهتمامات الحضور)
