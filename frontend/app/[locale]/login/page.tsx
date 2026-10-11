@@ -9,6 +9,7 @@ import Button from '@/components/Button';
 import FormField from '@/components/FormField';
 import FormMessage from '@/components/FormMessage';
 import { login } from '@/lib/api';
+import { HOME_BY_ROLE } from '@/lib/roleHome';
 import { useApiError } from '@/lib/useApiError';
 
 export default function LoginPage() {
@@ -29,7 +30,10 @@ export default function LoginPage() {
     const result = await login({ email, password });
 
     if (result.ok) {
-      router.push('/me');
+      // The login response carries the role, which decides where the user lands (Attendee ->
+      // /me, Organizer -> /organizer, Admin -> /admin). Falls back to the account page if the
+      // API ever sends a role this build doesn't know.
+      router.push(HOME_BY_ROLE[result.data.user.role] ?? '/me');
       return; // keep the button disabled while the route change is in flight
     }
 

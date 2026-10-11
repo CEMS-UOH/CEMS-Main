@@ -11,8 +11,9 @@ import { useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import Button from '@/components/Button';
 import { getMe, logout, type PublicUser } from '@/lib/api';
-import Button from './Button';
+import { HOME_BY_ROLE } from '@/lib/roleHome';
 import { FOCUS_RING, TEXT_LINK } from './focus';
 import { ErrorState, LoadingState } from './States';
 import { useApiQuery } from '../lib/useApiQuery';
@@ -40,12 +41,6 @@ export function useDashboardUser(): PublicUser {
   if (!user) throw new Error('useDashboardUser must be used inside <DashboardShell>');
   return user;
 }
-
-const HOME_BY_ROLE: Record<PublicUser['role'], string> = {
-  ADMIN: '/admin',
-  ORGANIZER: '/organizer',
-  ATTENDEE: '/me',
-};
 
 const FRAME = 'mx-auto w-full max-w-6xl px-4 sm:px-6';
 
