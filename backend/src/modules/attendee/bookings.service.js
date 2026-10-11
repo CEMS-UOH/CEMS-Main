@@ -29,7 +29,15 @@ async function book({ userId, eventId }) {
 
       const event = await tx.event.findUnique({
         where: { id: eventId },
-        select: { id: true, title: true, startsAt: true, capacity: true, status: true },
+        // organizerId is needed for the FR-15 capacity-full notification below.
+        select: {
+          id: true,
+          title: true,
+          startsAt: true,
+          capacity: true,
+          status: true,
+          organizerId: true,
+        },
       });
       if (!event || event.status !== 'APPROVED') throw NOT_FOUND();
       if (event.startsAt <= new Date()) {
@@ -73,6 +81,34 @@ async function book({ userId, eventId }) {
           body: `Your seat is booked for "${event.title}" on ${event.startsAt.toISOString()}.`,
         },
       });
+
+      // FR-15: tell the organizer once, the moment this booking fills the last seat.
+      // Notification has no eventId column, so the event id is embedded in `body` and used
+      // as the idempotency key - a second booking (after a cancellation frees a seat and a
+      // new one re-fills it) must not notify the organizer twice for the same event. The
+      // event row is still locked (FOR UPDATE) at this point, so two bookings racing for the
+      // last seat cannot both pass this check.
+      const seatsTakenNow = seatsTaken + 1;
+      if (seatsTakenNow === event.capacity) {
+        const alreadyNotified = await tx.notification.findFirst({
+          where: {
+            userId: event.organizerId,
+            type: 'CAPACITY_FULL',
+            body: { contains: event.id },
+          },
+          select: { id: true },
+        });
+        if (!alreadyNotified) {
+          await tx.notification.create({
+            data: {
+              userId: event.organizerId,
+              type: 'CAPACITY_FULL',
+              title: event.title,
+              body: `Event "${event.title}" (id: ${event.id}) has reached full capacity.`,
+            },
+          });
+        }
+      }
 
       return toPublicBooking(booking);
     });

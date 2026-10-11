@@ -11,7 +11,7 @@ jest.mock('../src/lib/prisma', () => ({
     create: jest.fn(),
     update: jest.fn(),
   },
-  notification: { create: jest.fn() },
+  notification: { create: jest.fn(), findFirst: jest.fn() },
   $queryRaw: jest.fn(),
   $transaction: jest.fn(),
 }));
@@ -42,12 +42,15 @@ const sessionFor = (user = attendee) => {
   return `${COOKIE_NAME}=${signToken(user)}`;
 };
 
+const ORGANIZER_ID = 'organizer-1';
+
 const lockedEvent = (overrides = {}) => ({
   id: EVENT_ID,
   title: 'AI Workshop',
   startsAt: inDays(3),
   capacity: 50,
   status: 'APPROVED',
+  organizerId: ORGANIZER_ID,
   ...overrides,
 });
 
@@ -115,7 +118,7 @@ describe('POST /bookings (FR-05, FR-06)', () => {
   };
 
   it('books a seat with a fresh random QR code and notifies the attendee', async () => {
-    arrangeOpenEvent({ taken: 49 }); // the last seat
+    arrangeOpenEvent({ taken: 10 }); // plenty of seats left - not the FR-15 capacity-full case
     prisma.registration.create.mockImplementationOnce(({ data }) =>
       Promise.resolve(dbBooking({ qrCode: data.qrCode }))
     );
@@ -280,6 +283,65 @@ describe('POST /bookings (FR-05, FR-06)', () => {
     expect(res.status).toBe(404);
     expect(res.body.error.code).toBe('EVENT_NOT_FOUND');
     expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------- FR-15 organizer notice
+
+describe('FR-15 capacity-full organizer notification', () => {
+  const book = (body = { eventId: EVENT_ID }) =>
+    request(app).post(BASE).set('Cookie', sessionFor()).send(body);
+
+  it('notifies the organizer once when a booking fills the last seat', async () => {
+    prisma.$queryRaw.mockResolvedValueOnce([{ id: EVENT_ID }]);
+    prisma.event.findUnique.mockResolvedValueOnce(lockedEvent({ capacity: 50 }));
+    prisma.registration.findUnique.mockResolvedValueOnce(null);
+    prisma.registration.count.mockResolvedValueOnce(49); // this booking is the 50th
+    prisma.registration.create.mockResolvedValueOnce(dbBooking());
+    prisma.notification.create.mockResolvedValueOnce({}); // BOOKING_CONFIRMATION
+    prisma.notification.findFirst.mockResolvedValueOnce(null); // not notified yet
+
+    const res = await book();
+
+    expect(res.status).toBe(201);
+    expect(prisma.notification.findFirst.mock.calls[0][0].where).toEqual({
+      userId: ORGANIZER_ID,
+      type: 'CAPACITY_FULL',
+      body: { contains: EVENT_ID },
+    });
+    expect(prisma.notification.create).toHaveBeenCalledTimes(2);
+    const capacityNotification = prisma.notification.create.mock.calls[1][0].data;
+    expect(capacityNotification.userId).toBe(ORGANIZER_ID);
+    expect(capacityNotification.type).toBe('CAPACITY_FULL');
+    expect(capacityNotification.body).toContain(EVENT_ID);
+  });
+
+  it('does not notify the organizer twice for the same event', async () => {
+    prisma.$queryRaw.mockResolvedValueOnce([{ id: EVENT_ID }]);
+    prisma.event.findUnique.mockResolvedValueOnce(lockedEvent({ capacity: 50 }));
+    prisma.registration.findUnique.mockResolvedValueOnce(null);
+    prisma.registration.count.mockResolvedValueOnce(49);
+    prisma.registration.create.mockResolvedValueOnce(dbBooking());
+    prisma.notification.create.mockResolvedValueOnce({}); // BOOKING_CONFIRMATION only
+    prisma.notification.findFirst.mockResolvedValueOnce({ id: 'already-sent' });
+
+    await book();
+
+    expect(prisma.notification.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not check or notify when seats remain after booking', async () => {
+    prisma.$queryRaw.mockResolvedValueOnce([{ id: EVENT_ID }]);
+    prisma.event.findUnique.mockResolvedValueOnce(lockedEvent({ capacity: 50 }));
+    prisma.registration.findUnique.mockResolvedValueOnce(null);
+    prisma.registration.count.mockResolvedValueOnce(10); // far from full
+    prisma.registration.create.mockResolvedValueOnce(dbBooking());
+    prisma.notification.create.mockResolvedValueOnce({});
+
+    await book();
+
+    expect(prisma.notification.findFirst).not.toHaveBeenCalled();
+    expect(prisma.notification.create).toHaveBeenCalledTimes(1);
   });
 });
 

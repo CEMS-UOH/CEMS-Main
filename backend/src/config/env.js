@@ -21,6 +21,11 @@ const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // FR-23 chatbot (Grok/xAI, per Leader override - see CLAUDE.md). Empty is valid here: the
+  // chatbot module fails each request cleanly (CHATBOT_UNAVAILABLE) rather than at startup,
+  // since it is not required for the rest of the app to run.
+  grokApiKey: process.env.GROK_API_KEY || '',
+  grokModel: process.env.GROK_MODEL || '',
 };
 
 // Fail fast on a missing JWT_SECRET. Called from src/index.js at startup, NOT from app.js,
