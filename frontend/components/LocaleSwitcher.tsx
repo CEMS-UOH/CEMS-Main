@@ -10,7 +10,7 @@ export default function LocaleSwitcher() {
   const other = locale === 'ar' ? 'en' : 'ar';
 
   return (
-    <Link href={pathname} locale={other} className="w-fit text-blue-700 underline">
+    <Link href={pathname} locale={other} className="w-fit text-sm font-medium text-primary hover:underline">
       {t('switchLanguage')}
     </Link>
   );

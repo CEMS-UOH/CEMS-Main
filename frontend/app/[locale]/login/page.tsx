@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
+import Button from '@/components/Button';
 import FormField from '@/components/FormField';
 import FormMessage from '@/components/FormMessage';
 import { login } from '@/lib/api';
@@ -37,13 +38,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6 py-12">
       <header className="flex flex-col gap-1 text-start">
-        <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <p className="text-sm text-slate-600">{t('subtitle')}</p>
+        <h1 className="text-2xl font-bold text-text">{t('title')}</h1>
+        <p className="text-sm text-text-muted">{t('subtitle')}</p>
       </header>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6 shadow-[var(--shadow-card)]" noValidate>
         {error ? <FormMessage kind="error">{error}</FormMessage> : null}
 
         <FormField
@@ -67,18 +68,14 @@ export default function LoginPage() {
           required
         />
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-60"
-        >
+        <Button type="submit" disabled={submitting} className="mt-2 w-full">
           {submitting ? t('submitting') : t('submit')}
-        </button>
+        </Button>
       </form>
 
       <p className="text-sm text-start">
-        <span className="me-1 text-slate-600">{t('noAccount')}</span>
-        <Link href="/register" className="text-blue-700 underline">
+        <span className="me-1 text-text-muted">{t('noAccount')}</span>
+        <Link href="/register" className="font-medium text-primary hover:underline">
           {t('registerLink')}
         </Link>
       </p>
