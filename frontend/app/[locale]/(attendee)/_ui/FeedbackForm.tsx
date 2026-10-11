@@ -8,9 +8,9 @@ import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
 import FormMessage from '@/components/FormMessage';
 import { FEEDBACK_COMMENT_MAX, submitFeedback } from '../_lib/attendee-api';
-import { INPUT } from '../_lib/styles';
+import { LABEL, TEXTAREA } from '@/components/FormField';
 import { useAttendeeError } from '../_lib/useAttendeeError';
-import { StarIcon } from './Icons';
+import { StarIcon } from '@/components/Icons';
 
 type Props = {
   eventId: string;
@@ -63,7 +63,7 @@ export default function FeedbackForm({ eventId, idPrefix, onSubmitted }: Props) 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4 text-start">
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium text-text">{t('ratingLabel')}</legend>
+        <legend className={`mb-2 ${LABEL}`}>{t('ratingLabel')}</legend>
         <div className="flex items-center gap-1" onMouseLeave={() => setHovered(0)}>
           {RATINGS.map((value) => (
             <label
@@ -88,8 +88,8 @@ export default function FeedbackForm({ eventId, idPrefix, onSubmitted }: Props) 
         </div>
       </fieldset>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor={`${idPrefix}-comment`} className="text-sm font-medium text-text">
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor={`${idPrefix}-comment`} className={LABEL}>
           {t('commentLabel')}
         </label>
         <textarea
@@ -101,7 +101,7 @@ export default function FeedbackForm({ eventId, idPrefix, onSubmitted }: Props) 
           disabled={busy}
           placeholder={t('commentPlaceholder')}
           aria-describedby={`${idPrefix}-comment-count`}
-          className={`${INPUT} resize-y`}
+          className={TEXTAREA}
         />
         <p id={`${idPrefix}-comment-count`} className="text-end text-xs text-text-muted">
           {t('characters', { count: comment.length, max: FEEDBACK_COMMENT_MAX })}
@@ -111,7 +111,7 @@ export default function FeedbackForm({ eventId, idPrefix, onSubmitted }: Props) 
       {error ? <FormMessage kind="error">{error}</FormMessage> : null}
 
       <div>
-        <Button type="submit" disabled={busy}>
+        <Button type="submit" loading={busy}>
           {busy ? t('submitting') : t('submit')}
         </Button>
       </div>

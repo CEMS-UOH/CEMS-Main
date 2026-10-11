@@ -7,6 +7,7 @@ import { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Button from '@/components/Button';
+import PageHeader from '@/components/PageHeader';
 import { useRouter } from '@/i18n/navigation';
 import { listEvents } from '../_lib/attendee-api';
 import {
@@ -76,11 +77,8 @@ function EventsFeed() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1 text-start">
-        <h1 className="text-2xl font-bold text-text sm:text-3xl">{t('title')}</h1>
-        <p className="text-sm text-text-muted sm:text-base">{t('subtitle')}</p>
-      </header>
+    <div className="flex flex-col gap-8">
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
 
       <FilterBar
         filters={filters}
@@ -112,7 +110,7 @@ function EventsFeed() {
         )
       ) : (
         <section aria-labelledby="events-results" className="flex flex-col gap-5">
-          <h2 id="events-results" className="text-sm text-text-muted" aria-live="polite">
+          <h2 id="events-results" className="text-start text-sm font-medium text-text-muted" aria-live="polite">
             {search.trim()
               ? t('searchCount', { shown: shown.length, count: loaded?.length ?? 0 })
               : t('count', { count: feed.data.pagination.total })}

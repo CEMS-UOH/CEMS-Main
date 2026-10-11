@@ -7,9 +7,10 @@ import { useParams } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import { Link } from '@/i18n/navigation';
-import { SelectField } from '../../../../../_dashboard/ui/Field';
-import { TEXT_LINK } from '../../../../../_dashboard/ui/focus';
-import PageHeader from '../../../../../_dashboard/ui/PageHeader';
+import { SelectField } from '@/components/FormField';
+import { BackIcon } from '@/components/Icons';
+import { TEXT_LINK } from '@/components/styles';
+import PageHeader from '@/components/PageHeader';
 import Pagination from '../../../../../_dashboard/ui/Pagination';
 import { EmptyState, ErrorState, LoadingState } from '../../../../../_dashboard/ui/States';
 import { BookingStatusBadge } from '../../../../../_dashboard/ui/StatusBadges';
@@ -21,7 +22,7 @@ import { getMyEvent, listAttendees } from '../../../../_lib/organizer-api';
 const PAGE_SIZE = 50;
 
 // One row layout for the header and every attendee from md up; stacked on phones.
-const ROW = 'grid gap-x-4 gap-y-1 px-5 py-4 md:grid-cols-[2fr_3fr_1fr_2fr] md:items-center';
+const ROW = 'grid gap-x-4 gap-y-1 px-5 py-4 sm:px-6 md:grid-cols-[2fr_3fr_1fr_2fr] md:items-center';
 
 export default function AttendeesPage() {
   const { id } = useParams<{ id: string }>();
@@ -53,7 +54,8 @@ export default function AttendeesPage() {
         title={t('title')}
         subtitle={event?.title}
         eyebrow={
-          <Link href="/organizer" className={TEXT_LINK}>
+          <Link href="/organizer" className={`flex w-fit items-center gap-1.5 ${TEXT_LINK}`}>
+            <BackIcon />
             {tNav('backToEvents')}
           </Link>
         }

@@ -67,7 +67,7 @@ export default function CancelBooking({ bookingId, onCancelled, onStale, onUnaut
         {asking ? (
           <>
             <span className="text-sm text-text">{t('cancelQuestion')}</span>
-            <Button type="button" variant="danger" size="sm" disabled={busy} onClick={confirm}>
+            <Button type="button" variant="danger" size="sm" loading={busy} onClick={confirm}>
               {busy ? t('cancelling') : t('confirmCancel')}
             </Button>
             <Button

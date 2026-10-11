@@ -4,7 +4,7 @@
 // placeholder so cards keep the same shape. Plain <img>: organizer images can live on any host,
 // which next/image would need listing in next.config.ts.
 import { useState } from 'react';
-import { CalendarIcon } from './Icons';
+import { CalendarIcon } from '@/components/Icons';
 
 type Props = {
   src: string | null;

@@ -7,8 +7,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import Button from '@/components/Button';
-import { TextAreaField, TextField } from '../../../_dashboard/ui/Field';
-import PageHeader from '../../../_dashboard/ui/PageHeader';
+import { MegaphoneIcon } from '@/components/Icons';
+import { TextAreaField, TextField } from '@/components/FormField';
+import PageHeader from '@/components/PageHeader';
 import { useDashboardError } from '../../../_dashboard/lib/useDashboardError';
 import { sendBroadcast } from '../../_lib/admin-api';
 
@@ -99,7 +100,7 @@ export default function AdminBroadcastPage() {
             >
               <p className="text-start text-sm font-medium text-text">{t('confirm')}</p>
               <div className="flex flex-wrap items-center gap-2">
-                <Button type="button" disabled={sending} onClick={onSend}>
+                <Button type="button" icon={<MegaphoneIcon />} loading={sending} onClick={onSend}>
                   {sending ? t('sending') : t('confirmSend')}
                 </Button>
                 <Button

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Badge, { type BadgeTone } from './Badge';
+import Badge, { type BadgeTone } from '@/components/Badge';
 import type { BookingStatus, EventStatus } from '../lib/types';
 
 const eventTones: Record<EventStatus, BadgeTone> = {

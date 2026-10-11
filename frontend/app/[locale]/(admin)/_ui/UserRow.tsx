@@ -6,17 +6,17 @@
 import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import type { PublicUser } from '@/lib/api';
-import Badge from '../../_dashboard/ui/Badge';
+import Badge from '@/components/Badge';
 import Button from '@/components/Button';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
-import { SelectField } from '../../_dashboard/ui/Field';
+import { SelectField } from '@/components/FormField';
 import { DATE_FORMAT } from '../../_dashboard/lib/campusTime';
 import { USER_ROLES, type UserRole } from '../../_dashboard/lib/types';
 
 export type UserAction = 'active' | 'role' | 'delete';
 
 export const USER_ROW =
-  'grid gap-x-4 gap-y-3 px-5 py-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,3fr)_minmax(0,6fr)] lg:items-center';
+  'grid gap-x-4 gap-y-3 px-5 py-4 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,3fr)_minmax(0,6fr)] lg:items-center';
 
 type Props = {
   user: PublicUser;
@@ -87,13 +87,19 @@ export default function UserRow({
             />
           </div>
           {roleChanged ? (
-            <Button size="sm" disabled={isBusy} onClick={() => onChangeRole(user, draftRole)}>
+            <Button
+              size="sm"
+              loading={busy === 'role'}
+              disabled={isBusy}
+              onClick={() => onChangeRole(user, draftRole)}
+            >
               {busy === 'role' ? tCommon('saving') : t('saveRole')}
             </Button>
           ) : null}
           <Button
             variant="secondary"
             size="sm"
+            loading={busy === 'active'}
             disabled={isBusy}
             onClick={() => onSetActive(user, !user.isActive)}
           >

@@ -14,14 +14,14 @@ import { bookEvent, getEvent, listBookings, type Booking, type EventDetails } fr
 import { useEventDates } from '../../_lib/format';
 import { bookingAction, findBookingForEvent, seatsTone, type BookingAction } from '../../_lib/rules';
 import { useSession } from '../../_lib/session';
-import { FOCUS_RING, TEXT_LINK } from '../../_lib/styles';
+import { TEXT_LINK } from '@/components/styles';
 import { useAttendeeError } from '../../_lib/useAttendeeError';
 import { useQuery } from '../../_lib/useQuery';
 import { CategoryBadge, SeatsBadge } from '../../_ui/Badges';
 import CancelBooking from '../../_ui/CancelBooking';
 import EventImage from '../../_ui/EventImage';
 import FeedbackForm from '../../_ui/FeedbackForm';
-import { BackIcon, CalendarIcon, CheckIcon, PaperclipIcon, PinIcon, SeatIcon, TicketIcon, UserIcon } from '../../_ui/Icons';
+import { BackIcon, CalendarIcon, CheckIcon, PaperclipIcon, PinIcon, SeatIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import { EmptyState, ErrorState, LoadingBlock } from '../../_ui/States';
 import TicketDialog from '../../_ui/TicketDialog';
 
@@ -60,9 +60,9 @@ export default function EventDetailsPage() {
           title={t('notFoundTitle')}
           body={t('notFoundBody')}
           action={
-            <Link href="/events" className={TEXT_LINK}>
+            <Button href="/events" variant="secondary">
               {t('browse')}
-            </Link>
+            </Button>
           }
         />
       </div>
@@ -137,14 +137,14 @@ export default function EventDetailsPage() {
             src={event.imageUrl}
             alt={t('imageAlt', { title: event.title })}
             eager
-            className="aspect-[16/9] w-full rounded-lg border border-border"
+            className="aspect-[16/9] w-full rounded-lg border border-border shadow-[var(--shadow-card)]"
           />
           <header className="flex flex-col gap-3 text-start">
             <div className="flex flex-wrap items-center gap-2">
               <CategoryBadge name={event.category.name} />
               <SeatsBadge event={event} />
             </div>
-            <h1 className="text-2xl font-bold text-text sm:text-3xl">{event.title}</h1>
+            <h1 className="type-h1 text-text [overflow-wrap:anywhere]">{event.title}</h1>
             <p className="flex items-center gap-2 text-sm text-text-muted">
               <UserIcon />
               {t('organizedBy', { name: event.organizer.fullName })}
@@ -184,16 +184,16 @@ export default function EventDetailsPage() {
         </aside>
 
         <div className="flex flex-col gap-6 lg:col-start-1">
-          <section aria-labelledby="about-title" className="flex flex-col gap-2 text-start">
-            <h2 id="about-title" className="text-lg font-bold text-text">
+          <section aria-labelledby="about-title" className="flex flex-col gap-3 text-start">
+            <h2 id="about-title" className="type-h2 text-text">
               {t('about')}
             </h2>
-            <p className="whitespace-pre-line text-base leading-relaxed text-text">{event.description}</p>
+            <p className="max-w-prose whitespace-pre-line text-base text-text">{event.description}</p>
           </section>
 
           {event.attachments.length > 0 ? (
-            <section aria-labelledby="attachments-title" className="flex flex-col gap-2 text-start">
-              <h2 id="attachments-title" className="text-lg font-bold text-text">
+            <section aria-labelledby="attachments-title" className="flex flex-col gap-3 text-start">
+              <h2 id="attachments-title" className="type-h2 text-text">
                 {t('attachments')}
               </h2>
               <ul className="flex flex-col gap-2">
@@ -267,9 +267,9 @@ function EventFacts({ event }: { event: EventDetails }) {
           <span className="font-medium text-text">
             {t('seatsTaken', { taken: event.seatsTaken, capacity: event.capacity })}
           </span>
-          <span aria-hidden className="h-2 w-full overflow-hidden rounded-full bg-background">
+          <span aria-hidden className="h-2 w-full overflow-hidden rounded-lg bg-background">
             <span
-              className={`block h-full rounded-full ${tone === 'full' ? 'bg-danger' : tone === 'low' ? 'bg-accent' : 'bg-primary'}`}
+              className={`block h-full rounded-lg transition-[width] duration-300 ${tone === 'full' ? 'bg-danger' : tone === 'low' ? 'bg-accent' : 'bg-primary'}`}
               style={{ width: `${percent}%` }}
             />
           </span>
@@ -298,15 +298,14 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
   switch (action) {
     case 'loading':
       return (
-        <Button type="button" disabled className="w-full">
+        <Button type="button" loading className="w-full">
           {t('checking')}
         </Button>
       );
 
     case 'can-book':
       return (
-        <Button type="button" onClick={onBook} disabled={busy} className="w-full">
-          <TicketIcon />
+        <Button type="button" icon={<TicketIcon />} onClick={onBook} loading={busy} className="w-full">
           {busy ? t('booking') : t('book')}
         </Button>
       );
@@ -318,8 +317,7 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
             <CheckIcon />
             {t('youHaveASeat')}
           </p>
-          <Button type="button" onClick={onShowTicket} className="w-full">
-            <TicketIcon />
+          <Button type="button" icon={<TicketIcon />} onClick={onShowTicket} className="w-full">
             {t('showTicket')}
           </Button>
           {booking?.canCancel ? (
@@ -352,12 +350,9 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
       return (
         <div className="flex flex-col gap-3 text-start">
           <p className={NOTE}>{t('loginToBook')}</p>
-          <Link
-            href="/login"
-            className={`inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-[var(--shadow-card)] hover:bg-primary-dark ${FOCUS_RING}`}
-          >
+          <Button href="/login" className="w-full">
             {t('login')}
-          </Link>
+          </Button>
           <p className="text-center text-sm">
             <span className="me-1 text-text-muted">{t('noAccount')}</span>
             <Link href="/register" className={TEXT_LINK}>
@@ -376,7 +371,7 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
           <p className={NOTE}>{t('ended')}</p>
           {booking ? (
             <div className="flex flex-col gap-3">
-              <h2 className="text-base font-bold text-text">{t('rateTitle')}</h2>
+              <h2 className="type-h3 text-text">{t('rateTitle')}</h2>
               <FeedbackForm eventId={id} idPrefix={`event-${id}`} />
             </div>
           ) : null}

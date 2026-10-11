@@ -7,8 +7,8 @@ import { useFormatter, useTranslations } from 'next-intl';
 import FormMessage from '@/components/FormMessage';
 import { Link } from '@/i18n/navigation';
 import type { ApiResult } from '@/lib/api';
-import { TEXT_LINK } from '../../_dashboard/ui/focus';
-import PageHeader from '../../_dashboard/ui/PageHeader';
+import { TEXT_LINK } from '@/components/styles';
+import PageHeader from '@/components/PageHeader';
 import StatTile, { StatGrid } from '../../_dashboard/ui/StatTile';
 import { EmptyState, ErrorState, LoadingState } from '../../_dashboard/ui/States';
 import type { AdminEvent } from '../../_dashboard/lib/types';
@@ -87,7 +87,7 @@ export default function AdminOverviewPage() {
 
           <section aria-labelledby="pending-heading" className="flex flex-col gap-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 id="pending-heading" className="text-start text-lg font-bold text-text">
+              <h2 id="pending-heading" className="type-h2 text-start text-text">
                 {t('pendingTitle')}
               </h2>
               <Link href="/admin/events" className={`text-sm ${TEXT_LINK}`}>

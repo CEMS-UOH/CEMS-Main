@@ -5,10 +5,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
+import AuthShell from '@/components/AuthShell';
+import Badge from '@/components/Badge';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
-import FormMessage from '@/components/FormMessage';
+import { CalendarIcon, GridIcon, TicketIcon } from '@/components/Icons';
+import { ErrorState, LoadingState } from '@/components/States';
+import { TEXT_LINK } from '@/components/styles';
 import { getMe, logout, type PublicUser } from '@/lib/api';
+import { HOME_BY_ROLE } from '@/lib/roleHome';
 import { useApiError } from '@/lib/useApiError';
 
 export default function MePage() {
@@ -60,58 +65,71 @@ export default function MePage() {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-md px-6 py-12">
-        <p className="text-start text-text-muted">{t('loading')}</p>
-      </main>
+      <AuthShell>
+        <LoadingState label={t('loading')} />
+      </AuthShell>
     );
   }
 
   if (error) {
     return (
-      <main className="mx-auto flex max-w-md flex-col gap-4 px-6 py-12">
-        <FormMessage kind="error">{error}</FormMessage>
-        <Link href="/login" className="text-start font-medium text-primary hover:underline">
-          {t('logout')}
+      <AuthShell>
+        <ErrorState message={error} />
+        <Link href="/login" className={`mx-auto text-sm ${TEXT_LINK}`}>
+          {t('goToLogin')}
         </Link>
-      </main>
+      </AuthShell>
     );
   }
 
   if (!user) return null; // redirect already in flight
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6 py-12">
-      <h1 className="text-start text-2xl font-bold text-text">{t('title')}</h1>
+    <AuthShell>
+      <h1 className="type-h1 text-start text-text">{t('title')}</h1>
 
       <Card>
         <dl className="flex flex-col gap-4 text-start">
-          <div>
+          <div className="flex flex-col gap-0.5">
             <dt className="text-xs font-medium text-text-muted">{t('fullName')}</dt>
-            <dd className="text-base text-text">{user.fullName}</dd>
+            <dd className="text-base font-medium text-text [overflow-wrap:anywhere]">{user.fullName}</dd>
           </div>
-          <div>
+          <div className="flex flex-col gap-0.5">
             <dt className="text-xs font-medium text-text-muted">{t('email')}</dt>
-            <dd className="text-base text-text">{user.email}</dd>
+            <dd dir="ltr" className="w-fit max-w-full text-base text-text [overflow-wrap:anywhere]">
+              {user.email}
+            </dd>
           </div>
-          <div>
+          <div className="flex flex-col gap-1">
             <dt className="text-xs font-medium text-text-muted">{t('role')}</dt>
-            <dd className="text-base text-text">
-              <span className="inline-flex items-center rounded-full bg-accent-light px-2.5 py-0.5 text-sm font-medium text-accent-dark">
-                {tRoles(user.role)}
-              </span>
+            <dd>
+              {/* The one gold element on this screen. */}
+              <Badge tone="accent">{tRoles(user.role)}</Badge>
             </dd>
           </div>
         </dl>
       </Card>
 
+      {/* Where this account's work actually happens. */}
       <div className="flex flex-col gap-3">
-        <Button type="button" variant="secondary" onClick={onLogout} disabled={loggingOut}>
+        {user.role === 'ATTENDEE' ? (
+          <>
+            <Button href="/events" icon={<CalendarIcon />} className="w-full">
+              {t('browseEvents')}
+            </Button>
+            <Button href="/bookings" variant="secondary" icon={<TicketIcon />} className="w-full">
+              {t('myBookings')}
+            </Button>
+          </>
+        ) : (
+          <Button href={HOME_BY_ROLE[user.role]} icon={<GridIcon />} className="w-full">
+            {t('dashboard')}
+          </Button>
+        )}
+        <Button type="button" variant="ghost" onClick={onLogout} loading={loggingOut} className="w-full">
           {loggingOut ? t('loggingOut') : t('logout')}
         </Button>
-        <Link href="/" className="text-center text-sm font-medium text-primary hover:underline">
-          {t('backHome')}
-        </Link>
       </div>
-    </main>
+    </AuthShell>
   );
 }

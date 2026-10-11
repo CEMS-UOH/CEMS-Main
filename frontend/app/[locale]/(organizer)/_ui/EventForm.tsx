@@ -10,7 +10,7 @@ import FormMessage from '@/components/FormMessage';
 import { useRouter } from '@/i18n/navigation';
 import type { ApiResult } from '@/lib/api';
 import Button from '@/components/Button';
-import { SelectField, TextAreaField, TextField } from '../../_dashboard/ui/Field';
+import { SelectField, TextAreaField, TextField } from '@/components/FormField';
 import { campusInputToIso, isoToCampusInput } from '../../_dashboard/lib/campusTime';
 import type { Category, EventInput, OrganizerEvent, Venue } from '../../_dashboard/lib/types';
 import { useDashboardError } from '../../_dashboard/lib/useDashboardError';
@@ -321,7 +321,7 @@ export default function EventForm({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" loading={submitting}>
             {submitting ? tCommon('saving') : submitLabel}
           </Button>
           <Button

@@ -8,17 +8,18 @@ import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
+import PageHeader from '@/components/PageHeader';
 import { Link, useRouter } from '@/i18n/navigation';
 import { listBookings, type Booking } from '../_lib/attendee-api';
 import { useEventDates } from '../_lib/format';
 import { canGiveFeedback, groupBookings, type BookingTab } from '../_lib/rules';
 import { useSession } from '../_lib/session';
-import { FOCUS_RING, TEXT_LINK } from '../_lib/styles';
+import { FOCUS_RING } from '@/components/styles';
 import { useQuery } from '../_lib/useQuery';
 import { BookingBadge } from '../_ui/Badges';
 import CancelBooking from '../_ui/CancelBooking';
 import FeedbackForm from '../_ui/FeedbackForm';
-import { CalendarIcon, PinIcon, TicketIcon } from '../_ui/Icons';
+import { CalendarIcon, PinIcon, TicketIcon } from '@/components/Icons';
 import { EmptyState, ErrorState, LoadingBlock } from '../_ui/States';
 import TicketDialog from '../_ui/TicketDialog';
 
@@ -52,12 +53,14 @@ export default function MyBookingsPage() {
 
   if (!isAttendee) {
     return (
-      <Card className="flex flex-col gap-2 text-start">
-        <h1 className="text-xl font-bold text-text">{t('attendeesOnlyTitle')}</h1>
+      <Card className="mx-auto flex w-full max-w-md flex-col gap-2 text-start">
+        <h1 className="type-h2 text-text">{t('attendeesOnlyTitle')}</h1>
         <p className="text-sm text-text-muted">{t('attendeesOnlyBody')}</p>
-        <Link href="/me" className={`mt-2 w-fit text-sm ${TEXT_LINK}`}>
-          {t('goToAccount')}
-        </Link>
+        <div className="pt-3">
+          <Button href="/me" variant="secondary">
+            {t('goToAccount')}
+          </Button>
+        </div>
       </Card>
     );
   }
@@ -70,11 +73,8 @@ export default function MyBookingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1 text-start">
-        <h1 className="text-2xl font-bold text-text sm:text-3xl">{t('title')}</h1>
-        <p className="text-sm text-text-muted sm:text-base">{t('subtitle')}</p>
-      </header>
+    <div className="flex flex-col gap-8">
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
 
       {notice ? <FormMessage kind="success">{t('cancelledNotice')}</FormMessage> : null}
 
@@ -91,9 +91,9 @@ export default function MyBookingsPage() {
               <EmptyState
                 title={t(`empty.${tab}`)}
                 action={
-                  <Link href="/events" className={TEXT_LINK}>
+                  <Button href="/events" variant="secondary">
                     {t('browse')}
-                  </Link>
+                  </Button>
                 }
               />
             ) : (
@@ -149,7 +149,7 @@ function Tabs({
       role="tablist"
       aria-label={t('label')}
       onKeyDown={onKeyDown}
-      className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1"
+      className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1 shadow-[var(--shadow-card)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {TABS.map((key) => {
         const selected = key === tab;
@@ -163,13 +163,13 @@ function Tabs({
             aria-controls={`bookings-panel-${key}`}
             tabIndex={selected ? 0 : -1}
             onClick={() => onTab(key)}
-            className={`flex flex-1 shrink-0 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150 ${FOCUS_RING} ${
-              selected ? 'bg-primary text-white shadow-[var(--shadow-card)]' : 'text-text-muted hover:bg-background hover:text-text'
+            className={`flex min-h-10 flex-1 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150 ${FOCUS_RING} ${
+              selected ? 'bg-primary text-white' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
             }`}
           >
             {t(key)}
             <span
-              className={`rounded-full px-2 text-xs ${selected ? 'bg-white/20 text-white' : 'bg-background text-text-muted'}`}
+              className={`rounded-full px-2 text-xs tabular-nums ${selected ? 'bg-white/20 text-white' : 'bg-background text-text-muted'}`}
             >
               {counts[key]}
             </span>
@@ -226,12 +226,12 @@ function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthentic
             {linkable ? (
               <Link
                 href={`/events/${booking.event.id}`}
-                className={`w-fit rounded-sm text-base font-bold text-text hover:text-primary-dark hover:underline ${FOCUS_RING}`}
+                className={`type-h3 w-fit rounded-sm text-text underline-offset-4 transition-colors duration-150 hover:text-primary hover:underline ${FOCUS_RING}`}
               >
                 {booking.event.title}
               </Link>
             ) : (
-              <p className="text-base font-bold text-text">{booking.event.title}</p>
+              <p className="type-h3 text-text">{booking.event.title}</p>
             )}
             <p className="flex items-start gap-2 text-sm text-text-muted">
               <CalendarIcon className="mt-0.5 size-4 shrink-0" />
@@ -250,8 +250,7 @@ function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthentic
 
         <div className="flex flex-wrap items-start gap-2 sm:shrink-0 sm:flex-col sm:items-end">
           {showTicket ? (
-            <Button type="button" size="sm" onClick={onShowTicket}>
-              <TicketIcon />
+            <Button type="button" size="sm" icon={<TicketIcon />} onClick={onShowTicket}>
               {t('showTicket')}
             </Button>
           ) : null}

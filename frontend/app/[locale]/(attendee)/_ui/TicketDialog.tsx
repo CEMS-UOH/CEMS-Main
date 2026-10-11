@@ -7,8 +7,8 @@ import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
 import type { Booking } from '../_lib/attendee-api';
 import { useEventDates } from '../_lib/format';
-import { FOCUS_RING } from '../_lib/styles';
-import { CalendarIcon, CheckIcon, CloseIcon, PinIcon, TicketIcon } from './Icons';
+import { FOCUS_RING } from '@/components/styles';
+import { CalendarIcon, CheckIcon, CloseIcon, PinIcon, TicketIcon } from '@/components/Icons';
 import QrCode from './QrCode';
 
 type TicketBooking = Pick<Booking, 'qrCode' | 'checkedInAt'> & {
@@ -42,12 +42,12 @@ export default function TicketDialog({ booking, onClose }: Props) {
       onClick={(e) => {
         if (e.target === e.currentTarget) e.currentTarget.close();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-lg bg-surface p-0 text-text shadow-[var(--shadow-card-hover)] backdrop:bg-primary-dark/60"
+      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-lg border border-border bg-surface p-0 text-text shadow-[var(--shadow-card-hover)] backdrop:bg-primary-dark/60 open:animate-rise"
     >
       {booking?.qrCode ? (
         <div className="flex flex-col gap-5 p-5 text-start">
           <div className="flex items-center justify-between gap-3">
-            <h2 id="ticket-title" className="flex items-center gap-2 text-lg font-bold">
+            <h2 id="ticket-title" className="type-h3 flex items-center gap-2">
               <TicketIcon className="size-5 text-primary" />
               {t('title')}
             </h2>
@@ -55,14 +55,14 @@ export default function TicketDialog({ booking, onClose }: Props) {
               type="button"
               onClick={() => ref.current?.close()}
               aria-label={t('close')}
-              className={`grid size-9 place-items-center rounded-lg text-text-muted hover:bg-background hover:text-text ${FOCUS_RING}`}
+              className={`grid size-9 cursor-pointer place-items-center rounded-lg text-text-muted transition-colors duration-150 hover:bg-primary-light hover:text-primary-dark ${FOCUS_RING}`}
             >
               <CloseIcon className="size-5" />
             </button>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <p className="text-base font-bold">{booking.event.title}</p>
+            <p className="type-h3">{booking.event.title}</p>
             <p className="flex items-start gap-2 text-sm text-text-muted">
               <CalendarIcon className="mt-0.5 size-4 shrink-0" />
               {dates.range(booking.event.startsAt, booking.event.endsAt)}

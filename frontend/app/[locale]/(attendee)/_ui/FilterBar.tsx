@@ -3,11 +3,12 @@
 // FR-04: search and filter the feed. Category, venue and day are sent to the API; the text
 // search runs over the loaded events (the API has no text search parameter yet).
 import { useTranslations } from 'next-intl';
+import Button from '@/components/Button';
 import Card from '@/components/Card';
+import { CONTROL, SelectField, TextField } from '@/components/FormField';
+import { CloseIcon, SearchIcon } from '@/components/Icons';
 import type { Category, Venue } from '../_lib/attendee-api';
 import type { FeedFilters } from '../_lib/rules';
-import { FOCUS_RING, INPUT } from '../_lib/styles';
-import { SearchIcon } from './Icons';
 
 type Props = {
   filters: FeedFilters;
@@ -18,8 +19,6 @@ type Props = {
   onClear: () => void;
   canClear: boolean;
 };
-
-const LABEL = 'text-xs font-medium text-text-muted';
 
 export default function FilterBar({ filters, options, search, onSearch, onFilter, onClear, canClear }: Props) {
   const t = useTranslations('Events.filters');
@@ -38,71 +37,49 @@ export default function FilterBar({ filters, options, search, onSearch, onFilter
           onChange={(e) => onSearch(e.target.value)}
           placeholder={t('searchPlaceholder')}
           autoComplete="off"
-          className={`${INPUT} ps-10`}
+          className={`${CONTROL} ps-10`}
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="filter-category" className={LABEL}>
-            {t('category')}
-          </label>
-          <select
-            id="filter-category"
-            value={filters.category}
-            onChange={(e) => onFilter({ category: e.target.value })}
-            className={INPUT}
-          >
-            <option value="">{t('allCategories')}</option>
-            {options.categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="filter-venue" className={LABEL}>
-            {t('venue')}
-          </label>
-          <select
-            id="filter-venue"
-            value={filters.venue}
-            onChange={(e) => onFilter({ venue: e.target.value })}
-            className={INPUT}
-          >
-            <option value="">{t('allVenues')}</option>
-            {options.venues.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.building ? `${v.name} - ${v.building}` : v.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="filter-date" className={LABEL}>
-            {t('date')}
-          </label>
-          <input
-            id="filter-date"
-            type="date"
-            value={filters.date}
-            onChange={(e) => onFilter({ date: e.target.value })}
-            className={INPUT}
-          />
-        </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <SelectField
+          id="filter-category"
+          label={t('category')}
+          value={filters.category}
+          onChange={(category) => onFilter({ category })}
+          options={[
+            { value: '', label: t('allCategories') },
+            ...options.categories.map((c) => ({ value: c.id, label: c.name })),
+          ]}
+        />
+        <SelectField
+          id="filter-venue"
+          label={t('venue')}
+          value={filters.venue}
+          onChange={(venue) => onFilter({ venue })}
+          options={[
+            { value: '', label: t('allVenues') },
+            ...options.venues.map((v) => ({
+              value: v.id,
+              label: v.building ? `${v.name} - ${v.building}` : v.name,
+            })),
+          ]}
+        />
+        <TextField
+          id="filter-date"
+          type="date"
+          label={t('date')}
+          value={filters.date}
+          onChange={(date) => onFilter({ date })}
+        />
       </div>
 
       {canClear ? (
-        <button
-          type="button"
-          onClick={onClear}
-          className={`w-fit rounded-sm text-sm font-medium text-primary hover:underline ${FOCUS_RING}`}
-        >
-          {t('clear')}
-        </button>
+        <div>
+          <Button type="button" variant="ghost" size="sm" icon={<CloseIcon />} onClick={onClear}>
+            {t('clear')}
+          </Button>
+        </div>
       ) : null}
     </Card>
   );

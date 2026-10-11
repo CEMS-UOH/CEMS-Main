@@ -2,13 +2,14 @@
 
 // One event in the feed (FR-03). The whole card is a single link to the event page (FR-09).
 import { useTranslations } from 'next-intl';
+import { cardClasses } from '@/components/Card';
+import { CalendarIcon, PinIcon } from '@/components/Icons';
+import { FOCUS_RING } from '@/components/styles';
 import { Link } from '@/i18n/navigation';
 import type { AttendeeEvent } from '../_lib/attendee-api';
 import { useEventDates } from '../_lib/format';
-import { FOCUS_RING } from '../_lib/styles';
 import { CategoryBadge, SeatsBadge } from './Badges';
 import EventImage from './EventImage';
-import { CalendarIcon, PinIcon } from './Icons';
 
 export default function EventCard({ event }: { event: AttendeeEvent }) {
   const t = useTranslations('AttendeeCommon');
@@ -18,7 +19,7 @@ export default function EventCard({ event }: { event: AttendeeEvent }) {
   return (
     <Link
       href={`/events/${event.id}`}
-      className={`group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card)] transition-shadow duration-150 hover:shadow-[var(--shadow-card-hover)] ${FOCUS_RING}`}
+      className={`group flex w-full flex-col overflow-hidden ${cardClasses({ padded: false, interactive: true })} ${FOCUS_RING}`}
     >
       <div className="relative">
         <EventImage src={event.imageUrl} alt="" className="aspect-[16/9] w-full" />
@@ -37,7 +38,7 @@ export default function EventCard({ event }: { event: AttendeeEvent }) {
           <SeatsBadge event={event} />
         </div>
 
-        <h3 className="line-clamp-2 text-lg font-bold text-text group-hover:text-primary-dark">
+        <h3 className="type-h3 line-clamp-2 text-text transition-colors duration-150 group-hover:text-primary">
           {event.title}
         </h3>
 

@@ -2,13 +2,41 @@
   "Home": {
     "title": "Smart Campus Event Manager System",
     "subtitle": "University of Hail — Graduation Project 2",
-    "apiChecking": "Checking server connection…",
-    "apiUp": "Server is up",
-    "apiDown": "Cannot reach the server",
     "switchLanguage": "العربية",
     "login": "Log in",
     "register": "Create account",
-    "myAccount": "My account"
+    "myAccount": "My account",
+    "metaDescription": "Discover events at the University of Hail, book a seat and enter with a QR ticket.",
+    "university": "University of Hail",
+    "headline": "Every campus event, in one place.",
+    "lead": "Discover what's happening at the University of Hail, book your seat in seconds and walk in with a QR ticket.",
+    "browse": "Browse events",
+    "dashboard": "Dashboard",
+    "footerNav": "Footer",
+    "features": {
+      "title": "One system for the whole event",
+      "subtitle": "From the first announcement to the last seat.",
+      "discover": {
+        "title": "Discover",
+        "body": "Browse upcoming events and filter them by category, venue or day."
+      },
+      "book": {
+        "title": "Book and attend",
+        "body": "Reserve a seat, keep your QR ticket on your phone, and cancel if your plans change."
+      },
+      "organize": {
+        "title": "Organize",
+        "body": "Organizers publish events and follow bookings; admins review every event before it goes live."
+      }
+    },
+    "upcoming": {
+      "title": "Coming up",
+      "subtitle": "The next events open for booking.",
+      "loading": "Loading upcoming events…",
+      "emptyTitle": "No upcoming events yet",
+      "emptyBody": "New events appear here as soon as they are approved.",
+      "seeAll": "See all events"
+    }
   },
   "Register": {
     "title": "Create account",
@@ -41,7 +69,10 @@
     "role": "Role",
     "logout": "Log out",
     "loggingOut": "Logging out…",
-    "backHome": "Home"
+    "goToLogin": "Go to log in",
+    "browseEvents": "Browse events",
+    "myBookings": "My bookings",
+    "dashboard": "Go to my dashboard"
   },
   "Roles": {
     "ATTENDEE": "Attendee",
@@ -279,6 +310,13 @@
       "sending": "Sending…",
       "sent": "The announcement was sent. Recipients: {count}"
     }
+  },
+  "NotFound": {
+    "code": "Error 404",
+    "title": "Page not found",
+    "body": "The page you are looking for does not exist or has been moved.",
+    "home": "Back to home",
+    "events": "Browse events"
   },
   "Errors": {
     "INVALID_EMAIL": "Enter a valid email address",

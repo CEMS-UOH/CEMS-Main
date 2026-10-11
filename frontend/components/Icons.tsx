@@ -1,4 +1,5 @@
-// Small inline icons for the attendee screens (24px grid, stroke = currentColor).
+// Small inline icons for every screen (24px grid, stroke = currentColor). One set, so the
+// attendee, organizer and admin areas never drift apart.
 // Decorative: every icon sits next to text that says the same thing, so they are aria-hidden.
 
 type Props = { className?: string };
@@ -115,6 +116,96 @@ export function StarIcon({ className = 'size-6', filled }: Props & { filled: boo
   return (
     <svg {...base} strokeWidth={1.5} fill={filled ? 'currentColor' : 'none'} className={className}>
       <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8Z" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+/** Something went wrong: used by the shared error state. */
+export function AlertIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 4 3 19.5h18L12 4Z" />
+      <path d="M12 10v4.5M12 17.2v.3" />
+    </svg>
+  );
+}
+
+/** Nothing here yet: used by the shared empty state. */
+export function InboxIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3.5 13.5 6 5.5h12l2.5 8v4a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5v-4Z" />
+      <path d="M3.5 13.5h4.7a1 1 0 0 1 .9.6 3.2 3.2 0 0 0 5.8 0 1 1 0 0 1 .9-.6h4.7" />
+    </svg>
+  );
+}
+
+/** Lost: used by the not-found page. */
+export function CompassIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="m15.2 8.8-1.9 4.5-4.5 1.9 1.9-4.5 4.5-1.9Z" />
+    </svg>
+  );
+}
+
+/** Dashboard sections. */
+export function GridIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+      <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+    </svg>
+  );
+}
+
+export function UsersIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="9" cy="8.5" r="3.2" />
+      <path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5" />
+      <path d="M16 5.7a3.2 3.2 0 0 1 0 5.6M18 14.6c1.6.7 2.6 2.2 3 4.4" />
+    </svg>
+  );
+}
+
+export function TagIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h6l8.5 8.5-7.5 7.5L4 11.5v-6Z" />
+      <circle cx="8.5" cy="8.5" r="1.3" />
+    </svg>
+  );
+}
+
+export function MegaphoneIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 10v4a1 1 0 0 0 1 1h2.5l7.5 4V5l-7.5 4H5a1 1 0 0 0-1 1Z" />
+      <path d="M18 9.5a3.5 3.5 0 0 1 0 5" />
+    </svg>
+  );
+}
+
+/**
+ * Loading. The only icon that moves, and it keeps moving for people who ask for reduced
+ * motion: a frozen spinner reads as a broken icon, not as "working".
+ */
+export function SpinnerIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} strokeWidth={2.2} className={`${className} animate-spin`}>
+      <path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5" />
     </svg>
   );
 }
