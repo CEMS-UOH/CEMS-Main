@@ -13,6 +13,16 @@ const newQrToken = () => crypto.randomBytes(24).toString('base64url');
 
 const NOT_FOUND = () => new HttpError(404, 'Event not found', 'EVENT_NOT_FOUND');
 
+// TEMPORARY MITIGATION - remove once the database is moved to a closer region.
+// The Supabase database is hosted in Seoul (ap-northeast-2), and from Saudi Arabia each query
+// takes about 1.5-2 seconds. The booking transaction below runs up to nine queries, so it
+// could never finish inside Prisma's default 5-second transaction timeout: every booking
+// failed with P2028 ("Transaction not found") and the API answered 500. These limits give
+// it room to finish. They do not make booking fast - the real fix is the database region.
+//   timeout: how long the whole transaction may run.
+//   maxWait: how long to wait for a free connection before it starts.
+const BOOKING_TX_OPTIONS = { timeout: 30000, maxWait: 10000 };
+
 /**
  * FR-05 + FR-06: book one seat and notify the attendee, all in one transaction.
  *
@@ -111,7 +121,7 @@ async function book({ userId, eventId }) {
       }
 
       return toPublicBooking(booking);
-    });
+    }, BOOKING_TX_OPTIONS);
   } catch (e) {
     // Belt and braces: the row lock already serialises bookings, but if two requests from the
     // same attendee still race to create the row, the unique index rejects the second one.
