@@ -1,5 +1,5 @@
-// Plain label + input pair. Styling is intentionally minimal - the real design comes
-// from Figma (Role 7). Uses logical classes only so it flips for RTL and LTR.
+// Label + input pair, styled to the SCEMS palette (globals.css tokens).
+// Uses logical classes only so it flips correctly for RTL and LTR.
 
 type Props = {
   id: string;
@@ -26,7 +26,7 @@ export default function FormField({
 }: Props) {
   return (
     <div className="flex flex-col gap-1 text-start">
-      <label htmlFor={id} className="text-sm font-medium">
+      <label htmlFor={id} className="text-sm font-medium text-text">
         {label}
       </label>
       <input
@@ -39,10 +39,10 @@ export default function FormField({
         required={required}
         disabled={disabled}
         aria-describedby={hint ? `${id}-hint` : undefined}
-        className="rounded border border-slate-300 px-3 py-2 text-start disabled:bg-slate-100"
+        className="rounded-lg border border-border bg-surface px-3 py-2.5 text-start text-text outline-none transition-colors duration-150 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-text-muted"
       />
       {hint ? (
-        <p id={`${id}-hint`} className="text-xs text-slate-500">
+        <p id={`${id}-hint`} className="text-xs text-text-muted">
           {hint}
         </p>
       ) : null}
