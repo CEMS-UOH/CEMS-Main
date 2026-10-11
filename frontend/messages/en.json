@@ -59,5 +59,116 @@
     "FORBIDDEN": "You do not have permission to perform this action",
     "NETWORK": "Cannot reach the server. Check your connection and try again.",
     "UNKNOWN": "Something went wrong. Please try again."
+  },
+  "Role5": {
+    "brand": "Smart Campus Event Manager System",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "approvals": "Event approvals",
+      "analytics": "Analytics",
+      "notifications": "Notifications",
+      "events": "My events",
+      "newEvent": "New event",
+      "attendees": "Attendees",
+      "account": "My account"
+    },
+    "common": {
+      "loading": "Loading…",
+      "empty": "Nothing to show yet",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Confirm delete",
+      "back": "Back",
+      "actions": "Actions",
+      "logout": "Log out",
+      "mockBanner": "Demo mode: this page shows sample data until the API is ready."
+    },
+    "admin": {
+      "dashboardTitle": "Admin dashboard",
+      "usersTotal": "Total users",
+      "usersActive": "Active users",
+      "eventsPending": "Pending events",
+      "eventsApproved": "Approved events",
+      "notificationsUnread": "Unread notifications",
+      "usersTitle": "User management",
+      "fullName": "Full name",
+      "email": "Email",
+      "role": "Role",
+      "active": "Active",
+      "yes": "Yes",
+      "no": "No",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "approvalsTitle": "Events awaiting approval",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "organizer": {
+      "title": "My events",
+      "createTitle": "Create event",
+      "editTitle": "Edit event"
+    },
+    "event": {
+      "title": "Title",
+      "description": "Description",
+      "category": "Category",
+      "venue": "Venue",
+      "noVenue": "No venue",
+      "startsAt": "Starts at",
+      "endsAt": "Ends at",
+      "capacity": "Capacity",
+      "registered": "Registered",
+      "status": "Status"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "registration": {
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    },
+    "attendees": {
+      "title": "Attendees: {title}",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "checkedIn": "Checked in",
+      "notCheckedIn": "Not checked in"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markRead": "Mark as read",
+      "read": "Read"
+    },
+    "notificationType": {
+      "BOOKING_CONFIRMATION": "Booking confirmation",
+      "CAPACITY_FULL": "Capacity full",
+      "BROADCAST": "Announcement",
+      "SYSTEM": "System"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "from": "From",
+      "to": "To",
+      "allCategories": "All categories",
+      "byCategory": "Category",
+      "apply": "Apply",
+      "attendanceCount": "Actual attendance",
+      "registeredVsCheckedIn": "Registered vs. checked in",
+      "legend": "Registered Attendees compared with those who checked in",
+      "prediction": "Predicted attendance"
+    },
+    "errors": {
+      "NOT_FOUND": "This item was not found",
+      "INVALID_STATUS": "Only pending events can be approved or rejected",
+      "VALIDATION": "Check the event details and try again"
+    }
   }
 }

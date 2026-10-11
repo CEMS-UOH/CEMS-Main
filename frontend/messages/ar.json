@@ -59,5 +59,116 @@
     "FORBIDDEN": "ليست لديك صلاحية للقيام بهذا الإجراء",
     "NETWORK": "تعذّر الاتصال بالخادم. تحقق من اتصالك وحاول مرة أخرى.",
     "UNKNOWN": "حدث خطأ غير متوقع. حاول مرة أخرى."
+  },
+  "Role5": {
+    "brand": "نظام إدارة فعاليات الحرم الجامعي الذكي",
+    "nav": {
+      "dashboard": "لوحة التحكم",
+      "users": "المستخدمون",
+      "approvals": "اعتماد الفعاليات",
+      "analytics": "التحليلات",
+      "notifications": "الإشعارات",
+      "events": "فعالياتي",
+      "newEvent": "فعالية جديدة",
+      "attendees": "الحضور",
+      "account": "حسابي"
+    },
+    "common": {
+      "loading": "جارٍ التحميل…",
+      "empty": "لا يوجد شيء لعرضه بعد",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "cancel": "إلغاء",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "confirmDelete": "تأكيد الحذف",
+      "back": "رجوع",
+      "actions": "الإجراءات",
+      "logout": "تسجيل الخروج",
+      "mockBanner": "وضع تجريبي: تعرض هذه الصفحة بيانات تجريبية حتى تجهز واجهة البرمجة."
+    },
+    "admin": {
+      "dashboardTitle": "لوحة تحكم المشرف",
+      "usersTotal": "إجمالي المستخدمين",
+      "usersActive": "المستخدمون النشطون",
+      "eventsPending": "فعاليات بانتظار الاعتماد",
+      "eventsApproved": "فعاليات معتمدة",
+      "notificationsUnread": "إشعارات غير مقروءة",
+      "usersTitle": "إدارة المستخدمين",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "role": "الدور",
+      "active": "نشط",
+      "yes": "نعم",
+      "no": "لا",
+      "activate": "تفعيل",
+      "deactivate": "تعطيل",
+      "approvalsTitle": "فعاليات بانتظار الاعتماد",
+      "approve": "اعتماد",
+      "reject": "رفض"
+    },
+    "organizer": {
+      "title": "فعالياتي",
+      "createTitle": "إنشاء فعالية",
+      "editTitle": "تعديل الفعالية"
+    },
+    "event": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "category": "التصنيف",
+      "venue": "المكان",
+      "noVenue": "بدون مكان",
+      "startsAt": "يبدأ في",
+      "endsAt": "ينتهي في",
+      "capacity": "السعة",
+      "registered": "المسجّلون",
+      "status": "الحالة"
+    },
+    "status": {
+      "PENDING": "بانتظار الاعتماد",
+      "APPROVED": "معتمدة",
+      "REJECTED": "مرفوضة",
+      "CANCELLED": "ملغاة"
+    },
+    "registration": {
+      "CONFIRMED": "مؤكد",
+      "CANCELLED": "ملغى"
+    },
+    "attendees": {
+      "title": "الحضور: {title}",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "status": "الحالة",
+      "checkedIn": "تم تسجيل الحضور",
+      "notCheckedIn": "لم يسجّل الحضور"
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "markRead": "تعليم كمقروء",
+      "read": "مقروء"
+    },
+    "notificationType": {
+      "BOOKING_CONFIRMATION": "تأكيد الحجز",
+      "CAPACITY_FULL": "اكتمال السعة",
+      "BROADCAST": "إعلان",
+      "SYSTEM": "النظام"
+    },
+    "analytics": {
+      "title": "التحليلات",
+      "from": "من",
+      "to": "إلى",
+      "allCategories": "كل التصنيفات",
+      "byCategory": "التصنيف",
+      "apply": "تطبيق",
+      "attendanceCount": "الحضور الفعلي",
+      "registeredVsCheckedIn": "المسجّلون مقابل الحاضرين",
+      "legend": "عدد المسجّلين مقارنة بمن سجّلوا حضورهم",
+      "prediction": "الحضور المتوقع"
+    },
+    "errors": {
+      "NOT_FOUND": "العنصر غير موجود",
+      "INVALID_STATUS": "يمكن اعتماد أو رفض الفعاليات المعلّقة فقط",
+      "VALIDATION": "تحقق من بيانات الفعالية وحاول مرة أخرى"
+    }
   }
 }
