@@ -4,9 +4,8 @@
 // the API says are allowed right now (canEdit / canDelete come from the backend).
 import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
-import { useRouter } from '@/i18n/navigation';
 import Badge from '../../_dashboard/ui/Badge';
-import Button from '../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { Meta, MetaList } from '../../_dashboard/ui/Meta';
 import { EventStatusBadge } from '../../_dashboard/ui/StatusBadges';
@@ -23,7 +22,6 @@ export default function EventCard({ event, deleting, onDelete }: Props) {
   const t = useTranslations('Organizer');
   const tCommon = useTranslations('Dashboard');
   const format = useFormatter();
-  const router = useRouter();
 
   const filled = event.capacity > 0 ? Math.min(100, (event.seatsTaken / event.capacity) * 100) : 0;
 
@@ -60,19 +58,11 @@ export default function EventCard({ event, deleting, onDelete }: Props) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => router.push(`/organizer/events/${event.id}/attendees`)}
-        >
+        <Button variant="secondary" size="sm" href={`/organizer/events/${event.id}/attendees`}>
           {t('attendees')}
         </Button>
         {event.canEdit ? (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => router.push(`/organizer/events/${event.id}/edit`)}
-          >
+          <Button variant="secondary" size="sm" href={`/organizer/events/${event.id}/edit`}>
             {tCommon('edit')}
           </Button>
         ) : null}

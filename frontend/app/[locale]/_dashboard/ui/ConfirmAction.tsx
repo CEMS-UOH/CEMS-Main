@@ -5,7 +5,7 @@
 // Keyboard focus follows the swap in both directions so it is never dropped.
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import Button from './Button';
+import Button from '@/components/Button';
 
 type Props = {
   /** The initial, calm button, e.g. "Delete". */
@@ -57,10 +57,11 @@ export default function ConfirmAction({
       {asking ? (
         <>
           <span className="text-sm text-text">{question}</span>
-          <Button variant="danger" size="sm" disabled={busy} onClick={onConfirm}>
+          <Button type="button" variant="danger" size="sm" disabled={busy} onClick={onConfirm}>
             {busy ? busyLabel : confirmLabel}
           </Button>
           <Button
+            type="button"
             data-confirm-cancel=""
             variant="ghost"
             size="sm"
@@ -72,6 +73,7 @@ export default function ConfirmAction({
         </>
       ) : (
         <Button
+          type="button"
           data-confirm-trigger=""
           variant="ghost"
           size="sm"

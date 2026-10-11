@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
-import Button from '../../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import ConfirmAction from '../../../_dashboard/ui/ConfirmAction';
 import { TextField } from '../../../_dashboard/ui/Field';
 import PageHeader from '../../../_dashboard/ui/PageHeader';
@@ -207,6 +207,7 @@ export default function AdminCategoriesPage() {
                         {savingEdit ? tCommon('saving') : tCommon('save')}
                       </Button>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         disabled={savingEdit}

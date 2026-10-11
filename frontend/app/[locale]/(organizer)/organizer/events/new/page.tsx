@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
-import { Link, useRouter } from '@/i18n/navigation';
-import Button from '../../../../_dashboard/ui/Button';
+import { Link } from '@/i18n/navigation';
+import Button from '@/components/Button';
 import { TEXT_LINK } from '../../../../_dashboard/ui/focus';
 import PageHeader from '../../../../_dashboard/ui/PageHeader';
 import { ErrorState, LoadingState } from '../../../../_dashboard/ui/States';
@@ -18,7 +18,6 @@ import EventForm from '../../../_ui/EventForm';
 export default function NewEventPage() {
   const t = useTranslations('Organizer.form');
   const tNav = useTranslations('Organizer');
-  const router = useRouter();
 
   const [created, setCreated] = useState(false);
   // Remounts the form with empty fields for "Create another".
@@ -41,7 +40,7 @@ export default function NewEventPage() {
         <Card className="flex flex-col gap-4">
           <FormMessage kind="success">{t('created')}</FormMessage>
           <div className="flex flex-wrap items-center gap-2">
-            <Button onClick={() => router.push('/organizer')}>{tNav('backToEvents')}</Button>
+            <Button href="/organizer">{tNav('backToEvents')}</Button>
             <Button
               variant="secondary"
               onClick={() => {

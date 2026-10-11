@@ -9,7 +9,7 @@ import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import { useRouter } from '@/i18n/navigation';
 import type { ApiResult } from '@/lib/api';
-import Button from '../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import { SelectField, TextAreaField, TextField } from '../../_dashboard/ui/Field';
 import { campusInputToIso, isoToCampusInput } from '../../_dashboard/lib/campusTime';
 import type { Category, EventInput, OrganizerEvent, Venue } from '../../_dashboard/lib/types';
@@ -324,7 +324,12 @@ export default function EventForm({
           <Button type="submit" disabled={submitting}>
             {submitting ? tCommon('saving') : submitLabel}
           </Button>
-          <Button variant="ghost" disabled={submitting} onClick={() => router.push('/organizer')}>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={submitting}
+            onClick={() => router.push('/organizer')}
+          >
             {tCommon('cancel')}
           </Button>
         </div>

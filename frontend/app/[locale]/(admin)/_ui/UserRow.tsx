@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import type { PublicUser } from '@/lib/api';
 import Badge from '../../_dashboard/ui/Badge';
-import Button from '../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { SelectField } from '../../_dashboard/ui/Field';
 import { DATE_FORMAT } from '../../_dashboard/lib/campusTime';

@@ -5,9 +5,8 @@
 import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import FormMessage from '@/components/FormMessage';
-import { useRouter } from '@/i18n/navigation';
 import type { ApiResult } from '@/lib/api';
-import Button from '../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import { SelectField } from '../../_dashboard/ui/Field';
 import PageHeader from '../../_dashboard/ui/PageHeader';
 import Pagination from '../../_dashboard/ui/Pagination';
@@ -53,7 +52,6 @@ export default function OrganizerDashboardPage() {
   const tStatus = useTranslations('Dashboard.eventStatus');
   const format = useFormatter();
   const errorMessage = useDashboardError();
-  const router = useRouter();
 
   const [status, setStatus] = useState<EventStatus | ''>('');
   const [page, setPage] = useState(1);
@@ -82,14 +80,12 @@ export default function OrganizerDashboardPage() {
     else list.reload();
   }
 
-  const goToNewEvent = () => router.push('/organizer/events/new');
-
   return (
     <>
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        actions={<Button onClick={goToNewEvent}>{t('newEvent')}</Button>}
+        actions={<Button href="/organizer/events/new">{t('newEvent')}</Button>}
       />
 
       <section aria-label={t('statsLabel')}>
@@ -141,7 +137,7 @@ export default function OrganizerDashboardPage() {
             <EmptyState
               title={t('emptyTitle')}
               body={t('emptyBody')}
-              action={<Button onClick={goToNewEvent}>{t('newEvent')}</Button>}
+              action={<Button href="/organizer/events/new">{t('newEvent')}</Button>}
             />
           )
         ) : (

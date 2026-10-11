@@ -4,7 +4,7 @@
 import { useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
-import Button from './Button';
+import Button from '@/components/Button';
 import { useDashboardError } from '../lib/useDashboardError';
 
 export function LoadingState({ label }: { label?: string }) {

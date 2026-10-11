@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
-import Button from '../../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import { TextAreaField, TextField } from '../../../_dashboard/ui/Field';
 import PageHeader from '../../../_dashboard/ui/PageHeader';
 import { useDashboardError } from '../../../_dashboard/lib/useDashboardError';
@@ -99,10 +99,15 @@ export default function AdminBroadcastPage() {
             >
               <p className="text-start text-sm font-medium text-text">{t('confirm')}</p>
               <div className="flex flex-wrap items-center gap-2">
-                <Button disabled={sending} onClick={onSend}>
+                <Button type="button" disabled={sending} onClick={onSend}>
                   {sending ? t('sending') : t('confirmSend')}
                 </Button>
-                <Button variant="ghost" disabled={sending} onClick={() => setConfirming(false)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={sending}
+                  onClick={() => setConfirming(false)}
+                >
                   {tCommon('cancel')}
                 </Button>
               </div>

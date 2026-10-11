@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Button from './Button';
+import Button from '@/components/Button';
 import type { Pagination as PaginationInfo } from '../lib/types';
 
 type Props = {

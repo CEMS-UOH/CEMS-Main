@@ -4,7 +4,7 @@
 // actions the API allows - approve/reject only while PENDING (FR-17), delete always (FR-22).
 import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
-import Button from '../../_dashboard/ui/Button';
+import Button from '@/components/Button';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { Meta, MetaList } from '../../_dashboard/ui/Meta';
 import { EventStatusBadge } from '../../_dashboard/ui/StatusBadges';
