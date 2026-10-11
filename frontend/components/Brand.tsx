@@ -1,11 +1,11 @@
 // The product mark and name, the same in every header: home page, sign-in pages, the attendee
 // area and both dashboards.
 //
-// The mark is a plain calendar tile in the brand green. It is deliberately NOT the University
-// of Hail crest: no official logo file has been provided, and one must not be imitated.
+// The mark is the team's own logo file, public/logo.webp, shown exactly as supplied - it is
+// only ever scaled, never redrawn. The favicon sizes in app/ are resized copies of that file.
 
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
-import { CalendarIcon } from './Icons';
 import { FOCUS_RING } from './styles';
 
 type Props = {
@@ -26,15 +26,20 @@ export default function Brand({ name, href, compact = false }: Props) {
       href={href}
       className={`group flex items-center gap-2.5 rounded-lg ${compact ? 'max-sm:shrink-0 sm:min-w-0' : 'min-w-0'} ${FOCUS_RING}`}
     >
-      <span
-        aria-hidden
-        className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-white shadow-[var(--shadow-card)] transition-colors duration-150 group-hover:bg-primary-dark"
-      >
-        <CalendarIcon className="size-5" />
-      </span>
+      {/* Decorative here: the product name right beside it says the same thing. `unoptimized`
+          serves the supplied file itself rather than a re-encoded copy. */}
+      <Image
+        src="/logo.webp"
+        alt=""
+        width={48}
+        height={48}
+        unoptimized
+        priority
+        className="size-12 shrink-0"
+      />
       {/* Two short lines on a phone, one line from sm up - never cut off mid-word. */}
       <span
-        className={`text-sm leading-tight font-bold text-primary-dark sm:line-clamp-1 sm:max-w-none sm:text-base ${
+        className={`text-sm leading-tight font-bold text-primary-dark transition-colors duration-150 group-hover:text-primary sm:line-clamp-1 sm:max-w-none sm:text-base ${
           compact ? 'sr-only sm:not-sr-only' : 'line-clamp-2 max-w-40'
         }`}
       >

@@ -1,4 +1,5 @@
 // Home: what the system is, who it is for, and the way in. Public - no session needed.
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { use } from 'react';
@@ -10,7 +11,6 @@ import { CalendarIcon, GridIcon, SearchIcon, TicketIcon } from '@/components/Ico
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import { FRAME, TEXT_LINK } from '@/components/styles';
 import { Link } from '@/i18n/navigation';
-import HeroArt from './_home/HeroArt';
 import HomeAccount from './_home/HomeAccount';
 import UpcomingEvents from './_home/UpcomingEvents';
 
@@ -30,20 +30,61 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="border-b border-border bg-surface">
-        <header className={`${FRAME} flex items-center justify-between gap-3 py-4`}>
+      <header className="border-b border-border bg-surface">
+        <div className={`${FRAME} flex items-center justify-between gap-3 py-3`}>
           <Brand name={t('title')} href="/" />
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <LocaleSwitcher />
             <HomeAccount />
           </div>
-        </header>
+        </div>
+      </header>
 
-        <section
-          aria-labelledby="hero-title"
-          className={`${FRAME} grid items-center gap-12 py-14 sm:py-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16 lg:py-24`}
+      {/*
+        Hero. The picture is the team's own file, public/hero.jpg, used exactly as supplied
+        (`unoptimized` serves that file itself, not a re-encoded copy). The headline and text
+        are real HTML laid over it, never part of the image.
+
+        The picture keeps its open space on the left, so:
+        - in English the text sits on the left, over that space;
+        - in Arabic the picture is mirrored with CSS, which moves the open space to the right,
+          under the Arabic text. The file itself is not changed.
+
+        Phones and tablets: the picture is anchored to the bottom and drawn 2.5x the screen
+        width, so only its open side shows - the two groups of people stand below the text.
+        Desktop: the picture fills the whole hero.
+      */}
+      <section
+        aria-labelledby="hero-title"
+        className="relative isolate overflow-hidden border-b border-border bg-surface"
+      >
+        <div
+          aria-hidden
+          className="absolute start-0 bottom-0 -z-20 aspect-[2000/1116] w-[250%] lg:inset-0 lg:aspect-auto lg:w-auto"
         >
-          <div className="flex flex-col items-start gap-6 text-start">
+          <Image
+            src="/hero.jpg"
+            alt=""
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-cover object-[0%_100%] rtl:-scale-x-100"
+          />
+          {/* Phones and tablets: the picture's top edge melts into the white above it instead
+              of ending in a visible line. */}
+          <div className="absolute inset-x-0 top-0 h-1/3 bg-linear-to-b from-surface to-transparent lg:hidden" />
+        </div>
+        {/* Desktop only: a soft white veil beside the text, fading out sideways over the scene
+            so the end of a long line never sits on the buildings. It also fades out downwards
+            (the mask), well above the people standing at the bottom, so it never covers them. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 hidden from-surface from-35% to-transparent to-60% [mask-image:linear-gradient(to_bottom,black_50%,transparent_64%)] lg:block ltr:bg-linear-to-r rtl:bg-linear-to-l"
+        />
+
+        <div className={`${FRAME} flex min-h-[46rem] flex-col lg:min-h-[max(50rem,56vw)]`}>
+          <div className="flex max-w-xl flex-col items-start gap-6 pt-12 text-start sm:pt-16 lg:max-w-md lg:pt-14">
             <div className={RISE[0]}>
               {/* The one gold element on this screen. */}
               <Badge tone="accent">{t('university')}</Badge>
@@ -51,7 +92,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
             <h1 id="hero-title" className={`type-display text-primary-dark ${RISE[1]}`}>
               {t('headline')}
             </h1>
-            <p className={`max-w-xl text-lg text-text-muted ${RISE[2]}`}>{t('lead')}</p>
+            <p className={`text-lg text-text-muted ${RISE[2]}`}>{t('lead')}</p>
             <div className={`flex flex-wrap items-center gap-3 pt-2 ${RISE[3]}`}>
               <Button href="/events" size="lg" icon={<CalendarIcon className="size-5" />}>
                 {t('browse')}
@@ -61,12 +102,8 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
               </Button>
             </div>
           </div>
-
-          <div className={`hidden lg:block ${RISE[2]}`}>
-            <HeroArt />
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <main className={`${FRAME} flex flex-1 flex-col gap-16 py-16 sm:gap-20 sm:py-20`}>
         <section aria-labelledby="features-title" className="flex flex-col gap-8">
