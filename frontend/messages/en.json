@@ -177,6 +177,109 @@
       "emptyFiltered": "No registrations with this status."
     }
   },
+  "Admin": {
+    "nav": {
+      "overview": "Overview",
+      "events": "Events",
+      "users": "Users",
+      "categories": "Categories",
+      "broadcast": "Broadcast"
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "What needs your attention across the platform.",
+      "statsLabel": "Platform totals",
+      "stats": {
+        "pending": "Awaiting approval",
+        "events": "Events",
+        "users": "Users",
+        "categories": "Categories"
+      },
+      "pendingTitle": "Events awaiting approval",
+      "pendingEmpty": "Nothing is waiting for approval.",
+      "viewAllEvents": "View all events"
+    },
+    "events": {
+      "title": "Events",
+      "subtitle": "Approve, reject or remove events from any organizer.",
+      "empty": "There are no events yet.",
+      "emptyFiltered": "No events with this status.",
+      "bookingsLabel": "Bookings",
+      "bookings": "{count, number} of {capacity, number} seats",
+      "approve": "Approve",
+      "approving": "Approving…",
+      "reject": "Reject",
+      "rejecting": "Rejecting…",
+      "deleteConfirm": "Delete this event permanently? Its bookings are deleted too.",
+      "done": {
+        "approve": "The event was approved.",
+        "reject": "The event was rejected.",
+        "delete": "The event was deleted."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Create staff accounts and manage who can sign in.",
+      "addUser": "Add user",
+      "createTitle": "New account",
+      "createHint": "For Organizer and Admin accounts. Attendees create their own account from the registration page.",
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters",
+      "role": "Role",
+      "createSubmit": "Create account",
+      "created": "An account was created for {name}.",
+      "searchLabel": "Search by name or email",
+      "search": "Search",
+      "empty": "No users match.",
+      "colAccount": "Account",
+      "colStatus": "Role and status",
+      "colActions": "Actions",
+      "you": "You",
+      "joined": "Joined {date}",
+      "active": "Active",
+      "inactive": "Inactive",
+      "roleFor": "Role for {name}",
+      "saveRole": "Save role",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "deleteConfirm": "Delete this account permanently?",
+      "activated": "The account was activated.",
+      "deactivated": "The account was deactivated.",
+      "roleSaved": "The role was updated.",
+      "deleted": "The account was deleted.",
+      "v": {
+        "nameLength": "Use 120 characters or fewer"
+      }
+    },
+    "categories": {
+      "title": "Categories",
+      "subtitle": "The categories organizers choose from when they create an event.",
+      "addTitle": "New category",
+      "name": "Name",
+      "description": "Description (optional)",
+      "add": "Add category",
+      "created": "The category was added.",
+      "updated": "The category was updated.",
+      "deleted": "The category was deleted.",
+      "empty": "There are no categories yet.",
+      "usedBy": "Events using it: {count}",
+      "inUse": "In use, cannot be deleted",
+      "deleteConfirm": "Delete this category?"
+    },
+    "broadcast": {
+      "title": "Broadcast",
+      "subtitle": "Send an announcement to every active user.",
+      "titleLabel": "Title",
+      "bodyLabel": "Message",
+      "send": "Send announcement",
+      "confirm": "Send this to all active users? It cannot be recalled.",
+      "confirmSend": "Yes, send",
+      "sending": "Sending…",
+      "sent": "The announcement was sent. Recipients: {count}"
+    }
+  },
   "Errors": {
     "INVALID_EMAIL": "Enter a valid email address",
     "WEAK_PASSWORD": "Password must be at least 8 characters",
