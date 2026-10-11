@@ -35,7 +35,8 @@ export default function HomeAccount() {
         size="sm"
         icon={isAttendee ? <UserIcon /> : <GridIcon />}
       >
-        {isAttendee ? t('myAccount') : t('dashboard')}
+        {/* Icon only on a phone (the label is still read out), like the other header buttons. */}
+        <span className="max-sm:sr-only">{isAttendee ? t('myAccount') : t('dashboard')}</span>
       </Button>
     );
   }

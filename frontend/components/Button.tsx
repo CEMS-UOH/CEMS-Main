@@ -35,7 +35,12 @@ type ButtonProps = StyleProps &
     loading?: boolean;
   };
 type LinkProps = StyleProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & { href: string; loading?: undefined };
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
+    href: string;
+    /** Link to the same page in another language (next-intl). */
+    locale?: string;
+    loading?: undefined;
+  };
 
 type Props = ButtonProps | LinkProps;
 

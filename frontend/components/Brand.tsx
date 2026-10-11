@@ -24,22 +24,32 @@ export default function Brand({ name, href, compact = false }: Props) {
   return (
     <Link
       href={href}
-      className={`group flex items-center gap-2.5 rounded-lg ${compact ? 'max-sm:shrink-0 sm:min-w-0' : 'min-w-0'} ${FOCUS_RING}`}
+      className={`group flex items-center gap-2 rounded-lg sm:gap-3 ${compact ? 'max-sm:shrink-0 sm:min-w-0' : 'min-w-0'} ${FOCUS_RING}`}
     >
-      {/* Decorative here: the product name right beside it says the same thing. `unoptimized`
-          serves the supplied file itself rather than a re-encoded copy. */}
-      <Image
-        src="/logo.webp"
-        alt=""
-        width={48}
-        height={48}
-        unoptimized
-        priority
-        className="size-12 shrink-0"
-      />
+      {/*
+        The logo file has a wide white margin around the drawing (the drawing is 71% of the
+        canvas, centred slightly up and left). Shown at face value, the mark looks small and
+        sits away from the name. So it is zoomed inside a 40px window until the drawing itself
+        fills the window - the file is untouched, only its empty margin falls outside the
+        frame. That keeps the mark the same height as the buttons across the header.
+
+        Decorative here: the product name right beside it says the same thing. `unoptimized`
+        serves the supplied file itself rather than a re-encoded copy.
+      */}
+      <span className="block size-10 shrink-0 overflow-hidden">
+        <Image
+          src="/logo.webp"
+          alt=""
+          width={40}
+          height={40}
+          unoptimized
+          priority
+          className="size-full origin-[47.8%_48.1%] translate-x-[2.2%] translate-y-[1.9%] scale-[1.35]"
+        />
+      </span>
       {/* Two short lines on a phone, one line from sm up - never cut off mid-word. */}
       <span
-        className={`text-sm leading-tight font-bold text-primary-dark transition-colors duration-150 group-hover:text-primary sm:line-clamp-1 sm:max-w-none sm:text-base ${
+        className={`text-xs leading-tight font-bold text-primary-dark transition-colors duration-150 group-hover:text-primary sm:line-clamp-1 sm:max-w-none sm:text-base ${
           compact ? 'sr-only sm:not-sr-only' : 'line-clamp-2 max-w-40'
         }`}
       >

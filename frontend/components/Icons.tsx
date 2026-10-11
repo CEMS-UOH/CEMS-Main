@@ -158,6 +158,16 @@ export function CompassIcon({ className = 'size-4' }: Props) {
   );
 }
 
+/** Language switch. */
+export function GlobeIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.1 3.6 8.5s-1.2 6.2-3.6 8.5c-2.4-2.3-3.6-5.1-3.6-8.5s1.2-6.2 3.6-8.5Z" />
+    </svg>
+  );
+}
+
 /** Dashboard sections. */
 export function GridIcon({ className = 'size-4' }: Props) {
   return (

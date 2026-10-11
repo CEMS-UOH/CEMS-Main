@@ -5,6 +5,7 @@
 import type { ReactNode } from 'react';
 import { Link } from '@/i18n/navigation';
 import Brand from './Brand';
+import HeaderBar from './HeaderBar';
 import { FOCUS_RING, FRAME } from './styles';
 
 export type HeaderNavItem = {
@@ -48,14 +49,15 @@ export default function AppHeader({
         {skipLabel}
       </a>
 
-      {/* Wraps onto two rows rather than overlapping when a very narrow screen cannot fit both sides. */}
-      <div className={`${FRAME} flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-3`}>
-        <div className="flex min-w-0 items-center gap-3">
-          <Brand name={productName} href={homeHref} compact={Boolean(badge)} />
-          {badge}
-        </div>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">{tools}</div>
-      </div>
+      <HeaderBar
+        start={
+          <>
+            <Brand name={productName} href={homeHref} compact={Boolean(badge)} />
+            {badge}
+          </>
+        }
+        tools={tools}
+      />
 
       {/* Scrolls sideways inside itself on narrow screens - the page never does. The scrollbar
           is hidden; the tabs themselves show there is more. */}

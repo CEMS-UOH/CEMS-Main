@@ -9,8 +9,8 @@ import Button from '@/components/Button';
 import Card from '@/components/Card';
 import { CalendarIcon, GridIcon, SearchIcon, TicketIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
-import { FRAME, TEXT_LINK } from '@/components/styles';
-import { Link } from '@/i18n/navigation';
+import HeaderBar from '@/components/HeaderBar';
+import { FRAME_WIDE } from '@/components/styles';
 import HomeAccount from './_home/HomeAccount';
 import UpcomingEvents from './_home/UpcomingEvents';
 
@@ -31,13 +31,16 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-border bg-surface">
-        <div className={`${FRAME} flex items-center justify-between gap-3 py-3`}>
-          <Brand name={t('title')} href="/" />
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <LocaleSwitcher />
-            <HomeAccount />
-          </div>
-        </div>
+        <HeaderBar
+          frame={FRAME_WIDE}
+          start={<Brand name={t('title')} href="/" />}
+          tools={
+            <>
+              <LocaleSwitcher />
+              <HomeAccount />
+            </>
+          }
+        />
       </header>
 
       {/*
@@ -52,7 +55,14 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
 
         Phones and tablets: the picture is anchored to the bottom and drawn 2.5x the screen
         width, so only its open side shows - the two groups of people stand below the text.
-        Desktop: the picture fills the whole hero.
+
+        Desktop: the picture fills the whole hero, edge to edge, and everything is sized from
+        the screen's width so it stays in proportion from 1280 to 1920 and beyond:
+        - the text starts 5% in from the edge and is as wide as the picture's open space
+          (which is its first third), so there is no empty band beside it;
+        - the headline grows with the screen (see type-display);
+        - a spacer as tall as the people at the bottom keeps the text block above them, and
+          the text is centred in the space that is left.
       */}
       <section
         aria-labelledby="hero-title"
@@ -80,11 +90,11 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
             (the mask), well above the people standing at the bottom, so it never covers them. */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 hidden from-surface from-35% to-transparent to-60% [mask-image:linear-gradient(to_bottom,black_50%,transparent_64%)] lg:block ltr:bg-linear-to-r rtl:bg-linear-to-l"
+          className="absolute inset-0 -z-10 hidden from-surface from-30% to-transparent to-48% [mask-image:linear-gradient(to_bottom,black_50%,transparent_64%)] lg:block ltr:bg-linear-to-r rtl:bg-linear-to-l"
         />
 
-        <div className={`${FRAME} flex min-h-[46rem] flex-col lg:min-h-[max(50rem,56vw)]`}>
-          <div className="flex max-w-xl flex-col items-start gap-6 pt-12 text-start sm:pt-16 lg:max-w-md lg:pt-14">
+        <div className={`${FRAME_WIDE} flex min-h-[46rem] flex-col lg:min-h-[max(50rem,56vw)]`}>
+          <div className="flex max-w-xl flex-col items-start gap-6 pt-12 text-start sm:pt-16 lg:max-w-[31vw] lg:flex-1 lg:justify-center lg:py-10">
             <div className={RISE[0]}>
               {/* The one gold element on this screen. */}
               <Badge tone="accent">{t('university')}</Badge>
@@ -92,7 +102,11 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
             <h1 id="hero-title" className={`type-display text-primary-dark ${RISE[1]}`}>
               {t('headline')}
             </h1>
-            <p className={`text-lg text-text-muted ${RISE[2]}`}>{t('lead')}</p>
+            <p
+              className={`text-lg text-text-muted lg:max-w-[26vw] lg:text-[clamp(1.125rem,1.3vw,1.5rem)] ${RISE[2]}`}
+            >
+              {t('lead')}
+            </p>
             <div className={`flex flex-wrap items-center gap-3 pt-2 ${RISE[3]}`}>
               <Button href="/events" size="lg" icon={<CalendarIcon className="size-5" />}>
                 {t('browse')}
@@ -102,10 +116,12 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
               </Button>
             </div>
           </div>
+          {/* Desktop: as tall as the people at the foot of the picture, so text never covers them. */}
+          <div aria-hidden className="hidden h-[max(16rem,17.5vw)] shrink-0 lg:block" />
         </div>
       </section>
 
-      <main className={`${FRAME} flex flex-1 flex-col gap-16 py-16 sm:gap-20 sm:py-20`}>
+      <main className={`${FRAME_WIDE} flex flex-1 flex-col gap-16 py-16 sm:gap-20 sm:py-20`}>
         <section aria-labelledby="features-title" className="flex flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-2 text-start">
             <h2 id="features-title" className="type-h1 text-text">
@@ -144,22 +160,17 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
 
       <footer className="border-t border-border bg-surface">
         <div
-          className={`${FRAME} flex flex-col gap-3 py-8 text-start text-sm text-text-muted sm:flex-row sm:items-center sm:justify-between`}
+          className={`${FRAME_WIDE} flex flex-col gap-3 py-6 text-start text-sm text-text-muted sm:flex-row sm:items-center sm:justify-between`}
         >
-          <p>
-            <span className="font-medium text-text">{t('title')}</span>
-            <span className="mx-2" aria-hidden>
-              ·
-            </span>
-            {t('subtitle')}
-          </p>
-          <nav aria-label={t('footerNav')} className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Link href="/events" className={TEXT_LINK}>
+          <p className="font-medium text-text">{t('university')}</p>
+          {/* The same small ghost buttons as the header, so the three sit evenly. */}
+          <nav aria-label={t('footerNav')} className="-mx-3 flex flex-wrap items-center gap-2">
+            <Button href="/events" variant="ghost" size="sm">
               {t('browse')}
-            </Link>
-            <Link href="/login" className={TEXT_LINK}>
+            </Button>
+            <Button href="/login" variant="ghost" size="sm">
               {t('login')}
-            </Link>
+            </Button>
             <LocaleSwitcher />
           </nav>
         </div>
