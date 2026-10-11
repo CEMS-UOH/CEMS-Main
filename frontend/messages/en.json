@@ -103,6 +103,80 @@
       "CANCELLED": "Cancelled"
     }
   },
+  "Organizer": {
+    "nav": {
+      "events": "My events",
+      "newEvent": "New event"
+    },
+    "title": "My events",
+    "subtitle": "Create events and follow their approval and bookings.",
+    "newEvent": "New event",
+    "backToEvents": "Back to my events",
+    "statsLabel": "Event totals",
+    "listLabel": "Event list",
+    "stats": {
+      "total": "All events",
+      "pending": "Awaiting approval",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "emptyTitle": "You have no events yet",
+    "emptyBody": "Create your first event. An admin reviews it before attendees can see it.",
+    "emptyFiltered": "No events with this status.",
+    "seats": "{taken, number} of {capacity, number} seats booked",
+    "full": "Full",
+    "attendees": "Attendees",
+    "deleteConfirm": "Delete this event? This cannot be undone.",
+    "deleted": "The event was deleted.",
+    "form": {
+      "createTitle": "New event",
+      "createSubtitle": "New events are sent to an admin for approval before attendees can see them.",
+      "editTitle": "Edit event",
+      "title": "Title",
+      "description": "Description",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "capacity": "Capacity",
+      "capacityHint": "Cannot exceed the venue's capacity or go below seats already booked.",
+      "category": "Category",
+      "categoryPlaceholder": "Choose a category",
+      "venue": "Venue",
+      "venueOption": "{name} (holds {capacity, number})",
+      "imageUrl": "Image link",
+      "imageUrlHint": "Optional. A link starting with http:// or https://",
+      "attachments": "Attachment links",
+      "attachmentsHint": "Optional. One link per line, up to 10.",
+      "submitCreate": "Create event",
+      "submitEdit": "Save changes",
+      "created": "The event was created and sent to an admin for approval.",
+      "createAnother": "Create another",
+      "saved": "Your changes were saved.",
+      "notEditable": "This event can no longer be edited.",
+      "v": {
+        "fixErrors": "Check the highlighted fields and try again.",
+        "titleLength": "Use 200 characters or fewer",
+        "descriptionLength": "Use 5000 characters or fewer",
+        "dateInvalid": "Enter a date and time",
+        "startFuture": "The start must be in the future",
+        "endAfterStart": "The end must be after the start",
+        "capacity": "Enter a whole number, 1 or more",
+        "capacityVenue": "This venue holds up to {capacity, number}",
+        "capacityBooked": "{count, number} seats are already booked",
+        "url": "Use links that start with http:// or https://",
+        "attachmentsMax": "Add up to 10 links"
+      }
+    },
+    "attendeesPage": {
+      "title": "Attendees",
+      "count": "Registrations: {count, number}",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colStatus": "Status",
+      "colRegistered": "Registered",
+      "empty": "No one has registered for this event yet.",
+      "emptyFiltered": "No registrations with this status."
+    }
+  },
   "Errors": {
     "INVALID_EMAIL": "Enter a valid email address",
     "WEAK_PASSWORD": "Password must be at least 8 characters",

@@ -103,6 +103,80 @@
       "CANCELLED": "ملغى"
     }
   },
+  "Organizer": {
+    "nav": {
+      "events": "فعالياتي",
+      "newEvent": "فعالية جديدة"
+    },
+    "title": "فعالياتي",
+    "subtitle": "أنشئ الفعاليات وتابع اعتمادها وحجوزاتها.",
+    "newEvent": "فعالية جديدة",
+    "backToEvents": "العودة إلى فعالياتي",
+    "statsLabel": "إجماليات الفعاليات",
+    "listLabel": "قائمة الفعاليات",
+    "stats": {
+      "total": "كل الفعاليات",
+      "pending": "بانتظار الاعتماد",
+      "approved": "معتمدة",
+      "rejected": "مرفوضة"
+    },
+    "emptyTitle": "ليس لديك فعاليات بعد",
+    "emptyBody": "أنشئ فعاليتك الأولى. يراجعها المشرف قبل أن تظهر للحضور.",
+    "emptyFiltered": "لا توجد فعاليات بهذه الحالة.",
+    "seats": "حُجز {taken, number} من {capacity, number} مقعدًا",
+    "full": "مكتملة",
+    "attendees": "الحضور",
+    "deleteConfirm": "هل تريد حذف هذه الفعالية؟ لا يمكن التراجع عن ذلك.",
+    "deleted": "تم حذف الفعالية.",
+    "form": {
+      "createTitle": "فعالية جديدة",
+      "createSubtitle": "تُرسل الفعاليات الجديدة إلى المشرف لاعتمادها قبل أن تظهر للحضور.",
+      "editTitle": "تعديل الفعالية",
+      "title": "العنوان",
+      "description": "الوصف",
+      "startsAt": "البداية",
+      "endsAt": "النهاية",
+      "capacity": "السعة",
+      "capacityHint": "لا يمكن أن تتجاوز سعة المكان ولا أن تقل عن المقاعد المحجوزة.",
+      "category": "الفئة",
+      "categoryPlaceholder": "اختر فئة",
+      "venue": "المكان",
+      "venueOption": "{name} (يتسع لـ {capacity, number})",
+      "imageUrl": "رابط الصورة",
+      "imageUrlHint": "اختياري. رابط يبدأ بـ http:// أو https://",
+      "attachments": "روابط المرفقات",
+      "attachmentsHint": "اختياري. رابط واحد في كل سطر، بحد أقصى 10 روابط.",
+      "submitCreate": "إنشاء الفعالية",
+      "submitEdit": "حفظ التعديلات",
+      "created": "تم إنشاء الفعالية وإرسالها إلى المشرف لاعتمادها.",
+      "createAnother": "إنشاء فعالية أخرى",
+      "saved": "تم حفظ تعديلاتك.",
+      "notEditable": "لم يعد تعديل هذه الفعالية ممكنًا.",
+      "v": {
+        "fixErrors": "راجع الحقول المظلَّلة ثم حاول مرة أخرى.",
+        "titleLength": "استخدم 200 حرف أو أقل",
+        "descriptionLength": "استخدم 5000 حرف أو أقل",
+        "dateInvalid": "أدخل التاريخ والوقت",
+        "startFuture": "يجب أن تكون البداية في المستقبل",
+        "endAfterStart": "يجب أن تكون النهاية بعد البداية",
+        "capacity": "أدخل عددًا صحيحًا، 1 أو أكثر",
+        "capacityVenue": "هذا المكان يتسع لـ {capacity, number} كحد أقصى",
+        "capacityBooked": "عدد المقاعد المحجوزة حاليًا: {count, number}",
+        "url": "استخدم روابط تبدأ بـ http:// أو https://",
+        "attachmentsMax": "أضف 10 روابط كحد أقصى"
+      }
+    },
+    "attendeesPage": {
+      "title": "الحضور",
+      "count": "عدد التسجيلات: {count, number}",
+      "colName": "الاسم",
+      "colEmail": "البريد الإلكتروني",
+      "colStatus": "الحالة",
+      "colRegistered": "تاريخ التسجيل",
+      "empty": "لم يسجّل أحد في هذه الفعالية بعد.",
+      "emptyFiltered": "لا توجد تسجيلات بهذه الحالة."
+    }
+  },
   "Errors": {
     "INVALID_EMAIL": "أدخل بريدًا إلكترونيًا صحيحًا",
     "WEAK_PASSWORD": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
