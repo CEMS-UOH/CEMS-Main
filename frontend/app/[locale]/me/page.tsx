@@ -5,6 +5,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import { getMe, logout, type PublicUser } from '@/lib/api';
 import { useApiError } from '@/lib/useApiError';
@@ -59,7 +61,7 @@ export default function MePage() {
   if (loading) {
     return (
       <main className="mx-auto max-w-md px-6 py-12">
-        <p className="text-start text-slate-600">{t('loading')}</p>
+        <p className="text-start text-text-muted">{t('loading')}</p>
       </main>
     );
   }
@@ -68,7 +70,7 @@ export default function MePage() {
     return (
       <main className="mx-auto flex max-w-md flex-col gap-4 px-6 py-12">
         <FormMessage kind="error">{error}</FormMessage>
-        <Link href="/login" className="text-start text-blue-700 underline">
+        <Link href="/login" className="text-start font-medium text-primary hover:underline">
           {t('logout')}
         </Link>
       </main>
@@ -78,34 +80,35 @@ export default function MePage() {
   if (!user) return null; // redirect already in flight
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-6 py-12">
-      <h1 className="text-start text-2xl font-bold">{t('title')}</h1>
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6 py-12">
+      <h1 className="text-start text-2xl font-bold text-text">{t('title')}</h1>
 
-      <dl className="flex flex-col gap-3 text-start">
-        <div>
-          <dt className="text-xs uppercase text-slate-500">{t('fullName')}</dt>
-          <dd className="text-base">{user.fullName}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase text-slate-500">{t('email')}</dt>
-          <dd className="text-base">{user.email}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase text-slate-500">{t('role')}</dt>
-          <dd className="text-base">{tRoles(user.role)}</dd>
-        </div>
-      </dl>
+      <Card>
+        <dl className="flex flex-col gap-4 text-start">
+          <div>
+            <dt className="text-xs font-medium text-text-muted">{t('fullName')}</dt>
+            <dd className="text-base text-text">{user.fullName}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-text-muted">{t('email')}</dt>
+            <dd className="text-base text-text">{user.email}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-text-muted">{t('role')}</dt>
+            <dd className="text-base text-text">
+              <span className="inline-flex items-center rounded-full bg-accent-light px-2.5 py-0.5 text-sm font-medium text-accent-dark">
+                {tRoles(user.role)}
+              </span>
+            </dd>
+          </div>
+        </dl>
+      </Card>
 
       <div className="flex flex-col gap-3">
-        <button
-          type="button"
-          onClick={onLogout}
-          disabled={loggingOut}
-          className="rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-60"
-        >
+        <Button type="button" variant="secondary" onClick={onLogout} disabled={loggingOut}>
           {loggingOut ? t('loggingOut') : t('logout')}
-        </button>
-        <Link href="/" className="text-start text-blue-700 underline">
+        </Button>
+        <Link href="/" className="text-center text-sm font-medium text-primary hover:underline">
           {t('backHome')}
         </Link>
       </div>
