@@ -8,8 +8,9 @@ import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import { Link } from '@/i18n/navigation';
 import Button from '@/components/Button';
-import { TEXT_LINK } from '../../../../_dashboard/ui/focus';
-import PageHeader from '../../../../_dashboard/ui/PageHeader';
+import { BackIcon } from '@/components/Icons';
+import { TEXT_LINK } from '@/components/styles';
+import PageHeader from '@/components/PageHeader';
 import { ErrorState, LoadingState } from '../../../../_dashboard/ui/States';
 import { bothOk, useApiQuery } from '../../../../_dashboard/lib/useApiQuery';
 import { createEvent, listCategories, listVenues } from '../../../_lib/organizer-api';
@@ -28,7 +29,8 @@ export default function NewEventPage() {
   );
 
   const backLink = (
-    <Link href="/organizer" className={TEXT_LINK}>
+    <Link href="/organizer" className={`flex w-fit items-center gap-1.5 ${TEXT_LINK}`}>
+      <BackIcon />
       {tNav('backToEvents')}
     </Link>
   );

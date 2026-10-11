@@ -7,8 +7,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 import FormMessage from '@/components/FormMessage';
 import type { ApiResult } from '@/lib/api';
 import Button from '@/components/Button';
-import { SelectField } from '../../_dashboard/ui/Field';
-import PageHeader from '../../_dashboard/ui/PageHeader';
+import { PlusIcon } from '@/components/Icons';
+import { SelectField } from '@/components/FormField';
+import PageHeader from '@/components/PageHeader';
 import Pagination from '../../_dashboard/ui/Pagination';
 import StatTile, { StatGrid } from '../../_dashboard/ui/StatTile';
 import { EmptyState, ErrorState, LoadingState } from '../../_dashboard/ui/States';
@@ -85,7 +86,11 @@ export default function OrganizerDashboardPage() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        actions={<Button href="/organizer/events/new">{t('newEvent')}</Button>}
+        actions={
+          <Button href="/organizer/events/new" icon={<PlusIcon />}>
+            {t('newEvent')}
+          </Button>
+        }
       />
 
       <section aria-label={t('statsLabel')}>
@@ -137,7 +142,11 @@ export default function OrganizerDashboardPage() {
             <EmptyState
               title={t('emptyTitle')}
               body={t('emptyBody')}
-              action={<Button href="/organizer/events/new">{t('newEvent')}</Button>}
+              action={
+                <Button href="/organizer/events/new" icon={<PlusIcon />}>
+                  {t('newEvent')}
+                </Button>
+              }
             />
           )
         ) : (

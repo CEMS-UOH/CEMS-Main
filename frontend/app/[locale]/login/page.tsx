@@ -5,9 +5,12 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
+import AuthShell from '@/components/AuthShell';
 import Button from '@/components/Button';
+import Card from '@/components/Card';
 import FormField from '@/components/FormField';
 import FormMessage from '@/components/FormMessage';
+import { TEXT_LINK } from '@/components/styles';
 import { login } from '@/lib/api';
 import { HOME_BY_ROLE } from '@/lib/roleHome';
 import { useApiError } from '@/lib/useApiError';
@@ -42,47 +45,50 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6 py-12">
-      <header className="flex flex-col gap-1 text-start">
-        <h1 className="text-2xl font-bold text-text">{t('title')}</h1>
-        <p className="text-sm text-text-muted">{t('subtitle')}</p>
+    <AuthShell>
+      <header className="flex flex-col gap-2 text-start">
+        <h1 className="type-h1 text-text">{t('title')}</h1>
+        <p className="text-base text-text-muted">{t('subtitle')}</p>
       </header>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6 shadow-[var(--shadow-card)]" noValidate>
-        {error ? <FormMessage kind="error">{error}</FormMessage> : null}
+      <Card>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+          {error ? <FormMessage kind="error">{error}</FormMessage> : null}
 
-        <FormField
-          id="email"
-          label={t('email')}
-          type="email"
-          value={email}
-          onChange={setEmail}
-          autoComplete="email"
-          disabled={submitting}
-          required
-        />
-        <FormField
-          id="password"
-          label={t('password')}
-          type="password"
-          value={password}
-          onChange={setPassword}
-          autoComplete="current-password"
-          disabled={submitting}
-          required
-        />
+          <FormField
+            id="email"
+            label={t('email')}
+            type="email"
+            value={email}
+            onChange={setEmail}
+            autoComplete="email"
+            ltrValue
+            disabled={submitting}
+            required
+          />
+          <FormField
+            id="password"
+            label={t('password')}
+            type="password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            disabled={submitting}
+            required
+          />
 
-        <Button type="submit" disabled={submitting} className="mt-2 w-full">
-          {submitting ? t('submitting') : t('submit')}
-        </Button>
-      </form>
+          <Button type="submit" loading={submitting} className="mt-2 w-full">
+            {submitting ? t('submitting') : t('submit')}
+          </Button>
+        </form>
+      </Card>
 
-      <p className="text-sm text-start">
+      <p className="text-start text-sm">
         <span className="me-1 text-text-muted">{t('noAccount')}</span>
-        <Link href="/register" className="font-medium text-primary hover:underline">
+        <Link href="/register" className={TEXT_LINK}>
           {t('registerLink')}
         </Link>
       </p>
-    </main>
+    </AuthShell>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Plus_Jakarta_Sans, Tajawal } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import '../globals.css';
@@ -10,19 +10,30 @@ import '../globals.css';
 // text uses Plus Jakarta Sans. globals.css switches between them off html[dir].
 const tajawal = Tajawal({
   subsets: ['arabic'],
-  weight: ['400', '500', '700'],
+  weight: ['400', '500', '700', '800'],
   variable: '--font-tajawal',
 });
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-jakarta',
 });
 
-export const metadata: Metadata = {
-  title: 'Smart Campus Event Manager System',
-};
+// The browser tab shows the product name in the visitor's language. The favicon is
+// app/icon.svg, picked up by Next.js on its own.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale: hasLocale(routing.locales, locale) ? locale : routing.defaultLocale,
+    namespace: 'Home',
+  });
+  return { title: t('title'), description: t('metaDescription') };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

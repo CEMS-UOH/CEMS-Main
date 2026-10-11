@@ -9,9 +9,10 @@ import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import type { ApiResult, PublicUser } from '@/lib/api';
 import Button from '@/components/Button';
+import { CloseIcon, PlusIcon, SearchIcon } from '@/components/Icons';
 import { useDashboardUser } from '../../../_dashboard/ui/DashboardShell';
-import { SelectField, TextField } from '../../../_dashboard/ui/Field';
-import PageHeader from '../../../_dashboard/ui/PageHeader';
+import { SelectField, TextField } from '@/components/FormField';
+import PageHeader from '@/components/PageHeader';
 import Pagination from '../../../_dashboard/ui/Pagination';
 import { EmptyState, ErrorState, LoadingState } from '../../../_dashboard/ui/States';
 import { USER_ROLES, type UserRole } from '../../../_dashboard/lib/types';
@@ -142,6 +143,7 @@ export default function AdminUsersPage() {
         actions={
           <Button
             variant={formOpen ? 'secondary' : 'primary'}
+            icon={formOpen ? <CloseIcon /> : <PlusIcon />}
             aria-expanded={formOpen}
             aria-controls="create-user-panel"
             onClick={() => setFormOpen((open) => !open)}
@@ -154,7 +156,7 @@ export default function AdminUsersPage() {
       {formOpen ? (
         <Card id="create-user-panel">
           <form onSubmit={onCreate} noValidate className="flex flex-col gap-4">
-            <h2 className="text-start text-lg font-bold text-text">{t('createTitle')}</h2>
+            <h2 className="type-h2 text-start text-text">{t('createTitle')}</h2>
             <p className="text-start text-sm text-text-muted">{t('createHint')}</p>
             {formError ? <FormMessage kind="error">{formError}</FormMessage> : null}
 
@@ -209,7 +211,7 @@ export default function AdminUsersPage() {
             </div>
 
             <div>
-              <Button type="submit" disabled={creating}>
+              <Button type="submit" loading={creating}>
                 {creating ? tCommon('saving') : t('createSubmit')}
               </Button>
             </div>
@@ -247,7 +249,7 @@ export default function AdminUsersPage() {
             ...USER_ROLES.map((r) => ({ value: r, label: tRoles(r) })),
           ]}
         />
-        <Button type="submit" variant="secondary">
+        <Button type="submit" variant="secondary" icon={<SearchIcon />}>
           {t('search')}
         </Button>
       </form>

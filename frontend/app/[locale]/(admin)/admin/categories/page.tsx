@@ -8,9 +8,10 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import Button from '@/components/Button';
+import { PlusIcon } from '@/components/Icons';
 import ConfirmAction from '../../../_dashboard/ui/ConfirmAction';
-import { TextField } from '../../../_dashboard/ui/Field';
-import PageHeader from '../../../_dashboard/ui/PageHeader';
+import { TextField } from '@/components/FormField';
+import PageHeader from '@/components/PageHeader';
 import { EmptyState, ErrorState, LoadingState } from '../../../_dashboard/ui/States';
 import type { AdminCategory } from '../../../_dashboard/lib/types';
 import { useApiQuery } from '../../../_dashboard/lib/useApiQuery';
@@ -134,7 +135,7 @@ export default function AdminCategoriesPage() {
 
       <Card>
         <form onSubmit={onAdd} noValidate className="flex flex-col gap-4">
-          <h2 className="text-start text-lg font-bold text-text">{t('addTitle')}</h2>
+          <h2 className="type-h2 text-start text-text">{t('addTitle')}</h2>
           <div className="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
             <TextField
               id="category-name"
@@ -156,7 +157,7 @@ export default function AdminCategoriesPage() {
             />
           </div>
           <div>
-            <Button type="submit" disabled={adding}>
+            <Button type="submit" icon={<PlusIcon />} loading={adding}>
               {adding ? tCommon('saving') : t('add')}
             </Button>
           </div>
@@ -176,7 +177,7 @@ export default function AdminCategoriesPage() {
           <ul className={`divide-y divide-border ${list.refreshing ? 'opacity-60' : ''}`}>
             {list.data.categories.map((category) =>
               editingId === category.id ? (
-                <li key={category.id} className="px-5 py-4">
+                <li key={category.id} className="px-5 py-4 sm:px-6">
                   <form
                     onSubmit={(e) => onSaveEdit(e, category)}
                     noValidate
@@ -203,7 +204,7 @@ export default function AdminCategoriesPage() {
                       />
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Button type="submit" size="sm" disabled={savingEdit}>
+                      <Button type="submit" size="sm" loading={savingEdit}>
                         {savingEdit ? tCommon('saving') : tCommon('save')}
                       </Button>
                       <Button
@@ -221,7 +222,7 @@ export default function AdminCategoriesPage() {
               ) : (
                 <li
                   key={category.id}
-                  className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-4"
+                  className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-4 sm:px-6"
                 >
                   <div className="flex min-w-0 flex-col gap-1">
                     <span className="text-sm font-medium text-text [overflow-wrap:anywhere]">

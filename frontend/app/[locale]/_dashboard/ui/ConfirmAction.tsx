@@ -57,7 +57,7 @@ export default function ConfirmAction({
       {asking ? (
         <>
           <span className="text-sm text-text">{question}</span>
-          <Button type="button" variant="danger" size="sm" disabled={busy} onClick={onConfirm}>
+          <Button type="button" variant="danger" size="sm" loading={busy} onClick={onConfirm}>
             {busy ? busyLabel : confirmLabel}
           </Button>
           <Button

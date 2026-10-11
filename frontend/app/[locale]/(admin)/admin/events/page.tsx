@@ -6,8 +6,8 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import FormMessage from '@/components/FormMessage';
-import { SelectField } from '../../../_dashboard/ui/Field';
-import PageHeader from '../../../_dashboard/ui/PageHeader';
+import { SelectField } from '@/components/FormField';
+import PageHeader from '@/components/PageHeader';
 import Pagination from '../../../_dashboard/ui/Pagination';
 import { EmptyState, ErrorState, LoadingState } from '../../../_dashboard/ui/States';
 import { EVENT_STATUSES, type EventStatus } from '../../../_dashboard/lib/types';
