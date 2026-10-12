@@ -16,7 +16,9 @@ import { EmptyState, ErrorState, LoadingState } from '../../_dashboard/ui/States
 import { EVENT_STATUSES, type EventStatus, type OrganizerEvent } from '../../_dashboard/lib/types';
 import { useApiQuery } from '../../_dashboard/lib/useApiQuery';
 import { useDashboardError } from '../../_dashboard/lib/useDashboardError';
+import Card from '@/components/Card';
 import { deleteEvent, listMyEvents } from '../_lib/organizer-api';
+import { isRequestLimited } from '../_lib/requestLimit';
 import EventCard from '../_ui/EventCard';
 
 const PAGE_SIZE = 10;
@@ -60,6 +62,14 @@ export default function OrganizerDashboardPage() {
   const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
   const counts = useApiQuery('organizer-counts', loadCounts);
+  // A new organizer may have one request waiting until an admin approves their first event
+  // (enforced by the API). While that applies, "New event" is replaced by an explanation.
+  const limited = counts.data ? isRequestLimited(counts.data) : false;
+  const newEventButton = (
+    <Button href="/organizer/events/new" icon={<PlusIcon />}>
+      {t('newEvent')}
+    </Button>
+  );
   const list = useApiQuery(`organizer-events:${status}:${page}`, () =>
     listMyEvents({ status, page, limit: PAGE_SIZE })
   );
@@ -86,12 +96,15 @@ export default function OrganizerDashboardPage() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        actions={
-          <Button href="/organizer/events/new" icon={<PlusIcon />}>
-            {t('newEvent')}
-          </Button>
-        }
+        actions={limited ? undefined : newEventButton}
       />
+
+      {limited ? (
+        <Card className="flex flex-col gap-1 text-start">
+          <h2 className="type-h3 text-text">{t('limit.title')}</h2>
+          <p className="text-sm text-text-muted">{t('limit.body')}</p>
+        </Card>
+      ) : null}
 
       <section aria-label={t('statsLabel')}>
         {counts.loading ? (
@@ -142,11 +155,7 @@ export default function OrganizerDashboardPage() {
             <EmptyState
               title={t('emptyTitle')}
               body={t('emptyBody')}
-              action={
-                <Button href="/organizer/events/new" icon={<PlusIcon />}>
-                  {t('newEvent')}
-                </Button>
-              }
+              action={newEventButton}
             />
           )
         ) : (

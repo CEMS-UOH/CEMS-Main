@@ -10,6 +10,7 @@ jest.mock('../src/lib/prisma', () => ({
     delete: jest.fn(),
     findMany: jest.fn(),
     count: jest.fn(),
+    groupBy: jest.fn(),
   },
   category: { findUnique: jest.fn(), findMany: jest.fn() },
   venue: { findUnique: jest.fn(), findMany: jest.fn() },
@@ -80,7 +81,19 @@ const validBody = () => ({
 // resetAllMocks (not clearAllMocks) - clearAllMocks leaves queued mockResolvedValueOnce
 // implementations in place, so an unconsumed one from a short-circuited test would bleed
 // into the next test's first call to that mock.
-beforeEach(() => jest.resetAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  // The new-organizer request limit looks up the organizer's PENDING/APPROVED counts before
+  // every create. Default: an organizer with nothing yet, so no test is limited by accident.
+  prisma.event.groupBy.mockResolvedValue([]);
+});
+
+/** What the request-limit lookup returns for an organizer with these event counts. */
+const eventCounts = ({ pending = 0, approved = 0 } = {}) =>
+  [
+    pending ? { status: 'PENDING', _count: { _all: pending } } : null,
+    approved ? { status: 'APPROVED', _count: { _all: approved } } : null,
+  ].filter(Boolean);
 
 // ---------------------------------------------------------------- auth guard
 
@@ -107,6 +120,70 @@ describe('organizer events auth', () => {
     expect(res.status).toBe(403);
     expect(res.body.error.code).toBe('FORBIDDEN');
     expect(prisma.event.create).not.toHaveBeenCalled();
+  });
+});
+
+// ------------------------------------------- new-organizer request limit (create)
+
+describe('POST /organizer/events - one request at a time until the first approval', () => {
+  const create = (body) => request(app).post(BASE).set('Cookie', sessionFor()).send(body);
+  const mockSuccessfulCreate = () => {
+    prisma.category.findUnique.mockResolvedValueOnce(category);
+    prisma.venue.findUnique.mockResolvedValueOnce(venue);
+    prisma.event.create.mockResolvedValueOnce(dbEvent());
+  };
+
+  it('lets a brand new organizer send their first request', async () => {
+    prisma.event.groupBy.mockResolvedValueOnce(eventCounts());
+    mockSuccessfulCreate();
+
+    const res = await create(validBody());
+
+    expect(res.status).toBe(201);
+    // The lookup is scoped to this organizer only.
+    expect(prisma.event.groupBy.mock.calls[0][0].where.organizerId).toBe(ORGANIZER_ID);
+  });
+
+  it('refuses a second request while the first is still pending, with 409', async () => {
+    prisma.event.groupBy.mockResolvedValueOnce(eventCounts({ pending: 1 }));
+
+    const res = await create(validBody());
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('PENDING_LIMIT_REACHED');
+    expect(prisma.event.create).not.toHaveBeenCalled();
+    // Refused before any other lookup is made.
+    expect(prisma.category.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('lifts the limit once one event has been approved', async () => {
+    prisma.event.groupBy.mockResolvedValueOnce(eventCounts({ pending: 3, approved: 1 }));
+    mockSuccessfulCreate();
+
+    const res = await create(validBody());
+
+    expect(res.status).toBe(201);
+  });
+
+  it('frees the slot when the pending request was rejected or deleted', async () => {
+    // REJECTED / CANCELLED events are not counted at all: the lookup only asks for
+    // PENDING and APPROVED, so an organizer whose only request was rejected has none.
+    prisma.event.groupBy.mockResolvedValueOnce(eventCounts());
+    mockSuccessfulCreate();
+
+    const res = await create(validBody());
+
+    expect(res.status).toBe(201);
+    expect(prisma.event.groupBy.mock.calls[0][0].where.status).toEqual({
+      in: ['PENDING', 'APPROVED'],
+    });
+  });
+
+  it('checks the cheap date rules before the limit', async () => {
+    const res = await create({ ...validBody(), startsAt: inDays(-1).toISOString() });
+
+    expect(res.status).toBe(422);
+    expect(prisma.event.groupBy).not.toHaveBeenCalled();
   });
 });
 

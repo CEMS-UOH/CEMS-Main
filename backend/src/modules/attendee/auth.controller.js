@@ -1,16 +1,29 @@
 // HTTP layer for FR-01 / FR-02. All request validation happens HERE (CLAUDE.md rule 5).
 const { ok, fail } = require('../../lib/response');
-const { isEmail, normalizeEmail, isNonEmptyString } = require('../../lib/validate');
+const {
+  isEmail,
+  normalizeEmail,
+  isNonEmptyString,
+  isPhone,
+  normalizePhone,
+} = require('../../lib/validate');
 const { setSessionCookie, clearSessionCookie, signToken } = require('../../lib/session');
 const authService = require('./auth.service');
 
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 200; // bcrypt only reads the first 72 bytes; cap the input anyway
 const MAX_NAME_LENGTH = 120;
+const MAX_ORGANIZATION_LENGTH = 120;
+
+// Who may sign themselves up. ADMIN is never on this list: admins are created by the seed
+// or by another admin (FR-18), never through the public form.
+const SELF_REGISTER_ROLES = ['ATTENDEE', 'ORGANIZER'];
 
 /** POST /api/attendee/auth/register */
 async function register(req, res, next) {
-  const { email, password, fullName } = req.body || {};
+  const { email, password, fullName, phone, organization } = req.body || {};
+  // Absent means the default, an Attendee - the original FR-01 behaviour.
+  const role = req.body?.role === undefined ? 'ATTENDEE' : req.body.role;
 
   if (!isEmail(email)) {
     return fail(res, 'Enter a valid email address', 422, 'INVALID_EMAIL');
@@ -32,13 +45,35 @@ async function register(req, res, next) {
   if (fullName.trim().length > MAX_NAME_LENGTH) {
     return fail(res, 'Full name is too long', 422, 'INVALID_NAME');
   }
+  if (!SELF_REGISTER_ROLES.includes(role)) {
+    return fail(res, 'Choose Attendee or Organizer', 422, 'INVALID_ROLE');
+  }
+
+  // An Organizer leaves contact details for the Admin who will review their event requests:
+  // a phone number (required) and the club or department they represent (optional).
+  // An Attendee is never asked for either, and anything sent is ignored.
+  let contact = { phone: null, organization: null };
+  if (role === 'ORGANIZER') {
+    if (!isPhone(phone)) {
+      return fail(res, 'Enter a valid phone number', 422, 'INVALID_PHONE');
+    }
+    if (organization !== undefined && organization !== null && typeof organization !== 'string') {
+      return fail(res, 'Organization must be text', 422, 'INVALID_ORGANIZATION');
+    }
+    const trimmed = typeof organization === 'string' ? organization.trim() : '';
+    if (trimmed.length > MAX_ORGANIZATION_LENGTH) {
+      return fail(res, 'Organization is too long', 422, 'INVALID_ORGANIZATION');
+    }
+    contact = { phone: normalizePhone(phone), organization: trimmed || null };
+  }
 
   try {
-    // Note `role` is not read from the body at all - self-registration is always ATTENDEE.
     const user = await authService.register({
       email: normalizeEmail(email),
       password,
       fullName: fullName.trim(),
+      role,
+      ...contact,
     });
     return ok(res, { user }, 201);
   } catch (e) {

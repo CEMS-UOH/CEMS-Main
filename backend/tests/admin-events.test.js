@@ -39,7 +39,13 @@ const dbEvent = (overrides = {}) => ({
   imageUrl: null,
   attachments: [],
   createdAt: new Date(),
-  organizer: { id: 'organizer-1', fullName: 'Omar', email: 'omar@example.com' },
+  organizer: {
+    id: 'organizer-1',
+    fullName: 'Omar',
+    email: 'omar@example.com',
+    phone: '+966512345678',
+    organization: 'Robotics Club',
+  },
   category: { id: 'cat-1', name: 'Workshop', description: null },
   venue: { id: 'venue-1', name: 'Hall', building: null, location: null, capacity: 100 },
   _count: { registrations: 0 },
@@ -145,6 +151,11 @@ describe('GET /admin/events', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.events).toHaveLength(1);
     expect(res.body.data.events[0].organizer.email).toBe('omar@example.com');
+    // The admin reviewing a request can see how to reach the organizer.
+    expect(res.body.data.events[0].organizer.phone).toBe('+966512345678');
+    expect(res.body.data.events[0].organizer.organization).toBe('Robotics Club');
+    const select = prisma.event.findMany.mock.calls[0][0].select.organizer.select;
+    expect(select).toMatchObject({ phone: true, organization: true });
     expect(prisma.event.findMany.mock.calls[0][0].where).toEqual({});
   });
 

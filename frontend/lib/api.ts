@@ -10,6 +10,9 @@ export type PublicUser = {
   email: string;
   fullName: string;
   role: 'ATTENDEE' | 'ORGANIZER' | 'ADMIN';
+  /** Contact details a self-registered Organizer gave. null for everyone else. */
+  phone: string | null;
+  organization: string | null;
   isActive: boolean;
   createdAt: string;
 };
@@ -68,7 +71,20 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 
 // --- Auth calls (FR-01, FR-02) ---
 
-export const register = (input: { email: string; password: string; fullName: string }) =>
+/** Who can sign themselves up. Admins are created by another admin, never from the form. */
+export type SelfRegisterRole = 'ATTENDEE' | 'ORGANIZER';
+
+export type RegisterInput = {
+  email: string;
+  password: string;
+  fullName: string;
+  role: SelfRegisterRole;
+  /** Organizers only: required phone, optional club or department. */
+  phone?: string;
+  organization?: string;
+};
+
+export const register = (input: RegisterInput) =>
   apiFetch<{ user: PublicUser }>('/api/attendee/auth/register', {
     method: 'POST',
     body: JSON.stringify(input),

@@ -12,7 +12,8 @@
     "prisma:migrate": "dotenv -e ../.env -- prisma migrate dev",
     "prisma:studio": "dotenv -e ../.env -- prisma studio",
     "prisma:deploy": "dotenv -e ../.env -- prisma migrate deploy",
-    "db:seed": "dotenv -e ../.env -- prisma db seed"
+    "db:seed": "dotenv -e ../.env -- prisma db seed",
+    "db:seed:demo": "dotenv -e ../.env -- node prisma/seed-demo.js"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",

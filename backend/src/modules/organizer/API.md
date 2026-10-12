@@ -91,6 +91,17 @@ exists for the organizer's own account (not part of this module).
 The event is always created with `status: "PENDING"` and `organizerId` set to the session user -
 neither can be sent by the client; if sent, they are silently ignored.
 
+### One request at a time until the first approval
+
+Organizers can register themselves (see `attendee/API.md`), so a new one is limited: an
+Organizer with **no approved event yet** may have only **one** `PENDING` event. A second
+`POST /events` in that state is refused with `409 PENDING_LIMIT_REACHED`.
+
+- The first approval lifts the limit for good - after it, any number of requests may wait.
+- A request that was rejected or deleted does not count, so the Organizer can try again.
+- The frontend can tell in advance from the totals it already loads: zero `APPROVED` and at
+  least one `PENDING`.
+
 ### `PATCH /events/:id` body
 
 Every field above, all **optional** - send only what changes. `startsAt` and `endsAt` must be
@@ -137,5 +148,6 @@ booking does not block deletion.
 | `EVENT_NOT_EDITABLE` | 409 | the event is REJECTED or CANCELLED |
 | `EVENT_ALREADY_STARTED` | 409 | editing or deleting after the start time |
 | `EVENT_HAS_BOOKINGS` | 409 | deleting an event with confirmed bookings |
+| `PENDING_LIMIT_REACHED` | 409 | creating a second request before the first has been approved |
 
 The existing `UNAUTHENTICATED` (401) and `FORBIDDEN` (403, for Attendees and Admins) also apply.

@@ -68,6 +68,33 @@ async function loadVenue(venueId) {
   return venue;
 }
 
+// How many requests an Organizer may have waiting for an Admin before any of their events
+// has ever been approved. Organizers can sign themselves up, so this keeps a new or throwaway
+// account from filling the Admin's queue. The first approval is what lifts the limit.
+const MAX_PENDING_BEFORE_FIRST_APPROVAL = 1;
+
+/**
+ * Refuses a new request from an Organizer who has nothing approved yet and already has one
+ * waiting. A rejected or deleted request frees the slot. This is a courtesy limit, not a
+ * lock: two requests sent in the same instant could both pass, which is harmless here.
+ */
+async function checkRequestLimit(organizerId) {
+  const rows = await prisma.event.groupBy({
+    by: ['status'],
+    where: { organizerId, status: { in: ['PENDING', 'APPROVED'] } },
+    _count: { _all: true },
+  });
+  const count = (status) => rows.find((row) => row.status === status)?._count._all ?? 0;
+
+  if (count('APPROVED') === 0 && count('PENDING') >= MAX_PENDING_BEFORE_FIRST_APPROVAL) {
+    throw new HttpError(
+      409,
+      'You already have a request awaiting approval. You can send more once it is approved.',
+      'PENDING_LIMIT_REACHED'
+    );
+  }
+}
+
 /** FR-10: always PENDING, always organised by the session user - never from the client. */
 async function createEvent({
   organizerId,
@@ -82,6 +109,7 @@ async function createEvent({
   attachments,
 }) {
   checkDates(startsAt, endsAt);
+  await checkRequestLimit(organizerId);
   await loadCategory(categoryId);
   const venue = await loadVenue(venueId);
   checkCapacity(capacity, venue, 0); // a brand new event has no bookings yet

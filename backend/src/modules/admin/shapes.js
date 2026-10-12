@@ -8,9 +8,9 @@ const USER_SELECT = PUBLIC_USER_FIELDS;
 const VENUE_SELECT = { id: true, name: true, building: true, location: true, capacity: true };
 const CATEGORY_SELECT = { id: true, name: true, description: true };
 
-// Admin sees every event regardless of status, plus who organizes it (their own module-local
-// concern - the attendee API deliberately never exposes an organizer's email, but admin
-// oversight genuinely needs it).
+// Admin sees every event regardless of status, plus who organizes it and how to reach them
+// (their own module-local concern - the attendee API deliberately never exposes an
+// organizer's email or phone, but an admin deciding on a request genuinely needs them).
 const EVENT_SELECT = {
   id: true,
   title: true,
@@ -22,7 +22,9 @@ const EVENT_SELECT = {
   imageUrl: true,
   attachments: true,
   createdAt: true,
-  organizer: { select: { id: true, fullName: true, email: true } },
+  organizer: {
+    select: { id: true, fullName: true, email: true, phone: true, organization: true },
+  },
   category: { select: CATEGORY_SELECT },
   venue: { select: VENUE_SELECT },
   _count: { select: { registrations: { where: { status: 'CONFIRMED' } } } },

@@ -7,6 +7,37 @@ Show errors by `code`, translated through the `Errors` namespace (CLAUDE.md rule
 
 All dates are ISO-8601 strings in UTC. All ids are UUIDs.
 
+## Accounts - FR-01, FR-02
+
+| Method and path | Body | Success `data` |
+|---|---|---|
+| `POST /api/attendee/auth/register` | `{ email, password, fullName, role?, phone?, organization? }` | `201 { user }` |
+| `POST /api/attendee/auth/login` | `{ email, password }` | `{ user }` + session cookie |
+| `POST /api/attendee/auth/logout` | — | `{ loggedOut: true }` |
+| `GET /api/attendee/auth/me` | — | `{ user }` |
+
+`user` is `{ id, email, fullName, role, phone, organization, isActive, createdAt }` - never the
+password hash. `phone` and `organization` are `null` for everyone except self-registered
+Organizers.
+
+**Registering as an Organizer.** `role` is `"ATTENDEE"` (the default when omitted) or
+`"ORGANIZER"`; anything else, including `"ADMIN"`, is `422 INVALID_ROLE` - admins are created
+by the seed or by another admin (FR-18), never through this form.
+
+- An Organizer must send `phone`: 8-15 digits with an optional leading `+`. Spaces, dashes and
+  brackets are stripped and Arabic digits are converted before it is stored.
+- `organization` (the club or department they represent) is optional, up to 120 characters.
+- For an Attendee both fields are ignored and stored as `null`.
+
+An Organizer account is usable immediately - there is no account approval step. The one gate
+is the event: every event waits for an admin (FR-17), and a new Organizer may only have one
+request waiting at a time (see `organizer/API.md`). The admin sees the Organizer's phone and
+organization next to each request; attendees never do.
+
+Extra error codes for registration: `INVALID_ROLE`, `INVALID_PHONE`, `INVALID_ORGANIZATION`
+(all 422), alongside the existing `INVALID_EMAIL`, `WEAK_PASSWORD`, `INVALID_NAME` (422) and
+`EMAIL_TAKEN` (409).
+
 ## Shapes
 
 ```ts

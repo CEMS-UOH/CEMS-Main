@@ -6,6 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import { CheckIcon } from '@/components/Icons';
+import { TEXT_LINK } from '@/components/styles';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { Meta, MetaList } from '../../_dashboard/ui/Meta';
 import { EventStatusBadge } from '../../_dashboard/ui/StatusBadges';
@@ -50,9 +51,22 @@ export default function AdminEventCard({
       <MetaList>
         <Meta label={tCommon('organizer')}>
           {event.organizer.fullName}
-          <span dir="ltr" className="block text-xs text-text-muted">
+          {event.organizer.organization ? (
+            <span className="block text-xs text-text-muted">{event.organizer.organization}</span>
+          ) : null}
+          <span dir="ltr" className="block w-fit text-xs text-text-muted">
             {event.organizer.email}
           </span>
+          {/* A self-registered organizer leaves a phone number for exactly this moment. */}
+          {event.organizer.phone ? (
+            <a
+              href={`tel:${event.organizer.phone}`}
+              dir="ltr"
+              className={`block w-fit text-xs tabular-nums ${TEXT_LINK}`}
+            >
+              {event.organizer.phone}
+            </a>
+          ) : null}
         </Meta>
         <Meta label={tCommon('category')}>{event.category.name}</Meta>
         <Meta label={tCommon('starts')}>
