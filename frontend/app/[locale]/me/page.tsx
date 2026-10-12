@@ -100,6 +100,20 @@ export default function MePage() {
               {user.email}
             </dd>
           </div>
+          {user.phone ? (
+            <div className="flex flex-col gap-0.5">
+              <dt className="text-xs font-medium text-text-muted">{t('phone')}</dt>
+              <dd dir="ltr" className="w-fit text-base text-text tabular-nums">
+                {user.phone}
+              </dd>
+            </div>
+          ) : null}
+          {user.organization ? (
+            <div className="flex flex-col gap-0.5">
+              <dt className="text-xs font-medium text-text-muted">{t('organization')}</dt>
+              <dd className="text-base text-text [overflow-wrap:anywhere]">{user.organization}</dd>
+            </div>
+          ) : null}
           <div className="flex flex-col gap-1">
             <dt className="text-xs font-medium text-text-muted">{t('role')}</dt>
             <dd>

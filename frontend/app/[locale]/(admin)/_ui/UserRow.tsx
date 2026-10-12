@@ -8,6 +8,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { PublicUser } from '@/lib/api';
 import Badge from '@/components/Badge';
 import Button from '@/components/Button';
+import { TEXT_LINK } from '@/components/styles';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { SelectField } from '@/components/FormField';
 import { DATE_FORMAT } from '../../_dashboard/lib/campusTime';
@@ -59,6 +60,22 @@ export default function UserRow({
         <span dir="ltr" className="w-fit max-w-full text-sm text-text-muted [overflow-wrap:anywhere]">
           {user.email}
         </span>
+        {/* Contact details a self-registered organizer gave; absent for everyone else. */}
+        {user.phone ? (
+          <a
+            href={`tel:${user.phone}`}
+            dir="ltr"
+            aria-label={`${tCommon('phone')}: ${user.phone}`}
+            className={`w-fit text-sm tabular-nums ${TEXT_LINK}`}
+          >
+            {user.phone}
+          </a>
+        ) : null}
+        {user.organization ? (
+          <span className="text-sm text-text-muted [overflow-wrap:anywhere]">
+            {tCommon('organization')}: {user.organization}
+          </span>
+        ) : null}
         <span className="text-xs text-text-muted">
           {t('joined', { date: format.dateTime(new Date(user.createdAt), DATE_FORMAT) })}
         </span>

@@ -7,10 +7,11 @@ import Badge from '@/components/Badge';
 import Brand from '@/components/Brand';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
-import { CalendarIcon, GridIcon, SearchIcon, TicketIcon } from '@/components/Icons';
+import { CalendarIcon, ForwardIcon, GridIcon, SearchIcon, TicketIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import HeaderBar from '@/components/HeaderBar';
-import { FRAME_WIDE } from '@/components/styles';
+import { FRAME_WIDE, TEXT_LINK } from '@/components/styles';
+import { Link } from '@/i18n/navigation';
 import HomeAccount from './_home/HomeAccount';
 import UpcomingEvents from './_home/UpcomingEvents';
 
@@ -141,6 +142,17 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
                   </span>
                   <h3 className="type-h3 text-text">{t(`features.${key}.title`)}</h3>
                   <p className="text-sm text-text-muted">{t(`features.${key}.body`)}</p>
+                  {/* The way in for someone who wants to run an event: registration opens
+                      with "Organizer" already chosen. */}
+                  {key === 'organize' ? (
+                    <Link
+                      href="/register?type=organizer"
+                      className={`mt-auto flex w-fit items-center gap-1.5 pt-1 text-sm ${TEXT_LINK}`}
+                    >
+                      {t('features.organize.cta')}
+                      <ForwardIcon />
+                    </Link>
+                  ) : null}
                 </Card>
               </li>
             ))}

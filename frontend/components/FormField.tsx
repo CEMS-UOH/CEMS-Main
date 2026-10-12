@@ -70,9 +70,18 @@ type CommonProps = {
 };
 
 type TextFieldProps = CommonProps & {
-  type?: 'text' | 'email' | 'password' | 'number' | 'url' | 'search' | 'date' | 'datetime-local';
+  type?:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'tel'
+    | 'url'
+    | 'search'
+    | 'date'
+    | 'datetime-local';
   autoComplete?: string;
-  inputMode?: 'text' | 'numeric' | 'email' | 'url' | 'search';
+  inputMode?: 'text' | 'numeric' | 'tel' | 'email' | 'url' | 'search';
   maxLength?: number;
   min?: number;
   /** Force LTR for values that are always Latin (emails, URLs), even on an Arabic page. */

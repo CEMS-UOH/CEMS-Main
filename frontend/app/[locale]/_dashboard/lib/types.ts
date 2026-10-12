@@ -50,7 +50,14 @@ export type OrganizerEvent = EventBase & {
 };
 
 export type AdminEvent = EventBase & {
-  organizer: { id: string; fullName: string; email: string };
+  /** phone / organization: how the admin reaches the person asking. Often null. */
+  organizer: {
+    id: string;
+    fullName: string;
+    email: string;
+    phone: string | null;
+    organization: string | null;
+  };
   confirmedBookings: number;
 };
 

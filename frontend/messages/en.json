@@ -25,7 +25,8 @@
       },
       "organize": {
         "title": "Organize",
-        "body": "Organizers publish events and follow bookings; admins review every event before it goes live."
+        "body": "Organizers publish events and follow bookings; admins review every event before it goes live.",
+        "cta": "Register as an organizer"
       }
     },
     "upcoming": {
@@ -39,7 +40,7 @@
   },
   "Register": {
     "title": "Create account",
-    "subtitle": "Create an account to register for events",
+    "subtitle": "Choose the kind of account you need.",
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
@@ -48,7 +49,18 @@
     "submitting": "Creating account…",
     "success": "Your account was created. You can log in now.",
     "haveAccount": "Already have an account?",
-    "loginLink": "Log in"
+    "loginLink": "Log in",
+    "accountType": "Account type",
+    "attendee": "Attendee",
+    "attendeeHint": "Browse events and book your seat.",
+    "organizer": "Organizer",
+    "organizerHint": "Propose an event and send it for approval.",
+    "phone": "Phone number",
+    "phoneHint": "Shown to the admin only, in case they need to reach you about your request.",
+    "organization": "Club or department (optional)",
+    "organizationHint": "The body you are organizing for, if any.",
+    "organizerNote": "Every event you propose is reviewed by an admin before attendees can see it. You can send one request at first; once it is approved you can send as many as you like.",
+    "successOrganizer": "Your organizer account is ready. Log in to send your first event request."
   },
   "Login": {
     "title": "Log in",
@@ -71,7 +83,9 @@
     "goToLogin": "Go to log in",
     "browseEvents": "Browse events",
     "myBookings": "My bookings",
-    "dashboard": "Go to my dashboard"
+    "dashboard": "Go to my dashboard",
+    "phone": "Phone number",
+    "organization": "Club or department"
   },
   "Roles": {
     "ATTENDEE": "Attendee",
@@ -131,7 +145,9 @@
     "bookingStatus": {
       "CONFIRMED": "Confirmed",
       "CANCELLED": "Cancelled"
-    }
+    },
+    "phone": "Phone",
+    "organization": "Club or department"
   },
   "Organizer": {
     "nav": {
@@ -205,6 +221,11 @@
       "colRegistered": "Registered",
       "empty": "No one has registered for this event yet.",
       "emptyFiltered": "No registrations with this status."
+    },
+    "limit": {
+      "title": "Your request is with the admin",
+      "body": "You can send one request at first. As soon as an admin approves it, you can send as many as you like.",
+      "back": "Back to my events"
     }
   },
   "Admin": {
@@ -252,7 +273,7 @@
       "subtitle": "Create staff accounts and manage who can sign in.",
       "addUser": "Add user",
       "createTitle": "New account",
-      "createHint": "For Organizer and Admin accounts. Attendees create their own account from the registration page.",
+      "createHint": "For Organizer and Admin accounts. People can also create their own Attendee or Organizer account from the registration page.",
       "fullName": "Full name",
       "email": "Email",
       "password": "Password",
@@ -363,7 +384,10 @@
     "INVALID_RATING": "Choose a rating from 1 to 5",
     "INVALID_COMMENT": "Keep the comment under 1000 characters",
     "FEEDBACK_NOT_OPEN": "You can rate an event after it ends, if you held a seat",
-    "ALREADY_REVIEWED": "You have already rated this event"
+    "ALREADY_REVIEWED": "You have already rated this event",
+    "INVALID_PHONE": "Enter a valid phone number (8 to 15 digits)",
+    "INVALID_ORGANIZATION": "The club or department name is too long (120 characters at most)",
+    "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
