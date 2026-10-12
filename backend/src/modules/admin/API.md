@@ -23,6 +23,8 @@ description.
 type PublicUser = {
   id: string; email: string; fullName: string;
   role: 'ATTENDEE' | 'ORGANIZER' | 'ADMIN'; isActive: boolean; createdAt: string;
+  // Contact details a self-registered Organizer gave. null for everyone else.
+  phone: string | null; organization: string | null;
   // never passwordHash
 };
 
@@ -34,7 +36,8 @@ type AdminEvent = {
   startsAt: string; endsAt: string; capacity: number;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
   imageUrl: string | null; attachments: string[]; createdAt: string;
-  organizer: { id: string; fullName: string; email: string };
+  // phone / organization: how to reach the person asking, shown beside the request.
+  organizer: { id: string; fullName: string; email: string; phone: string | null; organization: string | null };
   category: Category; venue: Venue | null;
   confirmedBookings: number;
 };

@@ -46,6 +46,11 @@ model User {
   passwordHash String
   fullName     String
   role         UserRole @default(ATTENDEE)
+  // Contact details an Organizer gives when registering, so the Admin reviewing an event
+  // request knows who is asking. Null for Attendees and for accounts an Admin created.
+  // Shown to Admins only - never part of anything an Attendee can read.
+  phone        String?
+  organization String?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
