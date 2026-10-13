@@ -1,80 +1,47 @@
 # UX Copy
 
-**Owner:** Role 7. **Used by:** Role 4 and Role 5, who add the strings to `frontend/messages/ar.json` and `en.json`.
+**Owner:** Role 7. **Source of truth:** `frontend/messages/ar.json` and `en.json`. Every UI string lives there
+(`CLAUDE.md` rule 7); this file is the rulebook for writing them, so the same situation reads the same everywhere.
 
-Wording for messages the API can return, so the same situation reads the same everywhere.
-Rules: short, plain, tell the user what happened and what they can do. No blame, no technical words.
-Arabic is Modern Standard Arabic, matching the existing `Errors` strings.
+## 1. Rules
 
-## 1. Attendee API errors (FR-03..FR-09)
+- Say what happened and what the person can do next: "الحجز مغلق لأن الفعالية بدأت بالفعل".
+- Short and plain. No blame ("you entered wrong"), no technical words (API, server error 409, null).
+- Arabic is Modern Standard Arabic, polite and direct. English is sentence case, no exclamation marks.
+- Errors are shown by the API's `code`, translated under `Errors`. Never show the API's English `message` to users.
+- A destructive confirmation names the thing and the consequence: "سيتم حذف «…» ولا يمكن التراجع".
+- Buttons are verbs: "احجز مقعدًا", "إلغاء الحجز", not "موافق" or "نعم".
 
-Codes from `backend/src/modules/attendee/API.md`. Add under the `Errors` namespace.
+## 2. Glossary (use these words, always)
 
-| Code | Arabic | English |
-|---|---|---|
-| `INVALID_FILTER` | عامل التصفية غير صالح. امسح التصفية وحاول مرة أخرى. | That filter isn't valid. Clear the filters and try again. |
-| `INVALID_PAGINATION` | تعذّر تحميل هذه الصفحة من النتائج. حاول مرة أخرى. | Couldn't load this page of results. Try again. |
-| `EVENT_NOT_FOUND` | هذه الفعالية غير متاحة. ربما حُذفت أو لم تُعتمد بعد. | This event isn't available. It may have been removed or not approved yet. |
-| `ALREADY_BOOKED` | لديك حجز في هذه الفعالية بالفعل. | You already have a booking for this event. |
-| `EVENT_FULL` | اكتمل عدد المقاعد في هذه الفعالية. | This event is full. |
-| `BOOKING_CLOSED` | انتهى الحجز لأن الفعالية بدأت. | Booking is closed because the event has started. |
-| `BOOKING_NOT_FOUND` | لم نجد هذا الحجز. | We couldn't find this booking. |
-| `ALREADY_CANCELLED` | هذا الحجز ملغى بالفعل. | This booking is already cancelled. |
-| `CANCELLATION_CLOSED` | لا يمكن إلغاء الحجز بعد بدء الفعالية. | You can't cancel after the event has started. |
+| Concept | Arabic | English | Never |
+|---|---|---|---|
+| Attendee (role) | حاضر / الحضور | Attendee | طالب، Student (`CLAUDE.md` naming rule) |
+| Organizer | منظم | Organizer | |
+| Admin | مشرف | Admin | مدير، أدمن |
+| Category | فئة | Category | تصنيف (keep one word) |
+| Venue | مكان | Venue | |
+| Booking / seat | حجز / مقعد | Booking / seat | تذكرة for the booking itself (the ticket is its QR) |
+| Event request (pending) | طلب بانتظار الاعتماد | Pending request | |
+| Approve / reject | اعتماد / رفض | Approve / reject | قبول |
 
-Ready to paste:
+## 3. Review of the current strings (13 Oct 2026)
 
-```json
-"INVALID_FILTER": "عامل التصفية غير صالح. امسح التصفية وحاول مرة أخرى.",
-"INVALID_PAGINATION": "تعذّر تحميل هذه الصفحة من النتائج. حاول مرة أخرى.",
-"EVENT_NOT_FOUND": "هذه الفعالية غير متاحة. ربما حُذفت أو لم تُعتمد بعد.",
-"ALREADY_BOOKED": "لديك حجز في هذه الفعالية بالفعل.",
-"EVENT_FULL": "اكتمل عدد المقاعد في هذه الفعالية.",
-"BOOKING_CLOSED": "انتهى الحجز لأن الفعالية بدأت.",
-"BOOKING_NOT_FOUND": "لم نجد هذا الحجز.",
-"ALREADY_CANCELLED": "هذا الحجز ملغى بالفعل.",
-"CANCELLATION_CLOSED": "لا يمكن إلغاء الحجز بعد بدء الفعالية."
-```
+Role 7 read all 486 lines of `ar.json` against these rules:
 
-```json
-"INVALID_FILTER": "That filter isn't valid. Clear the filters and try again.",
-"INVALID_PAGINATION": "Couldn't load this page of results. Try again.",
-"EVENT_NOT_FOUND": "This event isn't available. It may have been removed or not approved yet.",
-"ALREADY_BOOKED": "You already have a booking for this event.",
-"EVENT_FULL": "This event is full.",
-"BOOKING_CLOSED": "Booking is closed because the event has started.",
-"BOOKING_NOT_FOUND": "We couldn't find this booking.",
-"ALREADY_CANCELLED": "This booking is already cancelled.",
-"CANCELLATION_CLOSED": "You can't cancel after the event has started."
-```
+- No use of "طالب" or "Student" anywhere. Pass.
+- Role names, category and approval words are consistent across Attendee, Organizer and Admin screens. Pass.
+- 37 of the 41 error codes in `backend/src/modules/*/API.md` have Arabic and English strings, including the newer
+  ones (`PENDING_LIMIT_REACHED`, `INVALID_PHONE`, `FEEDBACK_NOT_OPEN`). The 4 chatbot codes have none yet; proposed
+  wording for whoever builds the chat screen (Role 4):
 
-## 2. Notification titles by type
-
-The API says to render a notification by its `type` in the reader's language (its `title` is the event title).
-
-| `type` | Arabic | English |
-|---|---|---|
-| `BOOKING_CONFIRMATION` | تم تأكيد حجزك | Booking confirmed |
-| `CAPACITY_FULL` | اكتملت سعة فعاليتك | Your event is full |
-| `BROADCAST` | إعلان | Announcement |
-| `SYSTEM` | تنبيه | Notice |
-
-## 3. Booking and event states (badges)
-
-| State | Source | Arabic | English | Badge color |
-|---|---|---|---|---|
-| Upcoming booking | `status = CONFIRMED`, event not started | قادم | Upcoming | teal |
-| Attended | `checkedInAt` set | حضرت | Attended | success |
-| Cancelled by the Attendee | `status = CANCELLED` | ألغيت الحجز | You cancelled | neutral |
-| Cancelled by the Organizer | `event.status = CANCELLED` | ألغاها المنظم | Cancelled by organizer | danger |
-| Open | `seatsLeft / capacity` > 25% | متاح | Open | success |
-| Almost full | 1–25% seats left | شبه ممتلئ | Almost full | warning |
-| Full | `isFull` | ممتلئ | Full | danger |
-
-Show the **Cancel booking** button only when the API sends `canCancel: true`.
-
-## 4. Filters (FR-04)
-
-The events API filters by **category**, **venue** and **one day** (`date=YYYY-MM-DD`). There is no text search and no
-date range, so the feed shows category chips, a venue list and a single date picker with an "All dates" reset.
-If the team wants a search box or "this week", Role 2 has to add it to the API first.
+  | Code | Arabic | English |
+  |---|---|---|
+  | `INVALID_MESSAGE` | اكتب رسالة لا تتجاوز 2000 حرف | Write a message of up to 2,000 characters |
+  | `INVALID_LOCALE` | تعذّر تحديد لغة المحادثة. حدّث الصفحة وحاول مرة أخرى. | Couldn't tell the chat language. Refresh and try again. |
+  | `SESSION_NOT_FOUND` | انتهت هذه المحادثة. ابدأ محادثة جديدة. | This chat has ended. Start a new one. |
+  | `CHATBOT_UNAVAILABLE` | المساعد غير متاح الآن. حاول بعد قليل. | The assistant isn't available right now. Try again shortly. |
+- Minor: `INVALID_FILTER` uses the loanword "الفلتر"; the rest of the UI does not use it. Suggest
+  "خيارات التصفية غير صالحة. أعد ضبطها وحاول مرة أخرى." (for Role 4).
+- Missing, because the screens do not exist yet: strings for the notification center, QR check-in and the chat
+  screen. Role 7 will review them when those screens are built.

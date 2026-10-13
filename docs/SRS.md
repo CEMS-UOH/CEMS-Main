@@ -23,10 +23,13 @@ SCEMS is one web platform for the whole event lifecycle: creation, approval, boo
 | Role | Who | Main tasks |
 |---|---|---|
 | Attendee | Students, faculty, staff and visitors | Register, browse and filter events, book a seat, get a QR ticket, cancel, view history, use the AI assistant. |
-| Organizer | Department and club staff | Create, edit and delete events, set capacity, upload images, view registered Attendees, check them in by QR. |
+| Organizer | Department and club staff | Create, edit and delete events, set capacity, add image and attachment links, view registered Attendees, check them in by QR. |
 | Admin | University IT / event office | Approve or reject events, manage accounts and categories, view analytics, broadcast notifications, remove content. |
 
-Self-registration always creates an **Attendee**. Organizer and Admin accounts are created by an Admin (FR-18).
+Anyone can self-register as an **Attendee** or an **Organizer**; nobody can self-register as an Admin.
+An Organizer gives a phone number (required) and the club or department they represent (optional), and has no
+account approval step: the gate is the event itself (FR-17). Until their first event is approved, a self-registered
+Organizer may have only **one** pending event request. Admins create Admin accounts (FR-18).
 
 ## 2. Overall description
 
@@ -35,11 +38,11 @@ Three-tier architecture:
 
 | Tier | Technology |
 |---|---|
-| Presentation | Next.js 15 (App Router) + TypeScript + Tailwind CSS 4 + shadcn/ui + next-intl. Hosted on Vercel. |
-| Application | Node.js + Express REST API (modules: attendee, organizer, admin, chatbot). Python FastAPI analytics service (pandas, scikit-learn). Anthropic Claude API for FR-23, called **only** from the backend. Hosted on DigitalOcean (Docker, NGINX, Certbot). |
+| Presentation | Next.js 15 (App Router) + TypeScript + Tailwind CSS 4 + next-intl, with the team's own shared components (`frontend/components`). Hosted on Vercel. |
+| Application | Node.js + Express REST API (modules: attendee, organizer, admin, chatbot). Python FastAPI analytics service (pandas, scikit-learn). Grok (xAI) API for FR-23, called **only** from the backend (Leader decision; GP1 named the Anthropic Claude API). Hosted on DigitalOcean (Docker, NGINX, Certbot). |
 | Data | Supabase PostgreSQL, accessed only through Prisma from the backend. |
 
-The browser talks only to the backend API. It never reaches the database or the Claude API directly.
+The browser talks only to the backend API. It never reaches the database or the AI provider directly.
 
 ### 2.2 Security model
 - Passwords hashed with bcrypt. Sessions are a JWT in an httpOnly cookie (7 days).
@@ -48,42 +51,47 @@ The browser talks only to the backend API. It never reaches the database or the 
   (`docs/DATABASE.md`).
 
 ### 2.3 Data model (summary)
-Eight tables: `users`, `venues`, `categories`, `events`, `registrations`, `feedbacks`, `notifications`, `chat_sessions`.
+Eight tables: `users` (with optional `phone` and `organization` for Organizers), `venues`, `categories`, `events`, `registrations`, `feedbacks`, `notifications`, `chat_sessions`.
 Roles are a `role` column on `users` (`ATTENDEE`, `ORGANIZER`, `ADMIN`), not separate tables.
 Check-in is `registrations.checkedInAt`; reports are computed by the analytics service. Full detail: `docs/DATABASE.md`.
 
 ## 3. Functional requirements
 
-Priority from GP1. Status as of `develop` after PR #7 (attendee APIs). "Backend done" means the API exists; the screens are still to build.
+Priority from GP1. Status as of `develop` on 13 Oct 2026 (after PR #13). **Done** = API and screens both exist;
+**API done** = the backend exists, the screen does not yet; **Partly done** = the note says what is missing.
 
 | ID | Requirement | Module | Priority | Status |
 |---|---|---|---|---|
-| FR-01 | The system shall allow users to register an Attendee account using a university email address. **[OPEN-2]** | Attendee | High | Done (any email accepted for now) |
-| FR-02 | The system shall provide secure login for all user roles. | All | High | Done |
-| FR-03 | The system shall display all approved campus events to Attendees. | Attendee | High | Backend done (PR #7) |
-| FR-04 | The system shall allow Attendees to filter events by category, venue and day. | Attendee | Medium | Backend done (PR #7) |
-| FR-05 | The system shall allow Attendees to book a seat for an available event and receive a QR code. Double booking and overbooking are rejected. | Attendee | High | Backend done (PR #7) |
-| FR-06 | The system shall send a booking confirmation notification after a successful booking. | Attendee | High | Backend done (PR #7) |
-| FR-07 | The system shall allow Attendees to cancel their own booking before the event starts. | Attendee | Medium | Backend done (PR #7) |
-| FR-08 | The system shall provide Attendees with their full booking history. | Attendee | Medium | Backend done (PR #7) |
-| FR-09 | The system shall display event details: description, date, venue and remaining capacity. | Attendee | High | Backend done (PR #7) |
-| FR-10 | The system shall allow Organizers to create events. New events start as `PENDING` until an Admin approves them. An optional English title and description may be added for the English interface. **[OPEN-6]** | Organizer | High | Planned |
-| FR-11 | The system shall allow Organizers to edit their own events. | Organizer | High | Planned |
-| FR-12 | The system shall allow Organizers to delete their own events before the event date. | Organizer | Medium | Planned |
-| FR-13 | The system shall allow Organizers to set a maximum capacity per event. | Organizer | High | Planned |
-| FR-14 | The system shall provide Organizers with the list of registered Attendees per event and record check-in by QR scan. | Organizer | High | Planned |
-| FR-15 | The system shall notify Organizers when an event reaches maximum capacity. | Organizer | Medium | Planned |
-| FR-16 | The system shall allow Organizers to upload images and attachments for their events. | Organizer | Low | Planned |
-| FR-17 | The system shall allow Admins to approve or reject events submitted by Organizers. | Admin | High | Planned |
-| FR-18 | The system shall allow Admins to manage user accounts: create Organizer/Admin accounts, change roles, activate and deactivate. | Admin | High | Planned |
-| FR-19 | The system shall allow Admins to create, edit and delete event categories. | Admin | Medium | Planned |
-| FR-20 | The system shall provide Admins with a system-wide analytics dashboard, including attendance trends and a predicted turnout for new events. | Admin | High | Planned |
-| FR-21 | The system shall allow Admins to send broadcast notifications to all users. | Admin | Medium | Planned |
-| FR-22 | The system shall allow Admins to delete any event or user account that breaks the rules. | Admin | High | Planned |
-| FR-23 | The system shall provide an AI assistant, powered by the Anthropic Claude API, to help users find events, answer questions and perform quick actions after explicit confirmation. | All | Medium | Planned |
+| FR-01 | The system shall allow users to register as an Attendee or an Organizer (Organizers give a phone number). Nobody can self-register as an Admin. **[OPEN-2]** | Attendee | High | Done (any email accepted for now) |
+| FR-02 | The system shall provide secure login for all user roles and send each role to its own area. | All | High | Done |
+| FR-03 | The system shall display all approved campus events to Attendees. | Attendee | High | Done |
+| FR-04 | The system shall allow Attendees to filter events by category, venue and day. | Attendee | Medium | Done |
+| FR-05 | The system shall allow Attendees to book a seat for an available event and receive a QR code. Double booking and overbooking are rejected. | Attendee | High | Done |
+| FR-06 | The system shall send a booking confirmation notification after a successful booking. | Attendee | High | Partly done: notification is stored, no notification screen yet |
+| FR-07 | The system shall allow Attendees to cancel their own booking before the event starts. | Attendee | Medium | Done |
+| FR-08 | The system shall provide Attendees with their full booking history. | Attendee | Medium | Done |
+| FR-09 | The system shall display event details: description, date, venue and remaining capacity. | Attendee | High | Done |
+| FR-10 | The system shall allow Organizers to create events. New events start as `PENDING` until an Admin approves them. A self-registered Organizer may have one pending request until their first approval. **[OPEN-6]** | Organizer | High | Done |
+| FR-11 | The system shall allow Organizers to edit their own events before they start. | Organizer | High | Done |
+| FR-12 | The system shall allow Organizers to delete their own events before they start, if no seats are booked. | Organizer | Medium | Done |
+| FR-13 | The system shall allow Organizers to set a maximum capacity per event, no larger than the venue and no smaller than the seats already booked. | Organizer | High | Done |
+| FR-14 | The system shall provide Organizers with the list of registered Attendees per event and record check-in by QR scan. **[OPEN-4]** | Organizer | High | Partly done: list done, QR check-in not built |
+| FR-15 | The system shall notify Organizers when an event reaches maximum capacity. | Organizer | Medium | Partly done: notification is stored, no notification screen yet |
+| FR-16 | The system shall allow Organizers to add an image and up to 10 attachments to their events (as links for now). | Organizer | Low | Done (links, not file upload) |
+| FR-17 | The system shall allow Admins to approve or reject events submitted by Organizers. | Admin | High | Done |
+| FR-18 | The system shall allow Admins to manage user accounts: create Organizer/Admin accounts, change roles, activate and deactivate, and see each Organizer's phone and organization. | Admin | High | Done |
+| FR-19 | The system shall allow Admins to create, edit and delete event categories. | Admin | Medium | Done |
+| FR-20 | The system shall provide Admins with a system-wide analytics dashboard, including attendance trends and a predicted turnout for new events. | Admin | High | Planned (analytics service has a health check only) |
+| FR-21 | The system shall allow Admins to send broadcast notifications to all users. | Admin | Medium | Partly done: sending done, no screen for users to read them |
+| FR-22 | The system shall allow Admins to delete any event or user account that breaks the rules. | Admin | High | Done |
+| FR-23 | The system shall provide an AI assistant, powered by the Grok (xAI) API, to help users find events, answer questions and perform quick actions after explicit confirmation. | All | Medium | API done, chat screen not built |
 
-Not yet covered by any FR **[OPEN-3]**: post-event feedback/rating (the `feedbacks` table and GP1 Screen 8),
-AI event recommendations (README), waitlist (GP1 Screen 5), password reset (GP1 Screen 1).
+Not yet covered by any FR **[OPEN-3]**: post-event feedback/rating (Role 4 built the form against a proposed
+`POST /api/attendee/events/:id/feedback`; the API does not exist yet), AI event recommendations (README),
+waitlist (GP1 Screen 5), password reset (GP1 Screen 1).
+
+Still to build across the system: a notification center (FR-06, FR-15, FR-21 are stored but nobody can read them),
+QR check-in (FR-14), the chat screen (FR-23) and the analytics dashboard (FR-20).
 
 ## 4. Non-functional requirements
 
@@ -114,7 +122,7 @@ Actors and their main use cases. The detailed use-case descriptions and diagrams
 | Actor | Use cases |
 |---|---|
 | Attendee | Register (FR-01), Log in (FR-02), Browse events (FR-03), Filter events (FR-04), View event details (FR-09), Book a seat (FR-05), Receive confirmation (FR-06), Cancel booking (FR-07), View booking history (FR-08), Chat with the AI assistant (FR-23) |
-| Organizer | Log in, Create event (FR-10), Set capacity (FR-13), Upload images (FR-16), Edit event (FR-11), Delete event (FR-12), View Attendees (FR-14), Check in by QR (FR-14), Receive capacity-full alert (FR-15) |
+| Organizer | Register as Organizer (FR-01), Log in, Create event (FR-10), Set capacity (FR-13), Add image and attachment links (FR-16), Edit event (FR-11), Delete event (FR-12), View Attendees (FR-14), Check in by QR (FR-14), Receive capacity-full alert (FR-15) |
 | Admin | Log in, Approve/Reject event (FR-17), Manage users (FR-18), Manage categories (FR-19), View analytics (FR-20), Broadcast notification (FR-21), Delete event or user (FR-22) |
 
 Sequence diagrams to redraw for the web platform (GP1 used "Mobile App" and "Scanner App"):
@@ -123,9 +131,11 @@ SD-04 QR check-in **[OPEN-4]**, SD-05 AI assistant.
 
 ## 6. Interface requirements
 
-- 17 screens from the GP1 prototype, built directly in code (no Figma before the midterm).
+- Screens are built directly in code under `frontend/app/[locale]` (no Figma before the midterm): home, login,
+  register, Attendee events/details/bookings, Organizer dashboard/event form/attendees, Admin overview/events/users/
+  categories/broadcast.
 - Arabic RTL default, English LTR, language toggle on every screen.
-- Visual rules: `docs/DESIGN-SYSTEM.md`.
+- Visual rules: `docs/DESIGN-SYSTEM.md`, which documents the tokens in `frontend/app/globals.css`.
 
 ## 7. Open decisions
 
@@ -136,4 +146,4 @@ SD-04 QR check-in **[OPEN-4]**, SD-05 AI assistant.
 | OPEN-3 | Which FR covers feedback/rating? Keep or drop recommendations, waitlist and password reset? | Leader + supervisor |
 | OPEN-4 | Is the QR scanner a page inside the web app (Organizer, phone camera)? | Leader + Role 3 |
 | OPEN-5 | Is this file the official SRS, or does a separate SRS document exist? | Leader |
-| OPEN-6 | Add optional `titleEn` and `descriptionEn` to `events`, so the English interface can show an English title when the Organizer provides one (falls back to the main title)? Supports GP1's goal of serving external guests. Needs a schema change by Role 2 and an update to the attendee API. Shown in the prototype's Create event form. | Leader + Role 2 |
+| OPEN-6 | Add optional `titleEn` and `descriptionEn` to `events`, so the English interface can show an English title when the Organizer provides one (falls back to the main title)? Supports GP1's goal of serving external guests. Needs a schema change by Role 2, an update to the attendee and organizer APIs, and a field in the event form. | Leader + Role 2 |

@@ -54,26 +54,34 @@ Items marked **Decision** need the Leader or supervisor before the SRS can be ch
 
 | # | Report says | Project actually | Proposed SRS update |
 |---|---|---|---|
-| 4.1 | Navy `#1B2A4A`, Teal `#2A9D8F`, Success `#2ECC71`, Warning `#F39C12`, Danger `#E74C3C` | `globals.css` is a placeholder; no colors defined yet | Keep the palette. Share it with Roles 4 and 5 **before** they build screens so they use the same values. |
-| 4.2 | "All 17 screens were designed in Figma" | Kickoff PDF: Figma skipped before the midterm; screens go straight to code | Say screens are built in code from the GP1 prototype (`SCEMS_UI_Prototype_17_Screens.html`). |
+| 4.1 | Navy `#1B2A4A` and Teal `#2A9D8F` | The built UI uses the University of Ha'il green `#1f7a52` with a gold accent, Tajawal and Plus Jakarta Sans | Follow the built design; documented and contrast-checked in `docs/DESIGN-SYSTEM.md`. |
+| 4.2 | "All 17 screens were designed in Figma" | Kickoff PDF: Figma skipped before the midterm; screens go straight to code | Say screens are built in code under `frontend/app` (done for most screens by 13 Oct). |
 
 ## 5. Design vs. the attendee API (PR #7, `backend/src/modules/attendee/API.md`)
 
-Checked after Role 2 merged FR-03..FR-09. The prototype was updated to match; these are the decisions that came out of it.
+Checked after Role 2 merged FR-03..FR-09. The built Attendee screens follow these decisions.
 
 | # | Design had | API does | Resolution |
 |---|---|---|---|
-| 5.1 | Text search box on the events feed | No text search (`category`, `venue`, `date` only), matching FR-04 | Search box removed from the prototype. If wanted, Role 2 adds a `q` parameter first. |
+| 5.1 | Text search box on the events feed | No text search (`category`, `venue`, `date` only), matching FR-04 | No search box. If wanted, Role 2 adds a `q` parameter first. |
 | 5.2 | "This week" / "This month" date filter | One campus day, `date=YYYY-MM-DD` | Single date picker with an "All dates" reset. |
-| 5.3 | Create-event form asked for Arabic **and** English title/description | One `title` and one `description` | One required field each, shown as written in both UI languages. Proposed: optional English title/description that the English UI prefers when present (**OPEN-6**, needs Role 2). The prototype shows the proposal. |
+| 5.3 | Create-event form asked for Arabic **and** English title/description | One `title` and one `description` | One required field each, shown as written in both UI languages. Proposed: optional English title/description that the English UI prefers when present (**OPEN-6**, needs Role 2). |
 | 5.4 | No state for an event the Organizer cancelled | `booking.event.status = CANCELLED` | New badge "Cancelled by organizer" in My bookings → Cancelled. |
-| 5.5 | Generic "full" message | Error codes `EVENT_FULL`, `BOOKING_CLOSED`, … | Wording for all 9 codes in `docs/UX-COPY.md`. |
+| 5.5 | Generic "full" message | Error codes `EVENT_FULL`, `BOOKING_CLOSED`, … | Strings for every code live in `frontend/messages`; wording rules in `docs/UX-COPY.md`. |
+
+## 6. Leader decisions after GP1 (develop, 13 Oct 2026)
+
+| # | GP1 said | Now | Applied in `SRS.md` |
+|---|---|---|---|
+| 6.1 | AI assistant on the Anthropic Claude API (FR-23, §12.3.1) | Grok (xAI) API, Leader override (commit `6f07b75`) | FR-23 and §2.1 |
+| 6.2 | Only Attendees self-register; Admin creates Organizers | Organizers self-register with a phone number; one pending request until their first approval (PR #13) | FR-01, FR-10, FR-18, §1.3 |
+| 6.3 | Image and attachment **upload** (FR-16) | Image and attachment **links** (http/https URLs, up to 10) | FR-16 |
 
 ---
 
 ## Next steps
 
-1. The Leader confirms the source file for the SRS and where it lives (`docs/SRS.md`?).
-2. The items marked **Decision** go to the Leader or supervisor.
-3. Once confirmed, write `docs/SRS.md` with the agreed updates.
-4. Send the design system (4.1) to Roles 4 and 5 now. They are about to start building screens.
+1. The Leader answers the open decisions in `SRS.md` §7 (OPEN-1..OPEN-6).
+2. Role 1 + Role 4 decide on the three contrast fixes in `DESIGN-SYSTEM.md` §5.
+3. Role 4 + Role 5 settle one badge tone for "confirmed" (`DESIGN-SYSTEM.md` §6).
+4. Role 7 reviews the notification center, QR check-in and chat screens when they are built.

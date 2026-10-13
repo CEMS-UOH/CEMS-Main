@@ -1,165 +1,127 @@
 # Design System
 
-**Owner:** Role 7 (UI/UX). **Used by:** Role 4 (Attendee screens) and Role 5 (Organizer / Admin screens).
+**Owner:** Role 7 (UI/UX). **Source of truth:** the code. Tokens live in `frontend/app/globals.css`, shared components
+in `frontend/components`. This file explains them, gives the rules for using them, and records Role 7's accessibility
+review. If this file and the code disagree, the code wins and this file gets fixed.
 
-One visual language for every screen, taken from the GP1 prototype (*SCEMS_UI_Prototype_17_Screens*, Report Ch. 11).
-If a screen needs something this file does not cover, ask Role 7 before inventing a new color, size or pattern.
+Need a color, size or pattern that is not here? Ask Role 7 and the owners of `frontend/components` (Role 1 + Role 4)
+before adding one.
 
 ## 1. Colors
 
-### Brand
+Palette taken from the University of Ha'il portal: deep green brand, white surfaces, a gold accent from the crest.
+The hex values are read from a screenshot, not the university's official brand kit (open item: get the kit).
 
-| Token | Hex | Use |
+| Token (Tailwind class) | Hex | Use |
 |---|---|---|
-| `navy` | `#1B2A4A` | Top bar, admin sidebar, page titles, chat header. Structure and authority. |
-| `navy-light` | `#253659` | Hover on navy surfaces. |
-| `navy-dark` | `#111B30` | Pressed state on navy buttons. |
-| `teal` | `#2A9D8F` | Active states, progress bars, focus rings, icons, links on large text. |
-| `teal-dark` | `#1E7268` | **Primary button background** and teal text on white (see §1.4). |
-| `teal-light` | `#3AB5A5` | Decorative only (gradients). |
-| `teal-bg` | `#E6F5F3` | Teal badge background, selected chip, outline-button hover. |
-
-### Neutrals
-
-| Token | Hex | Use |
-|---|---|---|
-| `gray-50` | `#F8F9FA` | Page background, info tiles inside cards. |
-| `gray-100` | `#F1F3F5` | Subtle fills. |
-| `gray-200` | `#E9ECEF` | Card borders, progress track. |
-| `gray-300` | `#DEE2E6` | Input borders, dashed upload zone. |
-| `gray-400` | `#CED4DA` | Disabled borders. **Not for text.** |
-| `gray-600` | `#6C757D` | Secondary text (subtitles, meta lines). |
-| `gray-700` | `#495057` | Form labels. |
-| `gray-800` | `#343A40` | Body text. |
-
-### Status
-
-| Meaning | Solid (icons, bars, borders) | Badge background | Badge text |
-|---|---|---|---|
-| Success / Confirmed / Present | `#2ECC71` | `#D4F5E2` | `#1A7A40` |
-| Warning / Near full | `#F39C12` | `#FEF3CD` | `#856404` |
-| Danger / Cancel / Delete / Error | `#E74C3C` | `#FDE8E8` | `#A12D2D` |
-| Info | `#3498DB` | `#E8ECF3` | `#1B2A4A` |
-| Neutral / Past | `gray-500` | `gray-200` | `gray-600` |
-
-### 1.4 Contrast rules (NFR-16, WCAG 2.1 AA)
-
-Measured against white:
-
-| Pair | Ratio | Verdict |
-|---|---|---|
-| White on `teal` `#2A9D8F` | 3.3 : 1 | **Fails** for normal text (needs 4.5). OK only for text ≥ 18.7px bold. |
-| White on `teal-dark` `#1E7268` | 5.7 : 1 | Passes. **Use this for primary buttons.** |
-| White on `navy` `#1B2A4A` | 14.2 : 1 | Passes. |
-| White on danger `#E74C3C` | 3.8 : 1 | **Fails** for normal text. Danger buttons use `#C0392B` (5.4 : 1). |
-| White on success `#2ECC71` / warning `#F39C12` | ~2.2 : 1 | **Fails.** Never put white text on these. Use the badge pairs above. |
-| `gray-600` on white | 4.7 : 1 | Passes, just. Do not use a lighter gray for text. |
-
-This is the one deliberate change from the GP1 prototype, which used white text on `teal` buttons.
+| `primary` | `#1f7a52` | Primary buttons, links, focus ring, active states. |
+| `primary-dark` | `#123b2e` | Hover on primary, text on `primary-light`. |
+| `primary-light` | `#e6f2ec` | Selected/hover backgrounds, primary badge background. |
+| `accent` | `#c9a227` | Gold. Decoration and icons only, **never text** (§5). At most one gold element per screen. |
+| `accent-dark` | `#8a6a1a` | Text on `accent-light` (see §5: needs one step darker). |
+| `accent-light` | `#f6eed7` | Accent badge background ("3 seats left"). |
+| `background` | `#f5f6f6` | Page background. |
+| `surface` | `#ffffff` | Cards, inputs, header. |
+| `text` | `#1a1f1c` | Body text. |
+| `text-muted` | `#5b6560` | Secondary text, labels of meta lines. |
+| `border` | `#e3e7e5` | Card and divider lines. |
+| `danger` / `danger-light` | `#b3261e` / `#fbecea` | Errors, delete, cancel. |
+| `success` / `success-light` | `#1f7a52` / `#e6f2ec` | Confirmed, done (same green as primary). |
 
 ## 2. Typography
 
-- Font: **IBM Plex Sans Arabic** (Google Fonts, covers Arabic and Latin), falling back to `'Segoe UI', Tahoma, Arial, sans-serif`.
-  In Next.js load it with `next/font/google`.
-- Icons: line icons from the shadcn/ui default set (lucide), 2px stroke. No emoji in the UI.
-- Sizes: page title 20px bold navy, section title 16px bold, body 14px, labels and meta 12–13px, badges 11px semibold.
-- Never go below 11px. Arabic needs line-height ≥ 1.5.
+| | Arabic (`dir="rtl"`) | English (`dir="ltr"`) |
+|---|---|---|
+| Font | Tajawal (matches the university portal) | Plus Jakarta Sans |
+| Display weight | 500 (heavier cuts fill in at large sizes) | 800 |
+| Letter spacing | 0 always (tracking breaks Arabic joins) | tight on headings |
+| Line height | taller, to clear the diacritics | standard |
+
+Use the named sizes, never a one-off `text-*`: `type-display` (home headline only), `type-h1` (page title),
+`type-h2` (section), `type-h3` (card or list title), `type-eyebrow` (small label above a title),
+`text-base` (body), `text-sm` (secondary/UI), `text-xs` (captions, field labels).
+`globals.css` switches the font and the numbers by `html[dir]`; components never set a font.
 
 ## 3. Shape, spacing, motion
 
-| Token | Value | Use |
-|---|---|---|
-| `radius` | 12px | Cards, banners, chat window. |
-| `radius-sm` | 8px | Buttons, inputs, info tiles. |
-| pill | 9999px | Badges, chips, search bar, language toggle. |
-| `shadow` | `0 2px 12px rgba(27,42,74,0.10)` | Cards; event cards only on hover. |
-| transition | `0.18s ease` | Hover and focus. |
-| Spacing | Tailwind scale. Card padding `p-6` (`p-4` small), gap between cards `gap-3`/`gap-4`. |
+- Radius: `rounded-lg` everywhere; `rounded-full` only for badges.
+- Shadow: `shadow-card`, `shadow-card-hover` on interactive cards and primary buttons.
+- Page width: `FRAME` (max-w-6xl), `FRAME_NARROW` for single forms, `FRAME_WIDE` for the home page (`components/styles.ts`).
+- Motion: one entrance (`animate-rise`) and one easing. Nothing bounces or loops except the loading spinner.
+  `prefers-reduced-motion` turns the entrance off.
 
 ## 4. Components
 
-| Component | Spec |
-|---|---|
-| Primary button | `teal-dark` background, white 13px semibold, `radius-sm`, padding 9×20. Hover: `#185E56`. Full-width variant 14px, padding 12. |
-| Secondary button | Transparent, 1.5px `teal-dark` border, `teal-dark` text. Hover: `teal-bg`. |
-| Navy button | `navy` background, white text. For admin/structural actions. |
-| Danger button | `#C0392B` background, white text. Always confirm before a destructive action. |
-| Input | 1.5px `gray-300` border, `radius-sm`, padding 10×12, 13px. Focus: border `teal`. Error: border danger + message below in `#A12D2D`. |
-| Label | 12px semibold `gray-700`, above the input. Required fields end with `*`. |
-| Card | White, 1px `gray-200` border, `radius`, `shadow`. |
-| Badge | Pill, 11px semibold, padding 2×10, colors from the status table. |
-| Filter chip | Pill, 1.5px `gray-300` border, 12px `gray-600`. Selected: `teal-bg` fill, `teal-dark` text and border. |
-| Search bar | Pill, 1.5px `gray-300` border, icon at the start, clear button at the end. |
-| Progress bar | 6px tall, `gray-200` track, rounded. Fill color by capacity (§5). |
-| Stat card (KPI) | White card, centered, big number in `navy`, label in `gray-600`. |
-| Avatar | 36px circle, `teal-bg` with `teal-dark` initials. |
-| Chat bubbles (FR-23) | Bot: `gray-100`, `gray-800` text. User: `teal-dark`, white text. 16px radius, max 75% width. |
+Use these; do not restyle them per screen.
 
-## 5. Status mapping (same everywhere)
-
-**Event capacity (progress bar and card badge):**
-
-| Booked | Bar color | Badge |
+| Component | File | Rules |
 |---|---|---|
-| < 75% | `teal` | Open (success) |
-| 75–99% | warning `#F39C12` | Almost full (warning) |
-| 100% | danger `#E74C3C` | Full (danger) |
+| Button | `Button.tsx` | Variants `primary`, `secondary`, `ghost`, `danger`; sizes `sm` (36px), `md` (44px), `lg` (48px). Pass `href` for navigation, nothing for actions. `loading` shows a spinner and blocks double clicks. One `primary` per area. |
+| Badge | `Badge.tsx` | Tones `primary`, `success`, `danger`, `accent`, `neutral`, `muted`. The label carries the meaning; color only reinforces it. |
+| Card | `Card.tsx` | `interactive` for clickable cards (hover lift + shadow). |
+| Form fields | `FormField.tsx` | `TextField`, `TextAreaField`, `SelectField`. 44px tall, label above, error below, `aria-invalid` turns the border red. |
+| Form message | `FormMessage.tsx` | Success or error banner at the top of a form. |
+| Page header | `PageHeader.tsx` | Eyebrow, title, subtitle, actions on the end side. |
+| States | `States.tsx` | `LoadingState`, `EmptyState` (icon, sentence, next action), `ErrorState` (message + retry). Every screen that loads data uses all three. |
+| Icons | `Icons.tsx` | 24px line icons. Directional ones (`BackIcon`, `ForwardIcon`) must flip in RTL. No emoji in the UI. |
+| Pagination | `Pagination.tsx` | Lists longer than one page. |
 
-**Event status (`EventStatus`, Organizer and Admin screens):** `PENDING` → warning, `APPROVED` → success,
-`REJECTED` → danger, `CANCELLED` → neutral.
+Focus: every interactive element shows `FOCUS_RING` (2px `primary` outline) on keyboard focus only.
 
-**Booking status (`RegistrationStatus`):** `CONFIRMED` → teal, `CANCELLED` → neutral. Past events → neutral.
+## 5. Accessibility review (WCAG 2.1 AA, NFR-16)
 
-**Notifications:** unread → teal dot, read → gray dot.
+Role 7 checked every text/background pair the components use. Measured contrast:
 
-Color is never the only signal: every status also has a text label (badge text, `aria-label`).
+| Pair | Ratio | Needs | Result |
+|---|---|---|---|
+| White on `primary` (primary button) | 5.30 | 4.5 | Pass |
+| `primary` on white (links, secondary button) | 5.30 | 4.5 | Pass |
+| `primary` on `background` | 4.89 | 4.5 | Pass |
+| `text` on `background` | 15.43 | 4.5 | Pass |
+| `text-muted` on white / on `background` | 6.04 / 5.58 | 4.5 | Pass |
+| White on `danger` | 6.54 | 4.5 | Pass |
+| `danger` on `danger-light` (badge) | 5.69 | 4.5 | Pass |
+| `success` on `success-light` (badge) | 4.61 | 4.5 | Pass, just |
+| `accent-dark` on `accent-light` (badge) | **4.36** | 4.5 | **Fail** |
+| `accent` (gold) on white as text | **2.42** | 4.5 | **Fail** (fine for icons and decoration) |
+| Input border (`border`) on white | **1.25** | 3.0 | **Fail**: the field outline is hard to see |
+| Placeholder (`text-muted` at 70%) on white | about 3.1 | 4.5 | Weak; acceptable only because every field has a visible label |
 
-## 6. Layout, RTL and language
+Recommended fixes, for the owners of `globals.css` and `components` (Role 1 + Role 4) to decide:
 
-- Arabic RTL is the default, English LTR second. Every screen has the AR/EN toggle in the top bar.
-- Use Tailwind logical classes only: `ms-` `me-` `ps-` `pe-` `start-` `end-` `text-start` `text-end`. Never `ml-` `mr-` `left-` `right-` (`CLAUDE.md` rule 8).
-- Icons that show direction (back arrow, chevrons) flip in RTL (`rtl:rotate-180`).
+1. `accent-dark`: `#8a6a1a` → `#785b16` (5.48:1 on `accent-light`). Same look, passes.
+2. Never use `accent` as a text color. Keep it for icons, borders and decoration.
+3. Input borders: give `CONTROL_BASE` its own darker border, e.g. `#86908b` (3.29:1), and keep `border` for cards
+   and dividers.
+
+## 6. Status mapping
+
+As implemented in `_dashboard/ui/StatusBadges.tsx` (Organizer, Admin) and `(attendee)/_ui/Badges.tsx`:
+
+| Meaning | Badge tone | Where |
+|---|---|---|
+| Event pending approval | `neutral` | Dashboards |
+| Event approved | `success` | Dashboards |
+| Event rejected | `danger` | Dashboards |
+| Event cancelled | `muted` | Dashboards |
+| Booking confirmed | `success` in dashboards, **`primary` for the Attendee** | Both |
+| Attended (checked in) | `success` | Attendee |
+| Event cancelled by the organizer | `danger` | Attendee |
+| Booking cancelled by the attendee | `muted` | Attendee |
+| Event full | `danger` | Attendee |
+| Few seats left | `accent` (the one gold element on the screen) | Attendee |
+| Category | `primary` | Attendee |
+
+**Inconsistency to settle (Role 4 + Role 5):** a confirmed booking is green (`success`) in the dashboards and
+`primary` for the Attendee. They look almost the same today (same background `#e6f2ec`), but the text is
+`primary-dark` in one and `success` in the other, and they will drift apart if either color changes. Pick one tone for "confirmed" and use it in both places; Role 7 suggests `success`.
+
+## 7. Layout, RTL and language
+
+- Arabic RTL is the default, English LTR second. The language switcher is on every screen.
+- Tailwind logical classes only: `ms-` `me-` `ps-` `pe-` `start-` `end-` `text-start` `text-end`
+  (`CLAUDE.md` rule 8). Never `ml-` `mr-` `left-` `right-`.
+- Text people type (event titles, descriptions, names) can be in either language: show it with `dir="auto"` so it
+  aligns by its own language inside the other UI.
 - Numbers, dates and times: format with the active locale (next-intl), never hand-built strings.
-- Responsive (NFR-08): one column on phones, two columns for the event grid from `md`, sidebar layouts from `lg`.
-- Admin and Organizer pages: navy sidebar at the start edge on `lg`, collapses to a top menu on smaller screens.
-
-## 7. States every screen must have
-
-- **Loading:** skeleton cards, not a blank page.
-- **Empty:** icon + one sentence + the next action (e.g. "+ Create event"), as in prototype Screen 16.
-- **Error:** message translated from the API error `code` through the `Errors` namespace, plus a way to retry.
-
-## 8. Tailwind 4 tokens
-
-For whoever owns `frontend/app/globals.css` (Role 4 with the Leader). Role 7 does not edit it.
-
-```css
-@theme {
-  --color-navy: #1B2A4A;
-  --color-navy-light: #253659;
-  --color-navy-dark: #111B30;
-  --color-teal: #2A9D8F;
-  --color-teal-dark: #1E7268;
-  --color-teal-darker: #185E56;
-  --color-teal-light: #3AB5A5;
-  --color-teal-bg: #E6F5F3;
-  --color-success: #2ECC71;
-  --color-success-bg: #D4F5E2;
-  --color-success-fg: #1A7A40;
-  --color-warning: #F39C12;
-  --color-warning-bg: #FEF3CD;
-  --color-warning-fg: #856404;
-  --color-danger: #E74C3C;
-  --color-danger-strong: #C0392B;
-  --color-danger-bg: #FDE8E8;
-  --color-danger-fg: #A12D2D;
-  --color-info: #3498DB;
-  --radius-card: 12px;
-  --radius-control: 8px;
-  --shadow-card: 0 2px 12px rgba(27, 42, 74, 0.10);
-  --font-sans: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
-}
-```
-
-This gives classes like `bg-navy`, `bg-teal-dark`, `text-danger-fg`, `rounded-card`, `shadow-card`.
-Tailwind's own gray scale is close enough to the prototype grays; use `gray-50`…`gray-800`.
+- Every UI string comes from `frontend/messages/{ar,en}.json` (`CLAUDE.md` rule 7). Wording rules: `docs/UX-COPY.md`.
