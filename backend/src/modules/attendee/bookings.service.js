@@ -13,6 +13,16 @@ const newQrToken = () => crypto.randomBytes(24).toString('base64url');
 
 const NOT_FOUND = () => new HttpError(404, 'Event not found', 'EVENT_NOT_FOUND');
 
+// TEMPORARY MITIGATION - remove once the database is moved to a closer region.
+// The Supabase database is hosted in Seoul (ap-northeast-2), and from Saudi Arabia each query
+// takes about 1.5-2 seconds. The booking transaction below runs up to nine queries, so it
+// could never finish inside Prisma's default 5-second transaction timeout: every booking
+// failed with P2028 ("Transaction not found") and the API answered 500. These limits give
+// it room to finish. They do not make booking fast - the real fix is the database region.
+//   timeout: how long the whole transaction may run.
+//   maxWait: how long to wait for a free connection before it starts.
+const BOOKING_TX_OPTIONS = { timeout: 30000, maxWait: 10000 };
+
 /**
  * FR-05 + FR-06: book one seat and notify the attendee, all in one transaction.
  *
@@ -29,7 +39,15 @@ async function book({ userId, eventId }) {
 
       const event = await tx.event.findUnique({
         where: { id: eventId },
-        select: { id: true, title: true, startsAt: true, capacity: true, status: true },
+        // organizerId is needed for the FR-15 capacity-full notification below.
+        select: {
+          id: true,
+          title: true,
+          startsAt: true,
+          capacity: true,
+          status: true,
+          organizerId: true,
+        },
       });
       if (!event || event.status !== 'APPROVED') throw NOT_FOUND();
       if (event.startsAt <= new Date()) {
@@ -74,8 +92,36 @@ async function book({ userId, eventId }) {
         },
       });
 
+      // FR-15: tell the organizer once, the moment this booking fills the last seat.
+      // Notification has no eventId column, so the event id is embedded in `body` and used
+      // as the idempotency key - a second booking (after a cancellation frees a seat and a
+      // new one re-fills it) must not notify the organizer twice for the same event. The
+      // event row is still locked (FOR UPDATE) at this point, so two bookings racing for the
+      // last seat cannot both pass this check.
+      const seatsTakenNow = seatsTaken + 1;
+      if (seatsTakenNow === event.capacity) {
+        const alreadyNotified = await tx.notification.findFirst({
+          where: {
+            userId: event.organizerId,
+            type: 'CAPACITY_FULL',
+            body: { contains: event.id },
+          },
+          select: { id: true },
+        });
+        if (!alreadyNotified) {
+          await tx.notification.create({
+            data: {
+              userId: event.organizerId,
+              type: 'CAPACITY_FULL',
+              title: event.title,
+              body: `Event "${event.title}" (id: ${event.id}) has reached full capacity.`,
+            },
+          });
+        }
+      }
+
       return toPublicBooking(booking);
-    });
+    }, BOOKING_TX_OPTIONS);
   } catch (e) {
     // Belt and braces: the row lock already serialises bookings, but if two requests from the
     // same attendee still race to create the row, the unique index rejects the second one.

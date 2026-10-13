@@ -57,19 +57,41 @@ describe('POST /register (FR-01)', () => {
     expect(bcrypt.compareSync('longenough1', data.passwordHash)).toBe(true);
   });
 
-  it('ignores a role sent by the client and always creates an ATTENDEE', async () => {
+  it.each(['ADMIN', 'SUPERUSER', '', 42, null])(
+    'refuses to self-register with role %p - only ATTENDEE or ORGANIZER',
+    async (role) => {
+      const res = await request(app).post(`${BASE}/register`).send({
+        email: 'sneaky@example.com',
+        password: 'longenough1',
+        fullName: 'Sneaky',
+        role,
+        phone: '0512345678',
+      });
+
+      expect(res.status).toBe(422);
+      expect(res.body.error.code).toBe('INVALID_ROLE');
+      expect(prisma.user.create).not.toHaveBeenCalled();
+    }
+  );
+
+  it('stores no contact details for an ATTENDEE, even if some are sent', async () => {
     prisma.user.findUnique.mockResolvedValueOnce(null);
     prisma.user.create.mockResolvedValueOnce(attendee);
 
     const res = await request(app).post(`${BASE}/register`).send({
-      email: 'sneaky@example.com',
+      email: 'sara@example.com',
       password: 'longenough1',
-      fullName: 'Sneaky',
-      role: 'ADMIN',
+      fullName: 'Sara',
+      role: 'ATTENDEE',
+      phone: '0512345678',
+      organization: 'Robotics Club',
     });
 
     expect(res.status).toBe(201);
-    expect(prisma.user.create.mock.calls[0][0].data.role).toBe('ATTENDEE');
+    const data = prisma.user.create.mock.calls[0][0].data;
+    expect(data.role).toBe('ATTENDEE');
+    expect(data.phone).toBeNull();
+    expect(data.organization).toBeNull();
   });
 
   it('rejects a duplicate email with 409', async () => {
@@ -117,6 +139,105 @@ describe('POST /register (FR-01)', () => {
 
     expect(res.status).toBe(422);
     expect(res.body.error.code).toBe('INVALID_NAME');
+  });
+});
+
+// ------------------------------------------------- FR-01 register as an Organizer
+
+describe('POST /register as an Organizer', () => {
+  const organizerUser = {
+    ...attendee,
+    id: 'user-2',
+    email: 'omar@example.com',
+    fullName: 'Omar',
+    role: 'ORGANIZER',
+    phone: '+966512345678',
+    organization: 'Robotics Club',
+  };
+  const body = (overrides = {}) => ({
+    email: 'omar@example.com',
+    password: 'longenough1',
+    fullName: 'Omar',
+    role: 'ORGANIZER',
+    phone: '+966 51 234-5678',
+    organization: '  Robotics Club  ',
+    ...overrides,
+  });
+
+  it('creates an active ORGANIZER with a cleaned-up phone and trimmed organization', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce(null);
+    prisma.user.create.mockResolvedValueOnce(organizerUser);
+
+    const res = await request(app).post(`${BASE}/register`).send(body());
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.user.role).toBe('ORGANIZER');
+    expect(JSON.stringify(res.body)).not.toMatch(/passwordHash|\$2[aby]\$/);
+
+    const data = prisma.user.create.mock.calls[0][0].data;
+    expect(data.role).toBe('ORGANIZER');
+    expect(data.phone).toBe('+966512345678'); // spaces and dashes removed
+    expect(data.organization).toBe('Robotics Club');
+    // No pending state: the account is usable at once. The gate is event approval.
+    expect(data.isActive).toBeUndefined();
+  });
+
+  it('accepts a phone typed in Arabic digits and stores it as 0-9', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce(null);
+    prisma.user.create.mockResolvedValueOnce(organizerUser);
+
+    const res = await request(app)
+      .post(`${BASE}/register`)
+      .send(body({ phone: '٠٥١٢٣٤٥٦٧٨' }));
+
+    expect(res.status).toBe(201);
+    expect(prisma.user.create.mock.calls[0][0].data.phone).toBe('0512345678');
+  });
+
+  it('treats the organization as optional', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce(null);
+    prisma.user.create.mockResolvedValueOnce({ ...organizerUser, organization: null });
+
+    const { organization, ...withoutOrganization } = body();
+    const res = await request(app).post(`${BASE}/register`).send(withoutOrganization);
+
+    expect(res.status).toBe(201);
+    expect(prisma.user.create.mock.calls[0][0].data.organization).toBeNull();
+  });
+
+  it.each([
+    ['missing', undefined],
+    ['empty', '   '],
+    ['too short', '12345'],
+    ['too long', '1234567890123456'],
+    ['letters', '05abc45678'],
+    ['not a string', 512345678],
+  ])('requires a valid phone number (%s) with 422', async (_label, phone) => {
+    const res = await request(app).post(`${BASE}/register`).send(body({ phone }));
+
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('INVALID_PHONE');
+    expect(prisma.user.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['over 120 characters', 'x'.repeat(121)],
+    ['not a string', 12345],
+  ])('rejects a bad organization (%s) with 422', async (_label, organization) => {
+    const res = await request(app).post(`${BASE}/register`).send(body({ organization }));
+
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('INVALID_ORGANIZATION');
+    expect(prisma.user.create).not.toHaveBeenCalled();
+  });
+
+  it('still rejects a duplicate email with 409', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ id: 'existing' });
+
+    const res = await request(app).post(`${BASE}/register`).send(body());
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('EMAIL_TAKEN');
   });
 });
 

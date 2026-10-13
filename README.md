@@ -25,7 +25,7 @@ It covers 23 functional requirements (FR-01..FR-23) and 16 non-functional requir
 **Supervisor:** Dr. Mohamed Hazber
 
 ## 🚀 Key Features | المميزات الأساسية
-* **AI Assistant (FR-23):** Conversational help for finding events, powered by the Anthropic Claude API.
+* **AI Assistant (FR-23):** Conversational help for finding events, powered by Grok (xAI).
   (مساعد ذكي للبحث عن الفعاليات والإجابة على الاستفسارات)
 * **AI Recommendation:** Personalized event suggestions.
   (توصيات ذكية للفعاليات بناءً على اهتمامات الحضور)
@@ -90,7 +90,7 @@ end to end, Supabase -> Express -> Next.js, in Arabic (RTL) and English (LTR).
 | Endpoint | Method | Purpose |
 |---|---|---|
 | `/health`, `/health/db` | GET | Liveness and database checks |
-| `/api/attendee/auth/register` | POST | FR-01. Always creates an ATTENDEE. |
+| `/api/attendee/auth/register` | POST | FR-01. Creates an ATTENDEE, or an ORGANIZER when `role: "ORGANIZER"` is sent with a `phone` (and optional `organization`). Never an ADMIN. See `backend/src/modules/attendee/API.md`. |
 | `/api/attendee/auth/login` | POST | FR-02. Sets an httpOnly JWT cookie (7 days). |
 | `/api/attendee/auth/logout` | POST | Clears the cookie. |
 | `/api/attendee/auth/me` | GET | Current user. Protected. |

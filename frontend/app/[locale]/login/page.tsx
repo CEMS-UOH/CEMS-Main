@@ -5,9 +5,14 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
+import AuthShell from '@/components/AuthShell';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
 import FormField from '@/components/FormField';
 import FormMessage from '@/components/FormMessage';
+import { TEXT_LINK } from '@/components/styles';
 import { login } from '@/lib/api';
+import { HOME_BY_ROLE } from '@/lib/roleHome';
 import { useApiError } from '@/lib/useApiError';
 
 export default function LoginPage() {
@@ -28,7 +33,10 @@ export default function LoginPage() {
     const result = await login({ email, password });
 
     if (result.ok) {
-      router.push('/me');
+      // The login response carries the role, which decides where the user lands (Attendee ->
+      // /me, Organizer -> /organizer, Admin -> /admin). Falls back to the account page if the
+      // API ever sends a role this build doesn't know.
+      router.push(HOME_BY_ROLE[result.data.user.role] ?? '/me');
       return; // keep the button disabled while the route change is in flight
     }
 
@@ -37,51 +45,50 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-6 py-12">
-      <header className="flex flex-col gap-1 text-start">
-        <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <p className="text-sm text-slate-600">{t('subtitle')}</p>
+    <AuthShell>
+      <header className="flex flex-col gap-2 text-start">
+        <h1 className="type-h1 text-text">{t('title')}</h1>
+        <p className="text-base text-text-muted">{t('subtitle')}</p>
       </header>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        {error ? <FormMessage kind="error">{error}</FormMessage> : null}
+      <Card>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+          {error ? <FormMessage kind="error">{error}</FormMessage> : null}
 
-        <FormField
-          id="email"
-          label={t('email')}
-          type="email"
-          value={email}
-          onChange={setEmail}
-          autoComplete="email"
-          disabled={submitting}
-          required
-        />
-        <FormField
-          id="password"
-          label={t('password')}
-          type="password"
-          value={password}
-          onChange={setPassword}
-          autoComplete="current-password"
-          disabled={submitting}
-          required
-        />
+          <FormField
+            id="email"
+            label={t('email')}
+            type="email"
+            value={email}
+            onChange={setEmail}
+            autoComplete="email"
+            ltrValue
+            disabled={submitting}
+            required
+          />
+          <FormField
+            id="password"
+            label={t('password')}
+            type="password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            disabled={submitting}
+            required
+          />
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-60"
-        >
-          {submitting ? t('submitting') : t('submit')}
-        </button>
-      </form>
+          <Button type="submit" loading={submitting} className="mt-2 w-full">
+            {submitting ? t('submitting') : t('submit')}
+          </Button>
+        </form>
+      </Card>
 
-      <p className="text-sm text-start">
-        <span className="me-1 text-slate-600">{t('noAccount')}</span>
-        <Link href="/register" className="text-blue-700 underline">
+      <p className="text-start text-sm">
+        <span className="me-1 text-text-muted">{t('noAccount')}</span>
+        <Link href="/register" className={TEXT_LINK}>
           {t('registerLink')}
         </Link>
       </p>
-    </main>
+    </AuthShell>
   );
 }

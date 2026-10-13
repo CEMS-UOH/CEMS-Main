@@ -1,18 +1,46 @@
 {
   "Home": {
     "title": "Smart Campus Event Manager System",
-    "subtitle": "University of Hail — Graduation Project 2",
-    "apiChecking": "Checking server connection…",
-    "apiUp": "Server is up",
-    "apiDown": "Cannot reach the server",
     "switchLanguage": "العربية",
     "login": "Log in",
     "register": "Create account",
-    "myAccount": "My account"
+    "myAccount": "My account",
+    "metaDescription": "Discover events at the University of Hail, book a seat and enter with a QR ticket.",
+    "university": "University of Hail",
+    "headline": "Every campus event, in one place.",
+    "lead": "Discover what's happening at the University of Hail, book your seat in seconds and walk in with a QR ticket.",
+    "browse": "Browse events",
+    "dashboard": "Dashboard",
+    "footerNav": "Footer",
+    "features": {
+      "title": "One system for the whole event",
+      "subtitle": "From the first announcement to the last seat.",
+      "discover": {
+        "title": "Discover",
+        "body": "Browse upcoming events and filter them by category, venue or day."
+      },
+      "book": {
+        "title": "Book and attend",
+        "body": "Reserve a seat, keep your QR ticket on your phone, and cancel if your plans change."
+      },
+      "organize": {
+        "title": "Organize",
+        "body": "Organizers publish events and follow bookings; admins review every event before it goes live.",
+        "cta": "Register as an organizer"
+      }
+    },
+    "upcoming": {
+      "title": "Coming up",
+      "subtitle": "The next events open for booking.",
+      "loading": "Loading upcoming events…",
+      "emptyTitle": "No upcoming events yet",
+      "emptyBody": "New events appear here as soon as they are approved.",
+      "seeAll": "See all events"
+    }
   },
   "Register": {
     "title": "Create account",
-    "subtitle": "Create an account to register for events",
+    "subtitle": "Choose the kind of account you need.",
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
@@ -21,7 +49,18 @@
     "submitting": "Creating account…",
     "success": "Your account was created. You can log in now.",
     "haveAccount": "Already have an account?",
-    "loginLink": "Log in"
+    "loginLink": "Log in",
+    "accountType": "Account type",
+    "attendee": "Attendee",
+    "attendeeHint": "Browse events and book your seat.",
+    "organizer": "Organizer",
+    "organizerHint": "Propose an event and send it for approval.",
+    "phone": "Phone number",
+    "phoneHint": "Shown to the admin only, in case they need to reach you about your request.",
+    "organization": "Club or department (optional)",
+    "organizationHint": "The body you are organizing for, if any.",
+    "organizerNote": "Every event you propose is reviewed by an admin before attendees can see it. You can send one request at first; once it is approved you can send as many as you like.",
+    "successOrganizer": "Your organizer account is ready. Log in to send your first event request."
   },
   "Login": {
     "title": "Log in",
@@ -41,12 +80,263 @@
     "role": "Role",
     "logout": "Log out",
     "loggingOut": "Logging out…",
-    "backHome": "Home"
+    "goToLogin": "Go to log in",
+    "browseEvents": "Browse events",
+    "myBookings": "My bookings",
+    "dashboard": "Go to my dashboard",
+    "phone": "Phone number",
+    "organization": "Club or department"
   },
   "Roles": {
     "ATTENDEE": "Attendee",
     "ORGANIZER": "Organizer",
     "ADMIN": "Admin"
+  },
+  "Dashboard": {
+    "productName": "Smart Campus Event Manager System",
+    "skipToContent": "Skip to content",
+    "navLabel": {
+      "ORGANIZER": "Organizer sections",
+      "ADMIN": "Admin sections"
+    },
+    "logout": "Log out",
+    "loggingOut": "Logging out…",
+    "checkingSession": "Checking your session…",
+    "goToLogin": "Go to log in",
+    "noAccessTitle": "This area is not available for your account",
+    "noAccess": {
+      "ORGANIZER": "The organizer dashboard is only for Organizer accounts.",
+      "ADMIN": "The admin dashboard is only for Admin accounts."
+    },
+    "goHome": {
+      "ADMIN": "Go to the admin dashboard",
+      "ORGANIZER": "Go to the organizer dashboard",
+      "ATTENDEE": "Go to my account"
+    },
+    "loading": "Loading…",
+    "retry": "Try again",
+    "pagination": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page, number} of {total, number}",
+    "all": "All",
+    "filterStatus": "Status",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "confirmDelete": "Yes, delete",
+    "required": "This field is required",
+    "starts": "Starts",
+    "ends": "Ends",
+    "venue": "Venue",
+    "noVenue": "No venue yet",
+    "category": "Category",
+    "organizer": "Organizer",
+    "campusTimeHint": "Campus time (Riyadh, UTC+3)",
+    "eventStatus": {
+      "PENDING": "Pending approval",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "bookingStatus": {
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    },
+    "phone": "Phone",
+    "organization": "Club or department"
+  },
+  "Organizer": {
+    "nav": {
+      "events": "My events",
+      "newEvent": "New event"
+    },
+    "title": "My events",
+    "subtitle": "Create events and follow their approval and bookings.",
+    "newEvent": "New event",
+    "backToEvents": "Back to my events",
+    "statsLabel": "Event totals",
+    "listLabel": "Event list",
+    "stats": {
+      "total": "All events",
+      "pending": "Awaiting approval",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "emptyTitle": "You have no events yet",
+    "emptyBody": "Create your first event. An admin reviews it before attendees can see it.",
+    "emptyFiltered": "No events with this status.",
+    "seats": "{taken, number} of {capacity, number} seats booked",
+    "full": "Full",
+    "attendees": "Attendees",
+    "deleteConfirm": "Delete this event? This cannot be undone.",
+    "deleted": "The event was deleted.",
+    "form": {
+      "createTitle": "New event",
+      "createSubtitle": "New events are sent to an admin for approval before attendees can see them.",
+      "editTitle": "Edit event",
+      "title": "Title",
+      "description": "Description",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "capacity": "Capacity",
+      "capacityHint": "Cannot exceed the venue's capacity or go below seats already booked.",
+      "category": "Category",
+      "categoryPlaceholder": "Choose a category",
+      "venue": "Venue",
+      "venueOption": "{name} (holds {capacity, number})",
+      "imageUrl": "Image link",
+      "imageUrlHint": "Optional. A link starting with http:// or https://",
+      "attachments": "Attachment links",
+      "attachmentsHint": "Optional. One link per line, up to 10.",
+      "submitCreate": "Create event",
+      "submitEdit": "Save changes",
+      "created": "The event was created and sent to an admin for approval.",
+      "createAnother": "Create another",
+      "saved": "Your changes were saved.",
+      "notEditable": "This event can no longer be edited.",
+      "v": {
+        "fixErrors": "Check the highlighted fields and try again.",
+        "titleLength": "Use 200 characters or fewer",
+        "descriptionLength": "Use 5000 characters or fewer",
+        "dateInvalid": "Enter a date and time",
+        "startFuture": "The start must be in the future",
+        "endAfterStart": "The end must be after the start",
+        "capacity": "Enter a whole number, 1 or more",
+        "capacityVenue": "This venue holds up to {capacity, number}",
+        "capacityBooked": "{count, number} seats are already booked",
+        "url": "Use links that start with http:// or https://",
+        "attachmentsMax": "Add up to 10 links"
+      }
+    },
+    "attendeesPage": {
+      "title": "Attendees",
+      "count": "Registrations: {count, number}",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colStatus": "Status",
+      "colRegistered": "Registered",
+      "empty": "No one has registered for this event yet.",
+      "emptyFiltered": "No registrations with this status."
+    },
+    "limit": {
+      "title": "Your request is with the admin",
+      "body": "You can send one request at first. As soon as an admin approves it, you can send as many as you like.",
+      "back": "Back to my events"
+    }
+  },
+  "Admin": {
+    "nav": {
+      "overview": "Overview",
+      "events": "Events",
+      "users": "Users",
+      "categories": "Categories",
+      "broadcast": "Broadcast"
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "What needs your attention across the platform.",
+      "statsLabel": "Platform totals",
+      "stats": {
+        "pending": "Awaiting approval",
+        "events": "Events",
+        "users": "Users",
+        "categories": "Categories"
+      },
+      "pendingTitle": "Events awaiting approval",
+      "pendingEmpty": "Nothing is waiting for approval.",
+      "viewAllEvents": "View all events"
+    },
+    "events": {
+      "title": "Events",
+      "subtitle": "Approve, reject or remove events from any organizer.",
+      "empty": "There are no events yet.",
+      "emptyFiltered": "No events with this status.",
+      "bookingsLabel": "Bookings",
+      "bookings": "{count, number} of {capacity, number} seats",
+      "approve": "Approve",
+      "approving": "Approving…",
+      "reject": "Reject",
+      "rejecting": "Rejecting…",
+      "deleteConfirm": "Delete this event permanently? Its bookings are deleted too.",
+      "done": {
+        "approve": "The event was approved.",
+        "reject": "The event was rejected.",
+        "delete": "The event was deleted."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Create staff accounts and manage who can sign in.",
+      "addUser": "Add user",
+      "createTitle": "New account",
+      "createHint": "For Organizer and Admin accounts. People can also create their own Attendee or Organizer account from the registration page.",
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters",
+      "role": "Role",
+      "createSubmit": "Create account",
+      "created": "An account was created for {name}.",
+      "searchLabel": "Search by name or email",
+      "search": "Search",
+      "empty": "No users match.",
+      "colAccount": "Account",
+      "colStatus": "Role and status",
+      "colActions": "Actions",
+      "you": "You",
+      "joined": "Joined {date}",
+      "active": "Active",
+      "inactive": "Inactive",
+      "roleFor": "Role for {name}",
+      "saveRole": "Save role",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "deleteConfirm": "Delete this account permanently?",
+      "activated": "The account was activated.",
+      "deactivated": "The account was deactivated.",
+      "roleSaved": "The role was updated.",
+      "deleted": "The account was deleted.",
+      "v": {
+        "nameLength": "Use 120 characters or fewer"
+      }
+    },
+    "categories": {
+      "title": "Categories",
+      "subtitle": "The categories organizers choose from when they create an event.",
+      "addTitle": "New category",
+      "name": "Name",
+      "description": "Description (optional)",
+      "add": "Add category",
+      "created": "The category was added.",
+      "updated": "The category was updated.",
+      "deleted": "The category was deleted.",
+      "empty": "There are no categories yet.",
+      "usedBy": "Events using it: {count}",
+      "inUse": "In use, cannot be deleted",
+      "deleteConfirm": "Delete this category?"
+    },
+    "broadcast": {
+      "title": "Broadcast",
+      "subtitle": "Send an announcement to every active user.",
+      "titleLabel": "Title",
+      "bodyLabel": "Message",
+      "send": "Send announcement",
+      "confirm": "Send this to all active users? It cannot be recalled.",
+      "confirmSend": "Yes, send",
+      "sending": "Sending…",
+      "sent": "The announcement was sent. Recipients: {count}"
+    }
+  },
+  "NotFound": {
+    "code": "Error 404",
+    "title": "Page not found",
+    "body": "The page you are looking for does not exist or has been moved.",
+    "home": "Back to home",
+    "events": "Browse events"
   },
   "Errors": {
     "INVALID_EMAIL": "Enter a valid email address",
@@ -58,6 +348,191 @@
     "UNAUTHENTICATED": "Your session has ended. Please log in again.",
     "FORBIDDEN": "You do not have permission to perform this action",
     "NETWORK": "Cannot reach the server. Check your connection and try again.",
-    "UNKNOWN": "Something went wrong. Please try again."
+    "UNKNOWN": "Something went wrong. Please try again.",
+    "INVALID_TITLE": "Enter a title of up to 200 characters",
+    "INVALID_DESCRIPTION": "Enter a description",
+    "INVALID_DATES": "Check the start and end: the start must be in the future and before the end",
+    "INVALID_CAPACITY": "Capacity must be a whole number, 1 or more",
+    "INVALID_CATEGORY": "Choose a category from the list",
+    "INVALID_VENUE": "Choose a venue from the list",
+    "INVALID_IMAGE_URL": "The image link must start with http:// or https://",
+    "INVALID_ATTACHMENTS": "Use up to 10 attachment links that start with http:// or https://",
+    "INVALID_BODY": "Enter a message of up to 2000 characters",
+    "INVALID_ROLE": "Choose a valid role",
+    "INVALID_FILTER": "That filter is not valid. Reset it and try again.",
+    "INVALID_PAGINATION": "That page does not exist. Go back to the first page.",
+    "CAPACITY_EXCEEDS_VENUE": "Capacity cannot be higher than the venue holds",
+    "CAPACITY_BELOW_BOOKED": "Capacity cannot be lower than the seats already booked",
+    "EVENT_NOT_FOUND": "This event no longer exists",
+    "EVENT_NOT_EDITABLE": "This event can no longer be edited",
+    "EVENT_ALREADY_STARTED": "This event has already started, so it cannot be changed",
+    "EVENT_HAS_BOOKINGS": "This event has confirmed bookings and cannot be deleted",
+    "EVENT_NOT_PENDING": "This event has already been approved or rejected",
+    "USER_NOT_FOUND": "This account no longer exists",
+    "CANNOT_MODIFY_SELF": "You cannot do this to your own account",
+    "LAST_ADMIN_PROTECTED": "This is the last active admin, so it must stay an active admin",
+    "USER_HAS_DATA": "This account has events, bookings or feedback and cannot be deleted. Deactivate it instead.",
+    "CATEGORY_NOT_FOUND": "This category no longer exists",
+    "CATEGORY_NAME_TAKEN": "A category with this name already exists",
+    "CATEGORY_HAS_EVENTS": "Events still use this category, so it cannot be deleted",
+    "ALREADY_BOOKED": "You already have a seat at this event",
+    "EVENT_FULL": "This event is full. No seats are left.",
+    "BOOKING_CLOSED": "Booking is closed because the event has already started",
+    "BOOKING_NOT_FOUND": "This booking no longer exists",
+    "ALREADY_CANCELLED": "This booking was already cancelled",
+    "CANCELLATION_CLOSED": "The event has started, so the booking can no longer be cancelled",
+    "INVALID_RATING": "Choose a rating from 1 to 5",
+    "INVALID_COMMENT": "Keep the comment under 1000 characters",
+    "FEEDBACK_NOT_OPEN": "You can rate an event after it ends, if you held a seat",
+    "ALREADY_REVIEWED": "You have already rated this event",
+    "INVALID_PHONE": "Enter a valid phone number (8 to 15 digits)",
+    "INVALID_ORGANIZATION": "The club or department name is too long (120 characters at most)",
+    "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved."
+  },
+  "AttendeeNav": {
+    "productName": "Smart Campus Event Manager System",
+    "label": "Attendee sections",
+    "skipToContent": "Skip to content",
+    "events": "Events",
+    "bookings": "My bookings",
+    "login": "Log in"
+  },
+  "AttendeeCommon": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "when": "When",
+    "where": "Where",
+    "full": "Full",
+    "seatsLeft": "{count, plural, one {# seat left} other {# seats left}}",
+    "pagination": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page, number} of {total, number}"
+  },
+  "Events": {
+    "title": "Upcoming events",
+    "subtitle": "Find workshops, seminars and activities on campus and book your seat.",
+    "count": "{count, plural, =0 {No events} one {# upcoming event} other {# upcoming events}}",
+    "searchCount": "{shown, number} of {count, number} events match your search",
+    "filters": {
+      "search": "Search events",
+      "searchPlaceholder": "Search by title, organizer or venue",
+      "category": "Category",
+      "allCategories": "All categories",
+      "venue": "Venue",
+      "allVenues": "All venues",
+      "date": "Date",
+      "clear": "Clear filters",
+      "clearSearch": "Clear search"
+    },
+    "empty": {
+      "noneTitle": "No upcoming events yet",
+      "noneBody": "New events appear here as soon as they are approved. Check back soon.",
+      "filteredTitle": "No events match these filters",
+      "filteredBody": "Try another category, venue or date.",
+      "searchTitle": "Nothing matches your search",
+      "searchBody": "Check the spelling or try a different word."
+    }
+  },
+  "EventDetails": {
+    "back": "All events",
+    "loading": "Loading the event…",
+    "notFoundTitle": "Event not found",
+    "notFoundBody": "It may have been removed, or it is not published yet.",
+    "browse": "Browse upcoming events",
+    "imageAlt": "Cover image for {title}",
+    "organizedBy": "Organized by {name}",
+    "about": "About this event",
+    "attachments": "Attachments",
+    "attachment": "Attachment {number, number}",
+    "when": "When",
+    "where": "Where",
+    "seats": "Seats",
+    "venueTbd": "Venue to be announced",
+    "seatsTaken": "{taken, number} of {capacity, number} seats booked",
+    "notice": {
+      "booked": "Your seat is booked. A confirmation was added to your notifications.",
+      "cancelled": "Your booking was cancelled."
+    }
+  },
+  "Booking": {
+    "checking": "Checking…",
+    "book": "Book a seat",
+    "booking": "Booking…",
+    "youHaveASeat": "You have a seat at this event",
+    "showTicket": "Show my ticket",
+    "cancel": "Cancel booking",
+    "cancelQuestion": "Cancel your seat?",
+    "confirmCancel": "Yes, cancel",
+    "cancelling": "Cancelling…",
+    "keep": "Keep my seat",
+    "cancelClosed": "The event has started, so this booking can no longer be cancelled.",
+    "started": "Booking is closed because this event has already started.",
+    "full": "Event full",
+    "fullHint": "All seats are taken. A seat can open up if someone cancels.",
+    "loginToBook": "Log in with your attendee account to book a seat.",
+    "login": "Log in to book",
+    "noAccount": "No account yet?",
+    "register": "Create one",
+    "attendeesOnly": "Only attendee accounts can book seats. You are signed in as an organizer or admin.",
+    "ended": "This event has ended.",
+    "rateTitle": "How was it?"
+  },
+  "MyBookings": {
+    "title": "My bookings",
+    "subtitle": "Your tickets and booking history.",
+    "checkingSession": "Checking your session…",
+    "attendeesOnlyTitle": "Bookings are for attendee accounts",
+    "attendeesOnlyBody": "Organizer and admin accounts do not book seats.",
+    "goToAccount": "Go to my account",
+    "cancelledNotice": "Your booking was cancelled.",
+    "browse": "Browse events",
+    "showTicket": "Ticket",
+    "rate": "Rate this event",
+    "tabs": {
+      "label": "Bookings",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "cancelled": "Cancelled"
+    },
+    "empty": {
+      "upcoming": "No upcoming bookings",
+      "past": "No past events yet",
+      "cancelled": "No cancelled bookings"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "attended": "Attended",
+      "cancelled": "Cancelled",
+      "eventCancelled": "Event cancelled"
+    }
+  },
+  "Ticket": {
+    "title": "Your ticket",
+    "close": "Close",
+    "qrLabel": "Ticket QR code",
+    "hint": "Show this code at the entrance to check in.",
+    "checkedIn": "You checked in to this event",
+    "done": "Done"
+  },
+  "Feedback": {
+    "ratingLabel": "Your rating",
+    "stars": "{count, plural, one {# star} other {# stars}}",
+    "scale": {
+      "1": "Poor",
+      "2": "Fair",
+      "3": "Good",
+      "4": "Very good",
+      "5": "Excellent"
+    },
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "What did you like? What could be better?",
+    "characters": "{count, number}/{max, number}",
+    "pickRating": "Choose a rating from 1 to 5 stars.",
+    "submit": "Send feedback",
+    "submitting": "Sending…",
+    "thanks": "Thank you! Your feedback was sent.",
+    "already": "You have already rated this event.",
+    "unavailable": "Rating events is not available yet. Please try again later."
   }
 }

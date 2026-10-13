@@ -12,10 +12,14 @@ const { PUBLIC_USER_FIELDS } = require('../../lib/userFields');
 const DUMMY_HASH = bcrypt.hashSync('unusable-placeholder-password', 10);
 
 /**
- * FR-01: self-registration. The role is ALWAYS ATTENDEE - it is never taken from the
- * client. Organizers and Admins are created by an Admin (FR-18), not through this route.
+ * FR-01: self-registration, as an Attendee or as an Organizer. The controller has already
+ * limited `role` to those two - an Admin is never created through this route (FR-18).
+ *
+ * An Organizer account works straight away; there is no separate account approval. The gate
+ * is the event: everything an Organizer submits waits for an Admin (FR-17), and a new
+ * Organizer may only have one request waiting at a time (organizer/events.service.js).
  */
-async function register({ email, password, fullName }) {
+async function register({ email, password, fullName, role, phone, organization }) {
   const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (existing) {
     throw new HttpError(409, 'An account with this email already exists', 'EMAIL_TAKEN');
@@ -26,7 +30,9 @@ async function register({ email, password, fullName }) {
       email,
       passwordHash: await bcrypt.hash(password, bcryptRounds),
       fullName,
-      role: 'ATTENDEE',
+      role,
+      phone,
+      organization,
     },
     select: PUBLIC_USER_FIELDS,
   });

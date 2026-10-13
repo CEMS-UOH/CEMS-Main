@@ -5,8 +5,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
-import FormMessage from '@/components/FormMessage';
+import AuthShell from '@/components/AuthShell';
+import Badge from '@/components/Badge';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
+import { CalendarIcon, GridIcon, TicketIcon } from '@/components/Icons';
+import { ErrorState, LoadingState } from '@/components/States';
+import { TEXT_LINK } from '@/components/styles';
 import { getMe, logout, type PublicUser } from '@/lib/api';
+import { HOME_BY_ROLE } from '@/lib/roleHome';
 import { useApiError } from '@/lib/useApiError';
 
 export default function MePage() {
@@ -58,57 +65,85 @@ export default function MePage() {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-md px-6 py-12">
-        <p className="text-start text-slate-600">{t('loading')}</p>
-      </main>
+      <AuthShell>
+        <LoadingState label={t('loading')} />
+      </AuthShell>
     );
   }
 
   if (error) {
     return (
-      <main className="mx-auto flex max-w-md flex-col gap-4 px-6 py-12">
-        <FormMessage kind="error">{error}</FormMessage>
-        <Link href="/login" className="text-start text-blue-700 underline">
-          {t('logout')}
+      <AuthShell>
+        <ErrorState message={error} />
+        <Link href="/login" className={`mx-auto text-sm ${TEXT_LINK}`}>
+          {t('goToLogin')}
         </Link>
-      </main>
+      </AuthShell>
     );
   }
 
   if (!user) return null; // redirect already in flight
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-6 py-12">
-      <h1 className="text-start text-2xl font-bold">{t('title')}</h1>
+    <AuthShell>
+      <h1 className="type-h1 text-start text-text">{t('title')}</h1>
 
-      <dl className="flex flex-col gap-3 text-start">
-        <div>
-          <dt className="text-xs uppercase text-slate-500">{t('fullName')}</dt>
-          <dd className="text-base">{user.fullName}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase text-slate-500">{t('email')}</dt>
-          <dd className="text-base">{user.email}</dd>
-        </div>
-        <div>
-          <dt className="text-xs uppercase text-slate-500">{t('role')}</dt>
-          <dd className="text-base">{tRoles(user.role)}</dd>
-        </div>
-      </dl>
+      <Card>
+        <dl className="flex flex-col gap-4 text-start">
+          <div className="flex flex-col gap-0.5">
+            <dt className="text-xs font-medium text-text-muted">{t('fullName')}</dt>
+            <dd className="text-base font-medium text-text [overflow-wrap:anywhere]">{user.fullName}</dd>
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <dt className="text-xs font-medium text-text-muted">{t('email')}</dt>
+            <dd dir="ltr" className="w-fit max-w-full text-base text-text [overflow-wrap:anywhere]">
+              {user.email}
+            </dd>
+          </div>
+          {user.phone ? (
+            <div className="flex flex-col gap-0.5">
+              <dt className="text-xs font-medium text-text-muted">{t('phone')}</dt>
+              <dd dir="ltr" className="w-fit text-base text-text tabular-nums">
+                {user.phone}
+              </dd>
+            </div>
+          ) : null}
+          {user.organization ? (
+            <div className="flex flex-col gap-0.5">
+              <dt className="text-xs font-medium text-text-muted">{t('organization')}</dt>
+              <dd className="text-base text-text [overflow-wrap:anywhere]">{user.organization}</dd>
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-1">
+            <dt className="text-xs font-medium text-text-muted">{t('role')}</dt>
+            <dd>
+              {/* The one gold element on this screen. */}
+              <Badge tone="accent">{tRoles(user.role)}</Badge>
+            </dd>
+          </div>
+        </dl>
+      </Card>
 
+      {/* Where this account's work actually happens. */}
       <div className="flex flex-col gap-3">
-        <button
-          type="button"
-          onClick={onLogout}
-          disabled={loggingOut}
-          className="rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-60"
-        >
+        {user.role === 'ATTENDEE' ? (
+          <>
+            <Button href="/events" icon={<CalendarIcon />} className="w-full">
+              {t('browseEvents')}
+            </Button>
+            <Button href="/bookings" variant="secondary" icon={<TicketIcon />} className="w-full">
+              {t('myBookings')}
+            </Button>
+          </>
+        ) : (
+          <Button href={HOME_BY_ROLE[user.role]} icon={<GridIcon />} className="w-full">
+            {t('dashboard')}
+          </Button>
+        )}
+        <Button type="button" variant="ghost" onClick={onLogout} loading={loggingOut} className="w-full">
           {loggingOut ? t('loggingOut') : t('logout')}
-        </button>
-        <Link href="/" className="text-start text-blue-700 underline">
-          {t('backHome')}
-        </Link>
+        </Button>
       </div>
-    </main>
+    </AuthShell>
   );
 }
