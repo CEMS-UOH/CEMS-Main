@@ -1,7 +1,92 @@
 # Deployment
 
-**Owner: Role 8 (QA + DevOps).** Documentation only — nothing here has been run against a real
-server yet.
+**Owner: Role 8 (QA + DevOps).**
+
+> **Current plan (Leader decision, 2026-10-24): the free setup below.** The DigitalOcean setup
+> further down is kept as the alternative for when the project gets its own domain and a paid
+> server.
+
+## Free setup: Vercel + Koyeb + Render
+
+| Part | Where | Free plan limits that matter |
+|---|---|---|
+| Frontend (Next.js) | **Vercel** (Hobby) | none for this project |
+| Backend API (Express) | **Koyeb** free instance, region **Frankfurt** (same city as the Supabase database, so bookings are fast) | sleeps after 1 hour without traffic; the first request after that waits a few seconds |
+| Analytics (FastAPI) | **Render** free web service, region **Frankfurt** | sleeps after 15 minutes; waking takes about a minute (the admin page shows "try again" meanwhile) |
+| Database | Supabase (already running) | free projects pause after a week without use - open the dashboard and restore |
+
+**Before a demo:** open the site and the admin analytics page five minutes early, so all three
+are awake.
+
+### Why no cookie problems without a domain
+
+The browser only ever talks to the Vercel site. Every `/api/*` request is passed on by Vercel to
+the Koyeb backend (the rewrite in `frontend/next.config.ts`), so the session cookie belongs to
+the Vercel address and is never a "third-party" cookie. Nothing to set for cookies or CORS
+domains: leave `COOKIE_DOMAIN` empty and do **not** set `NEXT_PUBLIC_API_URL`.
+
+### 1. Analytics on Render (first - the backend needs its address)
+
+1. render.com -> **New -> Web Service** -> connect the GitHub repo `CEMS-UOH/CEMS-Main`.
+2. Branch: `main` (or `develop` for testing). **Root Directory: `analytics`**. Runtime: **Docker**
+   (it uses `analytics/Dockerfile`). Region: **Frankfurt**. Instance type: **Free**.
+3. Environment variable: `ANALYTICS_TOKEN` = a long random string. Generate one with
+   `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
+   and keep it - the backend needs the same value.
+4. Create. When it is live, open `https://<name>.onrender.com/health` -> `{"success":true,...}`.
+
+### 2. Backend on Koyeb
+
+1. koyeb.com -> **Create Web Service** -> GitHub -> `CEMS-UOH/CEMS-Main`.
+2. Branch: same as above. Builder: **Dockerfile**, **work directory `backend`**.
+   Instance: **Free**, region **Frankfurt**. Exposed port: **5000** (HTTP), health check path
+   `/health`.
+3. Environment variables (Koyeb lets you mark the sensitive ones as secrets - do that):
+
+   | Name | Value |
+   |---|---|
+   | `NODE_ENV` | `production` |
+   | `PORT` | `5000` |
+   | `DATABASE_URL` | same as your `.env` (pooler, port 6543, `?pgbouncer=true`) |
+   | `DIRECT_URL` | same as your `.env` |
+   | `JWT_SECRET` | a **new** long random string (not the development one) |
+   | `CORS_ORIGINS` | the Vercel address, e.g. `https://scems.vercel.app` (fill in after step 3, then redeploy) |
+   | `COOKIE_DOMAIN` | leave empty |
+   | `GROQ_API_KEY` | your Groq key |
+   | `GROQ_MODEL` | `openai/gpt-oss-120b` |
+   | `ANALYTICS_URL` | `https://<name>.onrender.com` from step 1 |
+   | `ANALYTICS_TOKEN` | the same value as on Render |
+
+4. Deploy. Check `https://<name>.koyeb.app/health/db` -> `{"database":"up"}`.
+
+Migrations are not run on deploy. When a new migration is added, run
+`cd backend && npm run prisma:deploy` once from a laptop with the production `.env`.
+
+### 3. Frontend on Vercel
+
+1. vercel.com -> **Add New -> Project** -> import `CEMS-UOH/CEMS-Main`.
+2. **Root Directory: `frontend`** (framework Next.js is detected).
+3. Environment variable: `BACKEND_URL` = `https://<name>.koyeb.app` (no trailing slash).
+   Nothing else.
+4. Deploy. Then put the Vercel address into the backend's `CORS_ORIGINS` (step 2) and redeploy
+   the backend.
+
+### 4. Check it end to end
+
+- Open the Vercel address -> the home page shows the upcoming events (the API answers).
+- Log in, book a seat, see the notification bell count, open the ticket.
+- As admin: analytics page (predictions may need "try again" the first time - Render waking up).
+- Ask the assistant a question.
+
+Pushing to the chosen branch redeploys all three automatically.
+
+---
+
+# Alternative: own domain + DigitalOcean (paid)
+
+Kept for later. Not used by the current plan.
+
+Documentation only — nothing in this alternative has been run against a real server yet.
 
 Two hosts, one domain:
 

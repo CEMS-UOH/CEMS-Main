@@ -431,14 +431,15 @@
         "title": "Expected turnout",
         "subtitle": "How many seats upcoming events are expected to fill, and how many people are expected to come.",
         "loading": "Calculating…",
-        "unavailable": "Predictions are not available right now: the analytics service is not running. Everything above is unaffected.",
+        "unavailable": "Predictions are not available right now: the analytics service is not running or is still waking up. Everything above is unaffected.",
         "nothingUpcoming": "There are no upcoming approved events to predict.",
         "methodModel": "Predicted by a model trained on {count, plural, one {# past event} other {# past events}}.",
         "methodBaseline": "Based on the average of past events in the same category ({count, plural, =0 {no past events yet} one {# past event} other {# past events}}). A trained model takes over from 12 past events.",
         "showUp": "About {rate} of booked seats are used.",
         "legendBooked": "Booked now",
         "legendExpected": "Expected by the event",
-        "row": "{booked, number} booked now · about {expected, number} expected · about {attend, number} expected to attend · {capacity, number} seats"
+        "row": "{booked, number} booked now · about {expected, number} expected · about {attend, number} expected to attend · {capacity, number} seats",
+        "retry": "Try again"
       }
     }
   },

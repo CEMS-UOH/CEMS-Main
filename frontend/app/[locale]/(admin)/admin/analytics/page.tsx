@@ -8,6 +8,7 @@
 // inside tables. Every number a chart shows is also written out (labels, tooltips on hover
 // and keyboard focus, and a table view), so nothing depends on seeing the colours.
 import { useFormatter, useTranslations } from 'next-intl';
+import Button from '@/components/Button';
 import Card from '@/components/Card';
 import PageHeader from '@/components/PageHeader';
 import { StarIcon } from '@/components/Icons';
@@ -357,9 +358,16 @@ function Predictions() {
         </p>
       ) : query.errorCode || !query.data ? (
         // Optional part: a quiet note, not an alarm - everything above still works.
-        <p className="rounded-lg bg-background px-4 py-3 text-sm text-text-muted">
-          {query.errorCode === 'ANALYTICS_UNAVAILABLE' ? t('unavailable') : errorMessage(query.errorCode ?? 'UNKNOWN')}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-background px-4 py-3">
+          <p className="text-sm text-text-muted">
+            {query.errorCode === 'ANALYTICS_UNAVAILABLE' ? t('unavailable') : errorMessage(query.errorCode ?? 'UNKNOWN')}
+          </p>
+          {/* On a free hosting plan the service sleeps when idle; a second try a minute later
+              usually finds it awake. */}
+          <Button type="button" variant="secondary" size="sm" onClick={query.reload}>
+            {t('retry')}
+          </Button>
+        </div>
       ) : query.data.predictions.length === 0 ? (
         <p className="text-sm text-text-muted">{t('nothingUpcoming')}</p>
       ) : (

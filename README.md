@@ -79,13 +79,13 @@ Then open a new terminal. Linux/macOS, CI, and Vercel are not affected.
   to load the 5 categories, 3 venues and the first ADMIN account. See `docs/DATABASE.md` for the
   migration workflow, the RLS decision and the P1001 tip.
 - Role 4: run `npx shadcn@latest init` once inside `frontend/` and commit, so everyone shares the same UI component setup.
-- Role 8: connect Vercel to `frontend/` (root directory `frontend`), set up the DigitalOcean droplet, NGINX and Certbot. Full runbook in `docs/DEPLOY.md`, including the `CORS_ORIGINS` / `COOKIE_DOMAIN` values the shared session cookie needs.
+- Role 8: deploy for free - Vercel (frontend), Koyeb (backend), Render (analytics). Step by step in `docs/DEPLOY.md` (the DigitalOcean + own-domain setup is kept there as the paid alternative).
 
 ## Open decisions (settle in the first meeting)
 1. **Mobile:** the official NFR mentions React Native; we build a responsive web app instead. Get the supervisor's written OK.
 2. **Auth vs RLS:** NFRs say bcrypt + JWT (custom auth) and Row-Level Security. Prisma connects with a privileged role that bypasses RLS, so real access control must live in the API. RLS is enabled as a second safety net — see `docs/DATABASE.md`.
 3. **Feedback screen:** the 17 screens include Feedback/Rating but no FR covers it. Ask the supervisor which FR it belongs to.
-4. **Domain:** buy it and set `app.` (Vercel) and `api.` (DigitalOcean) subdomains; set `CORS_ORIGINS` to the app URL.
+4. **Domain:** not needed - the free setup runs on the hosts' own addresses (decided 2026-10-24).
 
 ## Foundation status
 

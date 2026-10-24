@@ -12,7 +12,7 @@ Three user roles: Attendee, Organizer, Admin. 23 functional requirements (FR-01.
 
 ## Stack
 - Frontend: Next.js 15 (App Router) + TypeScript + Tailwind CSS 4 + next-intl (Arabic RTL default, English LTR). Deployed on Vercel.
-- Backend: Node.js + Express (CommonJS) + Prisma 6 -> Supabase Postgres. Deployed on DigitalOcean (Docker).
+- Backend: Node.js + Express (CommonJS) + Prisma 6 -> Supabase Postgres. Deployed on Koyeb (free, Docker); analytics on Render (free). See docs/DEPLOY.md.
 - Analytics: Python (FastAPI, pandas, scikit-learn). Deployed with the backend.
 - AI assistant (FR-23): Groq API (groq.com, model openai/gpt-oss-120b), called from the backend only (never from the browser).
   Changed from the Anthropic Claude API named here originally, then from xAI Grok to Groq -

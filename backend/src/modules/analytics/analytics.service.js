@@ -17,7 +17,8 @@ const TOP_EVENTS = 5;
 // booked weeks before they happen).
 const MONTHS_BACK = 5;
 const MONTHS_AHEAD = 2;
-const PREDICTION_TIMEOUT_MS = 10000;
+// Long enough for a free hosting plan to wake the service up (it sleeps when idle).
+const PREDICTION_TIMEOUT_MS = 25000;
 const MAX_HISTORY = 500;
 
 const rate = (part, whole) => (whole > 0 ? Math.round((part / whole) * 1000) / 1000 : null);
@@ -248,7 +249,10 @@ async function getPredictions(now = new Date()) {
   try {
     response = await fetch(`${analyticsUrl.replace(/\/+$/, '')}/predict-attendance`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(env.analyticsToken ? { 'X-Analytics-Token': env.analyticsToken } : {}),
+      },
       body: JSON.stringify({
         history: past.map((e) => ({
           ...features(e),

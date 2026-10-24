@@ -31,6 +31,9 @@ const config = {
   // http://analytics:8000). Optional - without it the admin analytics page still shows every
   // descriptive number and says predictions are unavailable.
   analyticsUrl: process.env.ANALYTICS_URL || '',
+  // Shared secret sent to the analytics service as X-Analytics-Token. Needed only when that
+  // service is reachable from the internet; the same value goes in its ANALYTICS_TOKEN.
+  analyticsToken: process.env.ANALYTICS_TOKEN || '',
 };
 
 // Fail fast on a missing JWT_SECRET. Called from src/index.js at startup, NOT from app.js,

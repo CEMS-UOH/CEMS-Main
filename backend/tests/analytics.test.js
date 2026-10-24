@@ -194,11 +194,23 @@ describe('GET /api/admin/analytics/predictions', () => {
 
     const [url, init] = global.fetch.mock.calls[0];
     expect(url).toBe('http://analytics.test/predict-attendance');
+    expect(init.headers['X-Analytics-Token']).toBeUndefined(); // no token configured
     const sent = JSON.parse(init.body);
     // 15:00 UTC on a Tuesday is 18:00 on campus.
     expect(sent.history[0]).toMatchObject({ eventId: 'past-1', category: 'Competition', hour: 18, weekday: 2, durationHours: 2, bookings: 30, checkIns: 2 });
     expect(sent.history[0].title).toBeUndefined();
     expect(sent.upcoming[0]).toMatchObject({ eventId: 'up-1', capacity: 100, bookings: 30 });
+  });
+
+  it('sends the shared token when one is configured', async () => {
+    env.analyticsToken = 'shared-secret';
+    prisma.event.findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([upcomingEvent]);
+    global.fetch.mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ success: true, data: { method: 'baseline', trainedOn: 0, showUpRate: 0.8, predictions: [] } }) });
+
+    await request(app).get(`${BASE}/predictions`).set('Cookie', sessionFor());
+
+    expect(global.fetch.mock.calls[0][1].headers['X-Analytics-Token']).toBe('shared-secret');
+    env.analyticsToken = '';
   });
 
   it('answers 503 ANALYTICS_UNAVAILABLE when the service is down', async () => {

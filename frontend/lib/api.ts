@@ -22,7 +22,11 @@ export type ApiResult<T> =
   | { ok: true; status: number; data: T }
   | { ok: false; status: number; code: string; message: string };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
+// Empty (the default) = this site's own address: /api/* is passed on to the Express API by the
+// rewrite in next.config.ts, so the browser sees one site and the session cookie just works.
+// Set NEXT_PUBLIC_API_URL only to call an API on another address directly (it must then share
+// the session cookie, e.g. app.<domain> and api.<domain> with COOKIE_DOMAIN set).
+const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '');
 
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<ApiResult<T>> {
   let res: Response;
@@ -30,8 +34,8 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   try {
     res = await fetch(`${API_URL}${path}`, {
       ...init,
-      // Required so the httpOnly session cookie is sent to the API on another origin
-      // (frontend :3000 -> API :5000). The API sets CORS credentials:true to match.
+      // Sends the httpOnly session cookie. Needed only when NEXT_PUBLIC_API_URL points at another
+      // origin (the API sets CORS credentials:true to match); harmless on the same origin.
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
