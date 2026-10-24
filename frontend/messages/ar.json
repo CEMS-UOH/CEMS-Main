@@ -266,6 +266,19 @@
         "failedTitle": "تعذّر تشغيل الكاميرا",
         "failedBody": "قد يكون تطبيق آخر يستخدمها. أغلقه وحاول مرة أخرى."
       }
+    },
+    "ratings": "التقييمات",
+    "feedbackPage": {
+      "title": "التقييمات",
+      "commentsTitle": "آراء الحضور",
+      "stars": "{count, plural, one {نجمة واحدة} two {نجمتان} few {# نجوم} many {# نجمة} other {# نجمة}}",
+      "starsShort": "{count, plural, one {نجمة} two {نجمتان} few {# نجوم} many {# نجمة} other {# نجمة}}",
+      "averageLabel": "المتوسط {average, number} من 5",
+      "ratingsCount": "{count, plural, one {من تقييم واحد} two {من تقييمين} few {من # تقييمات} many {من # تقييمًا} other {من # تقييم}}",
+      "noComment": "بدون تعليق، تقييم فقط.",
+      "emptyTitle": "لا توجد تقييمات بعد",
+      "emptyNotEnded": "يمكن للحضور تقييم الفعالية بعد انتهائها.",
+      "emptyEnded": "لم يقيّم أي من الحضور هذه الفعالية بعد."
     }
   },
   "Admin": {
@@ -580,7 +593,7 @@
     "submitting": "جارٍ الإرسال…",
     "thanks": "شكرًا لك! تم إرسال تقييمك.",
     "already": "لقد قيّمت هذه الفعالية من قبل.",
-    "unavailable": "تقييم الفعاليات غير متاح بعد. حاول لاحقًا."
+    "yourRating": "تقييمك:"
   },
   "Notifications": {
     "title": "الإشعارات",

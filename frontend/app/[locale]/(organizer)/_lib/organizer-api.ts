@@ -74,6 +74,28 @@ export const checkInById = (id: string, registrationId: string) =>
     { method: 'POST' }
   );
 
+/** What attendees said after one of the organizer's events. */
+export type EventFeedback = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  user: { fullName: string };
+};
+export type FeedbackSummary = {
+  count: number;
+  /** One decimal; null when nobody has rated yet. */
+  average: number | null;
+  /** How many gave each number of stars. */
+  distribution: Record<'1' | '2' | '3' | '4' | '5', number>;
+};
+
+/** GET /api/organizer/events/:id/feedback */
+export const listEventFeedback = (id: string, params: { page?: number; limit?: number }) =>
+  apiFetch<{ summary: FeedbackSummary; feedback: EventFeedback[]; pagination: Pagination }>(
+    `${BASE}/events/${encodeURIComponent(id)}/feedback${toQuery(params)}`
+  );
+
 /** GET /api/organizer/venues */
 export const listVenues = () => apiFetch<{ venues: Venue[] }>(`${BASE}/venues`);
 

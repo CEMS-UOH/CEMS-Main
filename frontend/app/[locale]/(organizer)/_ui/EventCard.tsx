@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import Badge from '@/components/Badge';
 import Button from '@/components/Button';
-import { ScanIcon } from '@/components/Icons';
+import { ScanIcon, StarIcon } from '@/components/Icons';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { Meta, MetaList } from '../../_dashboard/ui/Meta';
 import { EventStatusBadge } from '../../_dashboard/ui/StatusBadges';
@@ -75,6 +75,17 @@ export default function EventCard({ event, deleting, onDelete }: Props) {
             href={`/organizer/events/${event.id}/check-in`}
           >
             {t('attendeesPage.scan')}
+          </Button>
+        ) : null}
+        {/* Ratings open once the event has started (attendees rate it after it ends). */}
+        {event.status === 'APPROVED' && new Date(event.startsAt) <= new Date() ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<StarIcon filled={false} className="size-4" />}
+            href={`/organizer/events/${event.id}/feedback`}
+          >
+            {t('ratings')}
           </Button>
         ) : null}
         {event.canEdit ? (

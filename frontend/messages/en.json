@@ -266,6 +266,19 @@
         "failedTitle": "The camera could not start",
         "failedBody": "Another app may be using it. Close it and try again."
       }
+    },
+    "ratings": "Ratings",
+    "feedbackPage": {
+      "title": "Ratings",
+      "commentsTitle": "What attendees said",
+      "stars": "{count, plural, one {# star} other {# stars}}",
+      "starsShort": "{count, plural, one {# star} other {# stars}}",
+      "averageLabel": "Average {average, number} out of 5",
+      "ratingsCount": "{count, plural, one {From # rating} other {From # ratings}}",
+      "noComment": "No comment, just a rating.",
+      "emptyTitle": "No ratings yet",
+      "emptyNotEnded": "Attendees can rate the event once it ends.",
+      "emptyEnded": "No attendee has rated this event yet."
     }
   },
   "Admin": {
@@ -580,7 +593,7 @@
     "submitting": "Sending…",
     "thanks": "Thank you! Your feedback was sent.",
     "already": "You have already rated this event.",
-    "unavailable": "Rating events is not available yet. Please try again later."
+    "yourRating": "Your rating:"
   },
   "Notifications": {
     "title": "Notifications",
