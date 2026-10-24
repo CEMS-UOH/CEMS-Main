@@ -13,6 +13,7 @@ import Badge from '@/components/Badge';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import NotificationBell from '@/components/NotificationBell';
 import { FRAME, FRAME_NARROW, TEXT_LINK } from '@/components/styles';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { getMe, logout, type PublicUser } from '@/lib/api';
@@ -127,6 +128,7 @@ export default function DashboardShell({ area, nav, children }: Props) {
                 {user.fullName}
               </span>
               <LocaleSwitcher />
+              <NotificationBell />
               <Button variant="secondary" size="sm" onClick={onLogout} loading={loggingOut}>
                 {loggingOut ? t('loggingOut') : t('logout')}
               </Button>

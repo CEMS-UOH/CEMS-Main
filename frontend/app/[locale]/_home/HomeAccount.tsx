@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
 import { GridIcon, UserIcon } from '@/components/Icons';
+import NotificationBell from '@/components/NotificationBell';
 import { getMe, type PublicUser } from '@/lib/api';
 import { HOME_BY_ROLE } from '@/lib/roleHome';
 
@@ -29,15 +30,18 @@ export default function HomeAccount() {
   if (user) {
     const isAttendee = user.role === 'ATTENDEE';
     return (
-      <Button
-        href={HOME_BY_ROLE[user.role]}
-        variant="secondary"
-        size="sm"
-        icon={isAttendee ? <UserIcon /> : <GridIcon />}
-      >
-        {/* Icon only on a phone (the label is still read out), like the other header buttons. */}
-        <span className="max-sm:sr-only">{isAttendee ? t('myAccount') : t('dashboard')}</span>
-      </Button>
+      <>
+        <NotificationBell />
+        <Button
+          href={HOME_BY_ROLE[user.role]}
+          variant="secondary"
+          size="sm"
+          icon={isAttendee ? <UserIcon /> : <GridIcon />}
+        >
+          {/* Icon only on a phone (the label is still read out), like the other header buttons. */}
+          <span className="max-sm:sr-only">{isAttendee ? t('myAccount') : t('dashboard')}</span>
+        </Button>
+      </>
     );
   }
 

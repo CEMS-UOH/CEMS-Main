@@ -387,7 +387,8 @@
     "ALREADY_REVIEWED": "You have already rated this event",
     "INVALID_PHONE": "Enter a valid phone number (8 to 15 digits)",
     "INVALID_ORGANIZATION": "The club or department name is too long (120 characters at most)",
-    "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved."
+    "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved.",
+    "NOTIFICATION_NOT_FOUND": "This notification no longer exists"
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
@@ -534,5 +535,57 @@
     "thanks": "Thank you! Your feedback was sent.",
     "already": "You have already rated this event.",
     "unavailable": "Rating events is not available yet. Please try again later."
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "subtitle": "Bookings, decisions on your events and announcements, newest first.",
+    "navLabel": "Sections",
+    "bellLabel": "{count, plural, =0 {Notifications} one {Notifications, # unread} other {Notifications, # unread}}",
+    "area": {
+      "ORGANIZER": "Organizer dashboard",
+      "ADMIN": "Admin dashboard",
+      "ATTENDEE": "My account"
+    },
+    "filterLabel": "Show",
+    "filterAll": "All",
+    "filterUnread": "{count, plural, =0 {Unread} other {Unread (#)}}",
+    "markAll": "Mark all as read",
+    "markingAll": "Marking…",
+    "markRead": "Mark as read",
+    "unreadMark": "Unread:",
+    "emptyTitle": "No notifications yet",
+    "emptyBody": "Booking confirmations, decisions on your events and announcements will appear here.",
+    "emptyUnreadTitle": "You are all caught up",
+    "emptyUnreadBody": "There are no unread notifications.",
+    "types": {
+      "BOOKING_CONFIRMATION": {
+        "title": "Seat booked",
+        "body": "Your seat at <event>{title}</event> is confirmed. Your QR ticket is in My bookings."
+      },
+      "CAPACITY_FULL": {
+        "title": "Event full",
+        "body": "Every seat at <event>{title}</event> is now booked."
+      },
+      "EVENT_APPROVED": {
+        "title": "Event approved",
+        "body": "<event>{title}</event> was approved and is now open for booking."
+      },
+      "EVENT_REJECTED": {
+        "title": "Event not approved",
+        "body": "<event>{title}</event> was not approved. You can send a new request."
+      },
+      "BROADCAST": {
+        "label": "Announcement"
+      },
+      "SYSTEM": {
+        "label": "System message"
+      }
+    },
+    "open": {
+      "BOOKING_CONFIRMATION": "Open my bookings",
+      "CAPACITY_FULL": "Open my events",
+      "EVENT_APPROVED": "Open my events",
+      "EVENT_REJECTED": "Open my events"
+    }
   }
 }

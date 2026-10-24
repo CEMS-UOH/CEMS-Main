@@ -208,6 +208,16 @@ export function MegaphoneIcon({ className = 'size-4' }: Props) {
   );
 }
 
+/** Notifications: the bell in every signed-in header. */
+export function BellIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 10a6 6 0 0 1 12 0c0 4.5 1.5 6 2 6.5H4c.5-.5 2-2 2-6.5Z" />
+      <path d="M10 19.5a2 2 0 0 0 4 0" />
+    </svg>
+  );
+}
+
 /**
  * Loading. The only icon that moves, and it keeps moving for people who ask for reduced
  * motion: a frozen spinner reads as a broken icon, not as "working".

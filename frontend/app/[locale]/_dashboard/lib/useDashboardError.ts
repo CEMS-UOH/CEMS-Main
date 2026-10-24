@@ -35,6 +35,7 @@ const DASHBOARD_CODES = [
   'CATEGORY_NOT_FOUND',
   'CATEGORY_NAME_TAKEN',
   'CATEGORY_HAS_EVENTS',
+  'NOTIFICATION_NOT_FOUND',
 ] as const;
 
 const isDashboardCode = (code: string) => (DASHBOARD_CODES as readonly string[]).includes(code);

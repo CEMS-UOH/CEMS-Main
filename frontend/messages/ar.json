@@ -387,7 +387,8 @@
     "ALREADY_REVIEWED": "لقد قيّمت هذه الفعالية من قبل",
     "INVALID_PHONE": "أدخل رقم جوال صحيحًا (من 8 إلى 15 رقمًا)",
     "INVALID_ORGANIZATION": "اسم النادي أو القسم طويل جدًا (120 حرفًا كحد أقصى)",
-    "PENDING_LIMIT_REACHED": "لديك طلب بانتظار الاعتماد. يمكنك إرسال طلبات أخرى بعد اعتماده."
+    "PENDING_LIMIT_REACHED": "لديك طلب بانتظار الاعتماد. يمكنك إرسال طلبات أخرى بعد اعتماده.",
+    "NOTIFICATION_NOT_FOUND": "هذا الإشعار لم يعد موجودًا"
   },
   "AttendeeNav": {
     "productName": "نظام إدارة فعاليات الحرم الجامعي الذكي",
@@ -534,5 +535,57 @@
     "thanks": "شكرًا لك! تم إرسال تقييمك.",
     "already": "لقد قيّمت هذه الفعالية من قبل.",
     "unavailable": "تقييم الفعاليات غير متاح بعد. حاول لاحقًا."
+  },
+  "Notifications": {
+    "title": "الإشعارات",
+    "subtitle": "الحجوزات، وقرارات فعالياتك، والإعلانات، الأحدث أولًا.",
+    "navLabel": "الأقسام",
+    "bellLabel": "{count, plural, =0 {الإشعارات} one {الإشعارات، إشعار واحد غير مقروء} two {الإشعارات، إشعاران غير مقروءين} few {الإشعارات، # إشعارات غير مقروءة} many {الإشعارات، # إشعارًا غير مقروء} other {الإشعارات، # إشعار غير مقروء}}",
+    "area": {
+      "ORGANIZER": "لوحة المنظم",
+      "ADMIN": "لوحة المشرف",
+      "ATTENDEE": "حسابي"
+    },
+    "filterLabel": "عرض",
+    "filterAll": "الكل",
+    "filterUnread": "{count, plural, =0 {غير المقروءة} other {غير المقروءة (#)}}",
+    "markAll": "تحديد الكل كمقروء",
+    "markingAll": "جارٍ التحديد…",
+    "markRead": "تحديد كمقروء",
+    "unreadMark": "غير مقروء:",
+    "emptyTitle": "لا توجد إشعارات بعد",
+    "emptyBody": "ستظهر هنا تأكيدات الحجز وقرارات فعالياتك والإعلانات.",
+    "emptyUnreadTitle": "لا جديد",
+    "emptyUnreadBody": "لا توجد إشعارات غير مقروءة.",
+    "types": {
+      "BOOKING_CONFIRMATION": {
+        "title": "تم حجز مقعدك",
+        "body": "تم تأكيد مقعدك في <event>{title}</event>. تجد تذكرة QR في حجوزاتي."
+      },
+      "CAPACITY_FULL": {
+        "title": "اكتمل العدد",
+        "body": "حُجزت جميع المقاعد في <event>{title}</event>."
+      },
+      "EVENT_APPROVED": {
+        "title": "تمت الموافقة على فعاليتك",
+        "body": "تمت الموافقة على <event>{title}</event> وأصبحت متاحة للحجز."
+      },
+      "EVENT_REJECTED": {
+        "title": "لم تتم الموافقة على فعاليتك",
+        "body": "لم تتم الموافقة على <event>{title}</event>. يمكنك إرسال طلب جديد."
+      },
+      "BROADCAST": {
+        "label": "إعلان"
+      },
+      "SYSTEM": {
+        "label": "رسالة من النظام"
+      }
+    },
+    "open": {
+      "BOOKING_CONFIRMATION": "عرض حجوزاتي",
+      "CAPACITY_FULL": "عرض فعالياتي",
+      "EVENT_APPROVED": "عرض فعالياتي",
+      "EVENT_REJECTED": "عرض فعالياتي"
+    }
   }
 }
