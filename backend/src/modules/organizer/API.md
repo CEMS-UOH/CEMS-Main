@@ -66,6 +66,7 @@ type Attendee = {
 | FR-14 | `GET /api/organizer/events/:id/attendees?status=&page=&limit=` | `{ attendees: Attendee[], pagination, summary: { confirmed, checkedIn } }` |
 | FR-14 | `POST /api/organizer/events/:id/check-in` body `{ code }` | `{ attendee: Attendee, alreadyCheckedIn: boolean }` |
 | FR-14 | `POST /api/organizer/events/:id/attendees/:registrationId/check-in` | `{ attendee: Attendee, alreadyCheckedIn: boolean }` |
+| Ratings | `GET /api/organizer/events/:id/feedback?page=&limit=` | `{ summary: { count, average, distribution }, feedback: Feedback[], pagination }` |
 | — | `GET /api/organizer/venues` | `{ venues: Venue[] }` |
 | — | `GET /api/organizer/categories` | `{ categories: Category[] }` |
 
@@ -144,6 +145,19 @@ Rules:
   event is `409 TICKET_FOR_OTHER_EVENT`.
 - `summary` on the attendee list gives the door's running count: confirmed seats and how many
   of them are checked in.
+
+### Ratings of an event
+
+`GET /events/:id/feedback` lists what attendees said after the event, newest first:
+
+```ts
+type Feedback = { id: string; rating: number; comment: string | null; createdAt: string;
+                  user: { fullName: string } };
+// summary.average: one decimal (4.3), null when nobody has rated yet.
+// summary.distribution: { 1: n, 2: n, 3: n, 4: n, 5: n } - how many gave each number of stars.
+```
+
+`limit` is 1..50 (default 20). Someone else's event is `404 EVENT_NOT_FOUND`.
 
 ### FR-12: delete
 
