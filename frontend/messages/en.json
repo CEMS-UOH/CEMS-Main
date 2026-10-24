@@ -220,12 +220,52 @@
       "colStatus": "Status",
       "colRegistered": "Registered",
       "empty": "No one has registered for this event yet.",
-      "emptyFiltered": "No registrations with this status."
+      "emptyFiltered": "No registrations with this status.",
+      "colCheckIn": "Check-in",
+      "checkIn": "Check in",
+      "checkedInAt": "In at {time}",
+      "notCheckedIn": "Not yet",
+      "checkedInCount": "{checkedIn, number} of {confirmed, number} checked in",
+      "checkedInNotice": "{name} is checked in.",
+      "scan": "Scan tickets"
     },
     "limit": {
       "title": "Your request is with the admin",
       "body": "You can send one request at first. As soon as an admin approves it, you can send as many as you like.",
       "back": "Back to my events"
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "backToAttendees": "Back to attendees",
+      "scanTitle": "Scan a ticket",
+      "count": "{checkedIn, number} / {confirmed, number}",
+      "countLabel": "checked in of confirmed seats",
+      "resultIn": "Checked in",
+      "resultAlready": "Already checked in at {time}",
+      "resultError": "Not checked in",
+      "manualTitle": "Type the code instead",
+      "manualBody": "If the camera cannot read a ticket, type the code printed under its QR, or find the person in the attendee list.",
+      "codeLabel": "Ticket code",
+      "checkInButton": "Check in",
+      "useList": "Open the attendee list",
+      "closedTitle": "Check-in is not open",
+      "closedNotApproved": "Check-in opens once an admin approves this event.",
+      "closedEnded": "This event has ended, so check-in is closed.",
+      "scanner": {
+        "start": "Start the camera",
+        "starting": "Starting the camera…",
+        "retry": "Try the camera again",
+        "stop": "Stop the camera",
+        "hint": "Hold the ticket’s QR code inside the frame.",
+        "checking": "Checking the ticket…",
+        "videoLabel": "Camera view for scanning tickets",
+        "unsupportedTitle": "This browser cannot scan QR codes",
+        "unsupportedBody": "Use Chrome or Edge (on Android or a computer) to scan. Here you can still type the code or check people in from the attendee list.",
+        "deniedTitle": "Camera permission was refused",
+        "deniedBody": "Allow the camera for this site in the browser settings, then try again.",
+        "failedTitle": "The camera could not start",
+        "failedBody": "Another app may be using it. Close it and try again."
+      }
     }
   },
   "Admin": {
@@ -388,7 +428,12 @@
     "INVALID_PHONE": "Enter a valid phone number (8 to 15 digits)",
     "INVALID_ORGANIZATION": "The club or department name is too long (120 characters at most)",
     "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved.",
-    "NOTIFICATION_NOT_FOUND": "This notification no longer exists"
+    "NOTIFICATION_NOT_FOUND": "This notification no longer exists",
+    "INVALID_CODE": "That is not a ticket code. Check it and try again.",
+    "TICKET_NOT_FOUND": "No booking matches this ticket.",
+    "TICKET_FOR_OTHER_EVENT": "This ticket is for a different event.",
+    "TICKET_CANCELLED": "This booking was cancelled.",
+    "CHECK_IN_CLOSED": "Check-in is closed for this event."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
@@ -514,7 +559,8 @@
     "qrLabel": "Ticket QR code",
     "hint": "Show this code at the entrance to check in.",
     "checkedIn": "You checked in to this event",
-    "done": "Done"
+    "done": "Done",
+    "codeLabel": "Ticket code"
   },
   "Feedback": {
     "ratingLabel": "Your rating",

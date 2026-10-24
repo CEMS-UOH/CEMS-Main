@@ -6,6 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Card from '@/components/Card';
 import Badge from '@/components/Badge';
 import Button from '@/components/Button';
+import { ScanIcon } from '@/components/Icons';
 import ConfirmAction from '../../_dashboard/ui/ConfirmAction';
 import { Meta, MetaList } from '../../_dashboard/ui/Meta';
 import { EventStatusBadge } from '../../_dashboard/ui/StatusBadges';
@@ -65,6 +66,17 @@ export default function EventCard({ event, deleting, onDelete }: Props) {
         <Button variant="secondary" size="sm" href={`/organizer/events/${event.id}/attendees`}>
           {t('attendees')}
         </Button>
+        {/* Check-in is open while the event is approved and has not ended (same rule as the API). */}
+        {event.status === 'APPROVED' && new Date(event.endsAt) > new Date() ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<ScanIcon />}
+            href={`/organizer/events/${event.id}/check-in`}
+          >
+            {t('attendeesPage.scan')}
+          </Button>
+        ) : null}
         {event.canEdit ? (
           <Button variant="secondary" size="sm" href={`/organizer/events/${event.id}/edit`}>
             {tCommon('edit')}

@@ -78,6 +78,15 @@ export default function TicketDialog({ booking, onClose }: Props) {
             <QrCode value={booking.qrCode} label={t('qrLabel')} className="h-auto w-full" />
           </div>
 
+          {/* The same code as text, in groups of four, for an organizer whose camera cannot
+              read the QR. The organizer's check-in form ignores the spaces. */}
+          <div className="-mt-2 flex flex-col items-center gap-1 text-center">
+            <p className="text-xs text-text-muted">{t('codeLabel')}</p>
+            <p dir="ltr" className="font-mono text-xs tracking-wider break-all text-text select-all">
+              {booking.qrCode.match(/.{1,4}/g)?.join(' ')}
+            </p>
+          </div>
+
           {booking.checkedInAt ? (
             <p className="flex items-center justify-center gap-2 rounded-lg bg-success-light px-3 py-2 text-sm font-medium text-success">
               <CheckIcon />
