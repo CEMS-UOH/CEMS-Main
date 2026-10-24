@@ -1,18 +1,18 @@
-// FR-23: AI assistant backed by Grok (xAI) - per Leader override, NOT the Anthropic Claude
-// API named in the original CLAUDE.md. See CLAUDE.md / README.md for the override record.
+// FR-23: AI assistant backed by Groq (groq.com, model openai/gpt-oss-120b by default) - per
+// Leader decision, NOT the Anthropic Claude API named in the original CLAUDE.md. See CLAUDE.md.
 // OWNER: Role 3. Input is already validated by the controller.
 const prisma = require('../../lib/prisma');
 const { HttpError } = require('../../lib/response');
-const { grokApiKey, grokModel } = require('../../config/env');
-const { askGrok, GrokError } = require('./grok');
+const { groqApiKey, groqModel } = require('../../config/env');
+const { askAssistant, AssistantError } = require('./groq');
 
 // Keeps the prompt - and the bill - small. Both are deliberately conservative; raise them if
 // the assistant starts missing events or forgetting context in practice.
 const MAX_EVENTS_IN_PROMPT = 15;
-const MAX_HISTORY_MESSAGES = 10; // prior turns resent each call, since store:false (grok.js)
+const MAX_HISTORY_MESSAGES = 10; // prior turns resent each call - the API keeps no history
 const MAX_EVENT_TITLE_LENGTH = 120;
 
-/** APPROVED events that have not ended yet, soonest first - the only facts Grok is given. */
+/** APPROVED events that have not ended yet, soonest first - the only facts the model is given. */
 async function loadUpcomingEvents() {
   const events = await prisma.event.findMany({
     where: { status: 'APPROVED', endsAt: { gt: new Date() } },
@@ -79,12 +79,12 @@ async function sendMessage({ userId, sessionId, message, locale }) {
 
   let reply;
   try {
-    reply = await askGrok({ apiKey: grokApiKey, model: grokModel, input });
+    reply = await askAssistant({ apiKey: groqApiKey, model: groqModel, messages: input });
   } catch (e) {
-    if (!(e instanceof GrokError)) throw e;
-    // Logged for our own diagnostics only - askGrok's messages never include the API key, and
+    if (!(e instanceof AssistantError)) throw e;
+    // Logged for our own diagnostics only - askAssistant's messages never include the API key, and
     // this never reaches the client, which gets the generic message below.
-    console.error(`[chatbot] Grok request failed: ${e.message}`);
+    console.error(`[chatbot] Groq request failed: ${e.message}`);
     throw new HttpError(503, 'The AI assistant is temporarily unavailable', 'CHATBOT_UNAVAILABLE');
   }
 

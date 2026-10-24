@@ -60,7 +60,7 @@
 | FR-20 | **الإحصائيات وتوقّع الحضور** | `GET /api/admin/analytics` و `/predictions` | `/admin/analytics` |
 | FR-21 | إعلان لكل المستخدمين | `POST /api/admin/broadcast` | `/admin/broadcast` |
 | FR-22 | حذف نهائي لأي فعالية/مستخدم | `DELETE /api/admin/events/:id` و users | `/admin/events` و `/admin/users` |
-| FR-23 | **المساعد الذكي** (Grok) | `POST /api/chatbot` | زر المحادثة الدائري في كل شاشة بعد الدخول |
+| FR-23 | **المساعد الذكي** (Groq) | `POST /api/chatbot` | زر المحادثة الدائري في كل شاشة بعد الدخول |
 
 **إضافات خارج قائمة الـ FR** (موثّقة لأن الشاشات تحتاجها):
 - **التقييمات** بعد الفعالية: `POST /api/attendee/events/:id/feedback` و `GET /api/organizer/events/:id/feedback`.
@@ -80,11 +80,11 @@
    │  كل الطلبات عبر frontend/lib/api.ts  (كوكي الجلسة httpOnly)
    ▼
 الخادم (Express على DigitalOcean)  ──►  قاعدة البيانات (Supabase Postgres عبر Prisma)
-   │                                 ──►  Grok (xAI) للمساعد الذكي — من الخادم فقط
+   │                                 ──►  Groq (موديل gpt-oss-120b) للمساعد الذكي — من الخادم فقط
    └──►  خدمة التحليلات (Python FastAPI) — داخلية، لتوقّع الحضور فقط
 ```
 
-- **المتصفح لا يكلّم قاعدة البيانات ولا Grok أبدًا** — كل شيء يمر بالخادم.
+- **المتصفح لا يكلّم قاعدة البيانات ولا Groq أبدًا** — كل شيء يمر بالخادم.
 - كل رد من الـ API بنفس الشكل: `{ success: true, data }` أو `{ success: false, error: { message, code } }`.
   الواجهة تعرض الخطأ حسب الـ `code` مترجمًا (لا تعرض نص الخادم الإنجليزي أبدًا).
 - الصلاحيات في الخادم (`requireAuth` + `requireRole`)، وليست في قاعدة البيانات.
@@ -99,7 +99,7 @@
 | `backend/src/modules/admin` | الموافقة، المستخدمين، الفئات، الإعلان، الحذف |
 | `backend/src/modules/notifications` | صندوق الإشعارات لكل الأدوار |
 | `backend/src/modules/analytics` | الإحصائيات (FR-20) ونقل طلب التوقع لخدمة Python |
-| `backend/src/modules/chatbot` | المساعد الذكي (Grok) |
+| `backend/src/modules/chatbot` | المساعد الذكي (Groq) |
 | `backend/prisma/schema.prisma` | جداول قاعدة البيانات (8 جداول) |
 | `analytics/app/model.py` | نموذج توقّع الحضور (مشروح خطوة بخطوة في أول الملف) |
 | `frontend/app/[locale]/…` | كل الشاشات، مقسّمة حسب الدور: `(attendee)`، `(organizer)`، `(admin)` |
@@ -126,7 +126,7 @@
 1. انسخ `.env.example` إلى `.env` في جذر المشروع واطلب القيم من قائد الفريق
    (**لا ترفع `.env` أبدًا**). المتغيرات:
    `DATABASE_URL`، `DIRECT_URL`، `JWT_SECRET`، `SEED_ADMIN_EMAIL/PASSWORD`،
-   `GROK_API_KEY`، `GROK_MODEL`، `ANALYTICS_URL` (الأخيرة اختيارية).
+   `GROQ_API_KEY`، `GROQ_MODEL`، `ANALYTICS_URL` (الأخيرة اختيارية).
 2. الخادم:
    ```bash
    cd backend
@@ -190,7 +190,7 @@
 | البند | ليش |
 |---|---|
 | **إرجاع قاعدة البيانات** (Supabase SCEMS-eu) | المشروع متوقف (الخطة المجانية توقف المشاريع غير النشطة). بعد تشغيله: `npm run prisma:deploy` ثم `npm run db:seed:demo`. |
-| **مفتاح Grok** (`GROK_API_KEY`) | بدونه المساعد يقول "غير متاح الآن" بشكل مرتب، لكن ما يجاوب. |
+| **مفتاح Groq** (`GROQ_API_KEY`) | بدونه المساعد يقول "غير متاح الآن" بشكل مرتب، لكن ما يجاوب. |
 | **النشر** (Vercel + DigitalOcean) | الخطوات في `docs/DEPLOY.md`. يُفضّل سيرفر في أوروبا (قريب من قاعدة البيانات في فرانكفورت) — هذا يحل بطء الحجز. |
 | **مطابقة ملف الـ SRS** | الأوصاف في الجدول أعلاه مأخوذة من الكود. قارنوها بنص الـ SRS الرسمي. |
 | **التوصيات الذكية** | مذكورة في المميزات في README لكن ما لها FR. إذا مطلوبة، نضيفها على نفس خدمة التحليلات. |

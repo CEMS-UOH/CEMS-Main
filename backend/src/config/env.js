@@ -21,11 +21,12 @@ const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
-  // FR-23 chatbot (Grok/xAI, per Leader override - see CLAUDE.md). Empty is valid here: the
-  // chatbot module fails each request cleanly (CHATBOT_UNAVAILABLE) rather than at startup,
+  // FR-23 chatbot (Groq, groq.com - per Leader decision, see CLAUDE.md). An empty key is valid
+  // here: the chatbot fails each request cleanly (CHATBOT_UNAVAILABLE) rather than at startup,
   // since it is not required for the rest of the app to run.
-  grokApiKey: process.env.GROK_API_KEY || '',
-  grokModel: process.env.GROK_MODEL || '',
+  groqApiKey: process.env.GROQ_API_KEY || '',
+  // openai/gpt-oss-120b: Groq's largest production model, good in Arabic and English.
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
   // FR-20 attendance predictions: where the Python analytics service listens (in Docker,
   // http://analytics:8000). Optional - without it the admin analytics page still shows every
   // descriptive number and says predictions are unavailable.

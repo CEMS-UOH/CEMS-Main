@@ -1,5 +1,5 @@
-// FR-23: AI assistant. grok.js is mocked at the module boundary, so Grok is never called and
-// no network traffic happens - only tests/grok.test.js exercises the real HTTP wrapper logic
+// FR-23: AI assistant. groq.js is mocked at the module boundary, so Groq is never called and
+// no network traffic happens - only tests/groq.test.js exercises the real HTTP wrapper logic
 // (with fetch mocked). Prisma is mocked like health.test.js.
 jest.mock('../src/lib/prisma', () => ({
   user: { findUnique: jest.fn() },
@@ -8,15 +8,15 @@ jest.mock('../src/lib/prisma', () => ({
 }));
 
 // The mock factory may not reference out-of-scope variables (Jest hoists jest.mock calls
-// above imports), so GrokError is defined inline here and read back via the mocked module.
-jest.mock('../src/modules/chatbot/grok', () => ({
-  askGrok: jest.fn(),
-  GrokError: class GrokError extends Error {},
+// above imports), so AssistantError is defined inline here and read back via the mocked module.
+jest.mock('../src/modules/chatbot/groq', () => ({
+  askAssistant: jest.fn(),
+  AssistantError: class AssistantError extends Error {},
 }));
 
 const request = require('supertest');
 const prisma = require('../src/lib/prisma');
-const { askGrok, GrokError: FakeGrokError } = require('../src/modules/chatbot/grok');
+const { askAssistant, AssistantError: FakeAssistantError } = require('../src/modules/chatbot/groq');
 const app = require('../src/app');
 const { COOKIE_NAME, signToken } = require('../src/lib/session');
 
@@ -50,7 +50,7 @@ describe('chatbot auth', () => {
   it.each(['ATTENDEE', 'ORGANIZER', 'ADMIN'])('allows a logged-in %s (no role restriction)', async (role) => {
     prisma.event.findMany.mockResolvedValueOnce([]);
     prisma.chatSession.create.mockResolvedValueOnce({ id: SESSION_ID });
-    askGrok.mockResolvedValueOnce('Hello!');
+    askAssistant.mockResolvedValueOnce('Hello!');
 
     const res = await request(app)
       .post(BASE)
@@ -64,7 +64,7 @@ describe('chatbot auth', () => {
 // ---------------------------------------------------------------- happy path
 
 describe('POST /chatbot (FR-23)', () => {
-  it('starts a new session, asks Grok with the event list in the system prompt, and saves both turns', async () => {
+  it('starts a new session, asks the model with the event list in the system prompt, and saves both turns', async () => {
     prisma.event.findMany.mockResolvedValueOnce([
       {
         title: 'AI Workshop',
@@ -74,7 +74,7 @@ describe('POST /chatbot (FR-23)', () => {
       },
     ]);
     prisma.chatSession.create.mockResolvedValueOnce({ id: SESSION_ID });
-    askGrok.mockResolvedValueOnce('There is an AI Workshop on Dec 1st.');
+    askAssistant.mockResolvedValueOnce('There is an AI Workshop on Dec 1st.');
 
     const res = await request(app)
       .post(BASE)
@@ -84,7 +84,7 @@ describe('POST /chatbot (FR-23)', () => {
     expect(res.status).toBe(201);
     expect(res.body.data).toEqual({ sessionId: SESSION_ID, reply: 'There is an AI Workshop on Dec 1st.' });
 
-    const { input } = askGrok.mock.calls[0][0];
+    const { messages: input } = askAssistant.mock.calls[0][0];
     expect(input[0].role).toBe('system');
     expect(input[0].content).toMatch(/AI Workshop/);
     // 10:00 UTC is 13:00 on campus (Asia/Riyadh, UTC+3).
@@ -103,7 +103,7 @@ describe('POST /chatbot (FR-23)', () => {
   it('only queries APPROVED, not-yet-ended events for the prompt', async () => {
     prisma.event.findMany.mockResolvedValueOnce([]);
     prisma.chatSession.create.mockResolvedValueOnce({ id: SESSION_ID });
-    askGrok.mockResolvedValueOnce('No events yet.');
+    askAssistant.mockResolvedValueOnce('No events yet.');
 
     await request(app).post(BASE).set('Cookie', sessionFor()).send({ message: 'hi', locale: 'en' });
 
@@ -123,7 +123,7 @@ describe('POST /chatbot (FR-23)', () => {
     });
     prisma.event.findMany.mockResolvedValueOnce([]);
     prisma.chatSession.update.mockResolvedValueOnce({ id: SESSION_ID });
-    askGrok.mockResolvedValueOnce('Sure, here is more detail.');
+    askAssistant.mockResolvedValueOnce('Sure, here is more detail.');
 
     const res = await request(app)
       .post(BASE)
@@ -131,7 +131,7 @@ describe('POST /chatbot (FR-23)', () => {
       .send({ message: 'Tell me more', sessionId: SESSION_ID, locale: 'en' });
 
     expect(res.status).toBe(201);
-    const { input } = askGrok.mock.calls[0][0];
+    const { messages: input } = askAssistant.mock.calls[0][0];
     expect(input).toEqual([
       expect.objectContaining({ role: 'system' }),
       { role: 'user', content: 'Hi' },
@@ -148,7 +148,7 @@ describe('POST /chatbot (FR-23)', () => {
   it('replies in Arabic when the message is in Arabic and locale is not given', async () => {
     prisma.event.findMany.mockResolvedValueOnce([]);
     prisma.chatSession.create.mockResolvedValueOnce({ id: SESSION_ID });
-    askGrok.mockResolvedValueOnce('مرحباً!');
+    askAssistant.mockResolvedValueOnce('مرحباً!');
 
     const res = await request(app)
       .post(BASE)
@@ -156,20 +156,20 @@ describe('POST /chatbot (FR-23)', () => {
       .send({ message: 'ما هي الفعاليات القادمة؟' });
 
     expect(res.status).toBe(201);
-    expect(askGrok.mock.calls[0][0].input[0].content).toMatch(/Reply in Arabic/);
+    expect(askAssistant.mock.calls[0][0].messages[0].content).toMatch(/Reply in Arabic/);
   });
 
   it('respects an explicit locale even when the message itself is in the other language', async () => {
     prisma.event.findMany.mockResolvedValueOnce([]);
     prisma.chatSession.create.mockResolvedValueOnce({ id: SESSION_ID });
-    askGrok.mockResolvedValueOnce('ok');
+    askAssistant.mockResolvedValueOnce('ok');
 
     await request(app)
       .post(BASE)
       .set('Cookie', sessionFor())
       .send({ message: 'hello', locale: 'ar' });
 
-    expect(askGrok.mock.calls[0][0].input[0].content).toMatch(/Reply in Arabic/);
+    expect(askAssistant.mock.calls[0][0].messages[0].content).toMatch(/Reply in Arabic/);
   });
 });
 
@@ -180,7 +180,7 @@ describe('POST /chatbot validation', () => {
     const res = await request(app).post(BASE).set('Cookie', sessionFor()).send({ message: '   ' });
     expect(res.status).toBe(422);
     expect(res.body.error.code).toBe('INVALID_MESSAGE');
-    expect(askGrok).not.toHaveBeenCalled();
+    expect(askAssistant).not.toHaveBeenCalled();
   });
 
   it('rejects a too-long message with 422', async () => {
@@ -236,18 +236,18 @@ describe('POST /chatbot validation', () => {
   });
 });
 
-// ---------------------------------------------------------------- Grok failure
+// ---------------------------------------------------------------- Groq failure
 
-describe('POST /chatbot when Grok fails', () => {
+describe('POST /chatbot when Groq fails', () => {
   it('returns a clean 503 instead of crashing, and saves nothing', async () => {
     prisma.event.findMany.mockResolvedValueOnce([]);
-    askGrok.mockRejectedValueOnce(new FakeGrokError('GROK_API_KEY is not configured'));
+    askAssistant.mockRejectedValueOnce(new FakeAssistantError('GROK_API_KEY is not configured'));
 
     const res = await request(app).post(BASE).set('Cookie', sessionFor()).send({ message: 'hi' });
 
     expect(res.status).toBe(503);
     expect(res.body.error.code).toBe('CHATBOT_UNAVAILABLE');
-    expect(res.body.error.message).not.toMatch(/GROK_API_KEY/);
+    expect(res.body.error.message).not.toMatch(/GROQ_API_KEY/);
     expect(prisma.chatSession.create).not.toHaveBeenCalled();
     expect(prisma.chatSession.update).not.toHaveBeenCalled();
   });
