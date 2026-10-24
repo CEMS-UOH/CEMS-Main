@@ -100,3 +100,61 @@ export const sendBroadcast = (input: { title: string; body: string }) =>
     method: 'POST',
     body: JSON.stringify(input),
   });
+
+// --- Analytics (FR-20) - backend/src/modules/analytics/API.md ---
+
+export type AnalyticsOverview = {
+  totals: {
+    events: { total: number; pending: number; approved: number; rejected: number; cancelled: number };
+    users: { total: number; attendees: number; organizers: number; admins: number };
+    bookings: { confirmed: number; cancelled: number };
+    /** Events that are over: confirmed seats and how many were checked in. rate is 0..1. */
+    attendance: { confirmed: number; checkedIn: number; rate: number | null };
+    ratings: { count: number; average: number | null };
+  };
+  byCategory: {
+    id: string;
+    name: string;
+    events: number;
+    bookings: number;
+    checkIns: number;
+    averageRating: number | null;
+    ratings: number;
+  }[];
+  /** Eight months, oldest first, "YYYY-MM" in campus time. */
+  byMonth: { month: string; events: number; bookings: number; checkIns: number }[];
+  topEvents: {
+    id: string;
+    title: string;
+    startsAt: string;
+    endsAt: string;
+    capacity: number;
+    bookings: number;
+    checkIns: number;
+    fillRate: number | null;
+    averageRating: number | null;
+  }[];
+  generatedAt: string;
+};
+
+export type AttendancePredictions = {
+  /** 'model' (trained), 'baseline' (too little history), 'none' (nothing upcoming). */
+  method: 'model' | 'baseline' | 'none';
+  trainedOn: number;
+  showUpRate: number | null;
+  predictions: {
+    eventId: string;
+    title: string;
+    startsAt: string;
+    capacity: number;
+    bookingsSoFar: number;
+    expectedBookings: number;
+    expectedAttendance: number;
+  }[];
+};
+
+/** GET /api/admin/analytics */
+export const getAnalytics = () => apiFetch<AnalyticsOverview>(`${BASE}/analytics`);
+
+/** GET /api/admin/analytics/predictions - needs the Python analytics service. */
+export const getPredictions = () => apiFetch<AttendancePredictions>(`${BASE}/analytics/predictions`);

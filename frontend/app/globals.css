@@ -35,6 +35,11 @@
   --color-success: #1f7a52;
   --color-success-light: #e6f2ec;
 
+  /* Charts. A lighter step of primary for a second, related measure (e.g. "expected" next to
+     "booked now"). Checked with the dataviz validator as a one-hue ramp with primary:
+     monotone lightness, visible step, 2.84:1 against white. */
+  --color-chart-soft: #58a97f;
+
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;

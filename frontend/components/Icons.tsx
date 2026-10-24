@@ -168,6 +168,15 @@ export function GlobeIcon({ className = 'size-4' }: Props) {
   );
 }
 
+/** Analytics: a small column chart. */
+export function ChartIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 20h16M7 16v-4M12 16V7M17 16v-6" />
+    </svg>
+  );
+}
+
 /** Dashboard sections. */
 export function GridIcon({ className = 'size-4' }: Props) {
   return (
