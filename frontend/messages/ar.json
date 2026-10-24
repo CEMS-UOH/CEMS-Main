@@ -220,12 +220,65 @@
       "colStatus": "الحالة",
       "colRegistered": "تاريخ التسجيل",
       "empty": "لم يسجّل أحد في هذه الفعالية بعد.",
-      "emptyFiltered": "لا توجد تسجيلات بهذه الحالة."
+      "emptyFiltered": "لا توجد تسجيلات بهذه الحالة.",
+      "colCheckIn": "الحضور",
+      "checkIn": "تسجيل حضور",
+      "checkedInAt": "حضر الساعة {time}",
+      "notCheckedIn": "لم يحضر بعد",
+      "checkedInCount": "حضر {checkedIn, number} من {confirmed, number}",
+      "checkedInNotice": "تم تسجيل حضور {name}.",
+      "scan": "مسح التذاكر"
     },
     "limit": {
       "title": "طلبك لدى المشرف",
       "body": "يمكنك إرسال طلب واحد في البداية. فور اعتماد المشرف له يمكنك إرسال ما تشاء من الطلبات.",
       "back": "العودة إلى فعالياتي"
+    },
+    "checkIn": {
+      "title": "تسجيل الحضور",
+      "backToAttendees": "العودة إلى المسجلين",
+      "scanTitle": "امسح التذكرة",
+      "count": "{checkedIn, number} من {confirmed, number}",
+      "countLabel": "حضروا من المقاعد المؤكدة",
+      "resultIn": "تم تسجيل الحضور",
+      "resultAlready": "سُجّل حضوره مسبقًا الساعة {time}",
+      "resultError": "لم يُسجَّل الحضور",
+      "manualTitle": "أو اكتب الرمز",
+      "manualBody": "إذا لم تقرأ الكاميرا التذكرة، اكتب الرمز المطبوع تحت رمز QR، أو ابحث عن الشخص في قائمة المسجلين.",
+      "codeLabel": "رمز التذكرة",
+      "checkInButton": "تسجيل الحضور",
+      "useList": "فتح قائمة المسجلين",
+      "closedTitle": "تسجيل الحضور غير متاح",
+      "closedNotApproved": "يُفتح تسجيل الحضور بعد موافقة المشرف على الفعالية.",
+      "closedEnded": "انتهت الفعالية، لذلك أُغلق تسجيل الحضور.",
+      "scanner": {
+        "start": "تشغيل الكاميرا",
+        "starting": "جارٍ تشغيل الكاميرا…",
+        "retry": "جرّب الكاميرا مرة أخرى",
+        "stop": "إيقاف الكاميرا",
+        "hint": "ضع رمز QR الخاص بالتذكرة داخل الإطار.",
+        "checking": "جارٍ التحقق من التذكرة…",
+        "videoLabel": "عرض الكاميرا لمسح التذاكر",
+        "unsupportedTitle": "هذا المتصفح لا يدعم مسح رموز QR",
+        "unsupportedBody": "استخدم Chrome أو Edge (على أندرويد أو الكمبيوتر) للمسح. ويمكنك هنا كتابة الرمز أو تسجيل الحضور من قائمة المسجلين.",
+        "deniedTitle": "تم رفض إذن الكاميرا",
+        "deniedBody": "اسمح للموقع باستخدام الكاميرا من إعدادات المتصفح، ثم حاول مرة أخرى.",
+        "failedTitle": "تعذّر تشغيل الكاميرا",
+        "failedBody": "قد يكون تطبيق آخر يستخدمها. أغلقه وحاول مرة أخرى."
+      }
+    },
+    "ratings": "التقييمات",
+    "feedbackPage": {
+      "title": "التقييمات",
+      "commentsTitle": "آراء الحضور",
+      "stars": "{count, plural, one {نجمة واحدة} two {نجمتان} few {# نجوم} many {# نجمة} other {# نجمة}}",
+      "starsShort": "{count, plural, one {نجمة} two {نجمتان} few {# نجوم} many {# نجمة} other {# نجمة}}",
+      "averageLabel": "المتوسط {average, number} من 5",
+      "ratingsCount": "{count, plural, one {من تقييم واحد} two {من تقييمين} few {من # تقييمات} many {من # تقييمًا} other {من # تقييم}}",
+      "noComment": "بدون تعليق، تقييم فقط.",
+      "emptyTitle": "لا توجد تقييمات بعد",
+      "emptyNotEnded": "يمكن للحضور تقييم الفعالية بعد انتهائها.",
+      "emptyEnded": "لم يقيّم أي من الحضور هذه الفعالية بعد."
     }
   },
   "Admin": {
@@ -234,7 +287,8 @@
       "events": "الفعاليات",
       "users": "المستخدمون",
       "categories": "الفئات",
-      "broadcast": "إعلان عام"
+      "broadcast": "إعلان عام",
+      "analytics": "الإحصائيات"
     },
     "overview": {
       "title": "نظرة عامة",
@@ -329,6 +383,64 @@
       "confirmSend": "نعم، أرسل",
       "sending": "جارٍ الإرسال…",
       "sent": "تم إرسال الإعلان. عدد المستلمين: {count}"
+    },
+    "analytics": {
+      "title": "الإحصائيات",
+      "subtitle": "كيف تُحجز الفعاليات ويُحضر لها وتُقيَّم في الحرم الجامعي.",
+      "totals": {
+        "label": "الإجماليات",
+        "approvedEvents": "الفعاليات المعتمدة",
+        "confirmedBookings": "الحجوزات المؤكدة",
+        "attendanceRate": "نسبة الحضور في الفعاليات المنتهية",
+        "averageRating": "متوسط التقييم (من 5)",
+        "details": "الحضور: {attendees, number} · المنظمون: {organizers, number} · طلبات بانتظار الاعتماد: {pending, number} · حجوزات ملغاة: {cancelled, number} · حضر {checkedIn, number} من {confirmed, number} في الفعاليات المنتهية · عدد التقييمات: {ratings, number}"
+      },
+      "months": {
+        "title": "الحجوزات حسب الشهر",
+        "subtitle": "الحجوزات المؤكدة في الفعاليات المعتمدة، حسب شهر إقامة الفعالية.",
+        "columnLabel": "{month}: الحجوزات {bookings, number}، الفعاليات {events, number}، الحضور {checkIns, number}",
+        "bookings": "الحجوزات: {count, number}",
+        "eventsAndCheckIns": "الفعاليات: {events, number} · الحضور: {checkIns, number}",
+        "showTable": "عرض كجدول",
+        "month": "الشهر",
+        "events": "الفعاليات",
+        "bookingsCol": "الحجوزات",
+        "checkInsCol": "الحضور"
+      },
+      "categories": {
+        "title": "حسب الفئة",
+        "subtitle": "الفعاليات المعتمدة فقط، الأكثر حجزًا أولًا.",
+        "category": "الفئة",
+        "events": "الفعاليات",
+        "bookings": "الحجوزات",
+        "checkIns": "الحضور",
+        "rating": "التقييم"
+      },
+      "top": {
+        "title": "الفعاليات الأكثر حجزًا",
+        "subtitle": "أكثر خمس فعاليات معتمدة من حيث الحجوزات المؤكدة.",
+        "event": "الفعالية",
+        "booked": "المحجوز",
+        "filled": "نسبة الامتلاء",
+        "attended": "نسبة الحضور",
+        "rating": "التقييم",
+        "ofCapacity": "{bookings, number} من {capacity, number}",
+        "notYet": "لم تنتهِ"
+      },
+      "predictions": {
+        "title": "الحضور المتوقع",
+        "subtitle": "كم مقعدًا يُتوقع أن يُحجز في الفعاليات القادمة، وكم شخصًا يُتوقع أن يحضر.",
+        "loading": "جارٍ الحساب…",
+        "unavailable": "التوقعات غير متاحة الآن: خدمة التحليلات متوقفة أو ما زالت تعمل على التشغيل. باقي الأرقام أعلاه لا تتأثر.",
+        "nothingUpcoming": "لا توجد فعاليات معتمدة قادمة لتوقّع حضورها.",
+        "methodModel": "التوقع من نموذج تدرّب على {count, number} فعالية سابقة.",
+        "methodBaseline": "التوقع مبني على متوسط الفعاليات السابقة من نفس الفئة (عدد الفعاليات السابقة: {count, number}). يبدأ النموذج المدرَّب من 12 فعالية سابقة.",
+        "showUp": "يُستخدم نحو {rate} من المقاعد المحجوزة.",
+        "legendBooked": "محجوز الآن",
+        "legendExpected": "متوقع حتى موعد الفعالية",
+        "row": "محجوز الآن {booked, number} · المتوقع نحو {expected, number} · يُتوقع حضور نحو {attend, number} · المقاعد {capacity, number}",
+        "retry": "حاول مرة أخرى"
+      }
     }
   },
   "NotFound": {
@@ -387,7 +499,18 @@
     "ALREADY_REVIEWED": "لقد قيّمت هذه الفعالية من قبل",
     "INVALID_PHONE": "أدخل رقم جوال صحيحًا (من 8 إلى 15 رقمًا)",
     "INVALID_ORGANIZATION": "اسم النادي أو القسم طويل جدًا (120 حرفًا كحد أقصى)",
-    "PENDING_LIMIT_REACHED": "لديك طلب بانتظار الاعتماد. يمكنك إرسال طلبات أخرى بعد اعتماده."
+    "PENDING_LIMIT_REACHED": "لديك طلب بانتظار الاعتماد. يمكنك إرسال طلبات أخرى بعد اعتماده.",
+    "NOTIFICATION_NOT_FOUND": "هذا الإشعار لم يعد موجودًا",
+    "INVALID_CODE": "هذا ليس رمز تذكرة. تحقّق منه وحاول مرة أخرى.",
+    "TICKET_NOT_FOUND": "لا يوجد حجز بهذه التذكرة.",
+    "TICKET_FOR_OTHER_EVENT": "هذه التذكرة لفعالية أخرى.",
+    "TICKET_CANCELLED": "هذا الحجز ملغى.",
+    "CHECK_IN_CLOSED": "تسجيل الحضور مغلق لهذه الفعالية.",
+    "INVALID_MESSAGE": "اكتب رسالة لا تزيد عن 2000 حرف.",
+    "INVALID_LOCALE": "هذه اللغة غير مدعومة.",
+    "SESSION_NOT_FOUND": "انتهت هذه المحادثة. ابدأ محادثة جديدة.",
+    "CHATBOT_UNAVAILABLE": "المساعد غير متاح الآن. حاول مرة أخرى لاحقًا.",
+    "ANALYTICS_UNAVAILABLE": "التوقعات غير متاحة الآن."
   },
   "AttendeeNav": {
     "productName": "نظام إدارة فعاليات الحرم الجامعي الذكي",
@@ -513,7 +636,8 @@
     "qrLabel": "رمز QR للتذكرة",
     "hint": "اعرض هذا الرمز عند المدخل لتسجيل حضورك.",
     "checkedIn": "تم تسجيل حضورك في هذه الفعالية",
-    "done": "تم"
+    "done": "تم",
+    "codeLabel": "رمز التذكرة"
   },
   "Feedback": {
     "ratingLabel": "تقييمك",
@@ -533,6 +657,78 @@
     "submitting": "جارٍ الإرسال…",
     "thanks": "شكرًا لك! تم إرسال تقييمك.",
     "already": "لقد قيّمت هذه الفعالية من قبل.",
-    "unavailable": "تقييم الفعاليات غير متاح بعد. حاول لاحقًا."
+    "yourRating": "تقييمك:"
+  },
+  "Notifications": {
+    "title": "الإشعارات",
+    "subtitle": "الحجوزات، وقرارات فعالياتك، والإعلانات، الأحدث أولًا.",
+    "navLabel": "الأقسام",
+    "bellLabel": "{count, plural, =0 {الإشعارات} one {الإشعارات، إشعار واحد غير مقروء} two {الإشعارات، إشعاران غير مقروءين} few {الإشعارات، # إشعارات غير مقروءة} many {الإشعارات، # إشعارًا غير مقروء} other {الإشعارات، # إشعار غير مقروء}}",
+    "area": {
+      "ORGANIZER": "لوحة المنظم",
+      "ADMIN": "لوحة المشرف",
+      "ATTENDEE": "حسابي"
+    },
+    "filterLabel": "عرض",
+    "filterAll": "الكل",
+    "filterUnread": "{count, plural, =0 {غير المقروءة} other {غير المقروءة (#)}}",
+    "markAll": "تحديد الكل كمقروء",
+    "markingAll": "جارٍ التحديد…",
+    "markRead": "تحديد كمقروء",
+    "unreadMark": "غير مقروء:",
+    "emptyTitle": "لا توجد إشعارات بعد",
+    "emptyBody": "ستظهر هنا تأكيدات الحجز وقرارات فعالياتك والإعلانات.",
+    "emptyUnreadTitle": "لا جديد",
+    "emptyUnreadBody": "لا توجد إشعارات غير مقروءة.",
+    "types": {
+      "BOOKING_CONFIRMATION": {
+        "title": "تم حجز مقعدك",
+        "body": "تم تأكيد مقعدك في <event>{title}</event>. تجد تذكرة QR في حجوزاتي."
+      },
+      "CAPACITY_FULL": {
+        "title": "اكتمل العدد",
+        "body": "حُجزت جميع المقاعد في <event>{title}</event>."
+      },
+      "EVENT_APPROVED": {
+        "title": "تمت الموافقة على فعاليتك",
+        "body": "تمت الموافقة على <event>{title}</event> وأصبحت متاحة للحجز."
+      },
+      "EVENT_REJECTED": {
+        "title": "لم تتم الموافقة على فعاليتك",
+        "body": "لم تتم الموافقة على <event>{title}</event>. يمكنك إرسال طلب جديد."
+      },
+      "BROADCAST": {
+        "label": "إعلان"
+      },
+      "SYSTEM": {
+        "label": "رسالة من النظام"
+      }
+    },
+    "open": {
+      "BOOKING_CONFIRMATION": "عرض حجوزاتي",
+      "CAPACITY_FULL": "عرض فعالياتي",
+      "EVENT_APPROVED": "عرض فعالياتي",
+      "EVENT_REJECTED": "عرض فعالياتي"
+    }
+  },
+  "Assistant": {
+    "open": "فتح المساعد الذكي",
+    "title": "مساعد الحرم الجامعي",
+    "subtitle": "اسأل عن الفعاليات القادمة",
+    "newChat": "محادثة جديدة",
+    "close": "إغلاق المساعد",
+    "welcome": "أهلًا! يمكنني إخبارك بالفعاليات القادمة في الحرم الجامعي ومواعيدها وأماكنها. بماذا أساعدك؟",
+    "suggest": {
+      "week": "ما الفعاليات هذا الأسبوع؟",
+      "ai": "هل توجد ورش عمل عن الذكاء الاصطناعي؟",
+      "book": "كيف أحجز مقعدًا؟"
+    },
+    "you": "أنت",
+    "assistant": "المساعد",
+    "thinking": "جارٍ التفكير…",
+    "inputLabel": "رسالتك",
+    "placeholder": "اكتب سؤالك…",
+    "send": "إرسال",
+    "disclaimer": "الإجابات من الذكاء الاصطناعي وقد تخطئ. تأكد من صفحة الفعالية قبل الحضور."
   }
 }

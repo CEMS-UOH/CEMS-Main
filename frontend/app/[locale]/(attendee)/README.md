@@ -33,21 +33,6 @@ from Project Nayuki's QR Code generator.
 
 ## Not in the API yet
 
-**Feedback.** The `Feedback` table exists, but there is no route. The form is built against this
-proposed contract (Role 2 to confirm or change):
-
-```
-POST /api/attendee/events/:id/feedback   (Attendee)
-body  { rating: 1..5, comment?: string <= 1000 chars }
-201   { feedback: { id, rating, comment, createdAt } }
-422   INVALID_RATING | INVALID_COMMENT
-404   EVENT_NOT_FOUND
-409   FEEDBACK_NOT_OPEN   (no confirmed booking, or the event has not ended)
-409   ALREADY_REVIEWED
-```
-
-Until it exists the API answers `404 NOT_FOUND` and the form says rating is not available yet.
-
 **Text search and filter lists.** The API has no `q` parameter, so search runs over the loaded
 page (48 events). The category/venue choices come from the upcoming events, because the
 categories/venues endpoints need the Organizer role. A public `GET /api/attendee/categories`

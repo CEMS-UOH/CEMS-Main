@@ -35,6 +35,13 @@ const DASHBOARD_CODES = [
   'CATEGORY_NOT_FOUND',
   'CATEGORY_NAME_TAKEN',
   'CATEGORY_HAS_EVENTS',
+  'NOTIFICATION_NOT_FOUND',
+  'INVALID_CODE',
+  'TICKET_NOT_FOUND',
+  'TICKET_FOR_OTHER_EVENT',
+  'TICKET_CANCELLED',
+  'CHECK_IN_CLOSED',
+  'ANALYTICS_UNAVAILABLE',
 ] as const;
 
 const isDashboardCode = (code: string) => (DASHBOARD_CODES as readonly string[]).includes(code);

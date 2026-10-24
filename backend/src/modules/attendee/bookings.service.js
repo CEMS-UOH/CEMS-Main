@@ -139,8 +139,17 @@ async function listBookings({ userId, status }) {
     select: BOOKING_SELECT,
     orderBy: [{ event: { startsAt: 'desc' } }, { createdAt: 'desc' }],
   });
+  // The attendee's own ratings, so a past booking can show its stars instead of a Rate button.
+  const ratings = await prisma.feedback.findMany({
+    where: { userId, eventId: { in: bookings.map((b) => b.event.id) } },
+    select: { eventId: true, rating: true },
+  });
+  const ratingByEvent = new Map(ratings.map((r) => [r.eventId, r.rating]));
   const now = new Date();
-  return bookings.map((b) => toPublicBooking(b, now));
+  return bookings.map((b) => ({
+    ...toPublicBooking(b, now),
+    myRating: ratingByEvent.get(b.event.id) ?? null,
+  }));
 }
 
 /**

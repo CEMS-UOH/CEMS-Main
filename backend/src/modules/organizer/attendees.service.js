@@ -14,7 +14,7 @@ async function listEventAttendees({ organizerId, eventId, status, page, limit })
   if (!event || event.organizerId !== organizerId) throw NOT_FOUND();
 
   const where = { eventId, ...(status ? { status } : {}) };
-  const [attendees, total] = await Promise.all([
+  const [attendees, total, confirmed, checkedIn] = await Promise.all([
     prisma.registration.findMany({
       where,
       select: ATTENDEE_SELECT,
@@ -23,10 +23,14 @@ async function listEventAttendees({ organizerId, eventId, status, page, limit })
       take: limit,
     }),
     prisma.registration.count({ where }),
+    // For the door: how many hold a seat, and how many of them are already in.
+    prisma.registration.count({ where: { eventId, status: 'CONFIRMED' } }),
+    prisma.registration.count({ where: { eventId, status: 'CONFIRMED', checkedInAt: { not: null } } }),
   ]);
 
   return {
     attendees: attendees.map(toPublicAttendee),
+    summary: { confirmed, checkedIn },
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   };
 }

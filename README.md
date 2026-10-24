@@ -25,7 +25,7 @@ It covers 23 functional requirements (FR-01..FR-23) and 16 non-functional requir
 **Supervisor:** Dr. Mohamed Hazber
 
 ## 🚀 Key Features | المميزات الأساسية
-* **AI Assistant (FR-23):** Conversational help for finding events, powered by Grok (xAI).
+* **AI Assistant (FR-23):** Conversational help for finding events, powered by Groq (model openai/gpt-oss-120b).
   (مساعد ذكي للبحث عن الفعاليات والإجابة على الاستفسارات)
 * **AI Recommendation:** Personalized event suggestions.
   (توصيات ذكية للفعاليات بناءً على اهتمامات الحضور)
@@ -35,6 +35,11 @@ It covers 23 functional requirements (FR-01..FR-23) and 16 non-functional requir
   (التنبؤ بعدد الحضور باستخدام الذكاء الاصطناعي)
 * **Bilingual UI:** Arabic (RTL) by default, English (LTR) second.
   (واجهة ثنائية اللغة: العربية افتراضياً مع دعم الاتجاه من اليمين لليسار)
+
+## 📘 Start here | ابدأ من هنا
+All 23 functional requirements are built. **[docs/PROJECT-GUIDE.md](docs/PROJECT-GUIDE.md)** explains the
+whole system (in Arabic): what each role does, where every FR lives, how to run it, the demo script,
+and what is still open.
 
 ## 📂 Repository layout
 ```
@@ -74,13 +79,13 @@ Then open a new terminal. Linux/macOS, CI, and Vercel are not affected.
   to load the 5 categories, 3 venues and the first ADMIN account. See `docs/DATABASE.md` for the
   migration workflow, the RLS decision and the P1001 tip.
 - Role 4: run `npx shadcn@latest init` once inside `frontend/` and commit, so everyone shares the same UI component setup.
-- Role 8: connect Vercel to `frontend/` (root directory `frontend`), set up the DigitalOcean droplet, NGINX and Certbot. Full runbook in `docs/DEPLOY.md`, including the `CORS_ORIGINS` / `COOKIE_DOMAIN` values the shared session cookie needs.
+- Role 8: deploy for free - Vercel (frontend), Koyeb (backend), Render (analytics). Step by step in `docs/DEPLOY.md` (the DigitalOcean + own-domain setup is kept there as the paid alternative).
 
 ## Open decisions (settle in the first meeting)
 1. **Mobile:** the official NFR mentions React Native; we build a responsive web app instead. Get the supervisor's written OK.
 2. **Auth vs RLS:** NFRs say bcrypt + JWT (custom auth) and Row-Level Security. Prisma connects with a privileged role that bypasses RLS, so real access control must live in the API. RLS is enabled as a second safety net — see `docs/DATABASE.md`.
 3. **Feedback screen:** the 17 screens include Feedback/Rating but no FR covers it. Ask the supervisor which FR it belongs to.
-4. **Domain:** buy it and set `app.` (Vercel) and `api.` (DigitalOcean) subdomains; set `CORS_ORIGINS` to the app URL.
+4. **Domain:** not needed - the free setup runs on the hosts' own addresses (decided 2026-10-24).
 
 ## Foundation status
 
@@ -116,8 +121,8 @@ Honest list of what the foundation does **not** do yet. None of these block the 
    valid until it expires (7 days). A token copied before logout would still work. Mitigated
    by `requireAuth` re-loading the user each request, so deactivating an account via
    `isActive` takes effect immediately.
-6. **Organizer and Admin accounts cannot be created through the UI yet** - only by the seed or
-   directly in the database. That is FR-18 (Admin user management).
+6. Organizers register themselves (with a phone number); an Admin can change any account's role
+   (FR-18). Admin accounts come from the seed or from another Admin.
 
 **Database**
 7. **RLS is enabled with no policies on purpose.** A side effect is that Supabase's **Table
@@ -151,8 +156,8 @@ Honest list of what the foundation does **not** do yet. None of these block the 
 **Scope**
 13. The official NFR mentions a **React Native** mobile app; we build a responsive web app
     instead (open decision #1).
-14. No E2E tests yet (Playwright is planned for Sprint 6). Backend has 26 Jest/Supertest tests;
-    the frontend has none.
+14. No E2E tests yet (Playwright is planned for Sprint 6). Backend: 341 Jest/Supertest tests;
+    attendee screens: 21 node:test tests; analytics model: 5 unittest tests.
 
 ## Roles
 1 Leader/Architecture - 2 Backend core + DB - 3 Backend organizer/AI - 4 Frontend attendee - 5 Frontend dashboards - 6 Data analytics - 7 UI/UX + docs - 8 QA + DevOps.

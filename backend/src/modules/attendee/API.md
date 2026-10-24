@@ -92,6 +92,7 @@ type Booking = {
 | FR-05, FR-06 | `POST /api/attendee/bookings` body `{ eventId }` | Attendee | `201 { booking: Booking }` |
 | FR-08 | `GET /api/attendee/bookings?status=` | Attendee | `{ bookings: Booking[] }` |
 | FR-07 | `POST /api/attendee/bookings/:id/cancel` | Attendee | `{ booking: Booking }` |
+| Rating | `POST /api/attendee/events/:id/feedback` body `{ rating, comment? }` | Attendee | `201 { feedback: { id, rating, comment, createdAt } }` |
 
 ### `GET /events` query parameters (all optional)
 
@@ -112,6 +113,14 @@ Only APPROVED events that have not ended yet are listed, soonest first.
   its `title` is the event title.
 - Booking again after cancelling is allowed while seats remain; it gets a new QR code.
 - `GET /bookings` returns the full history, newest event first. `status` is `CONFIRMED` or `CANCELLED`.
+  Each booking also carries `myRating` (1..5, or `null`): the attendee's own rating of that event.
+
+### Rating an event
+
+- `rating` is a whole number 1..5; `comment` is optional, up to 1000 characters (blank = none).
+- Open once the event has **ended**, to an attendee who held a **confirmed** seat
+  (otherwise `409 FEEDBACK_NOT_OPEN`). One rating per attendee per event (`409 ALREADY_REVIEWED`).
+- The organizer reads them through `GET /api/organizer/events/:id/feedback`.
 
 ## Error codes (add these to `frontend/messages/{ar,en}.json` under `Errors`)
 
@@ -126,6 +135,10 @@ Only APPROVED events that have not ended yet are listed, soonest first.
 | `BOOKING_NOT_FOUND` | 404 | unknown booking, or someone else's |
 | `ALREADY_CANCELLED` | 409 | cancelling twice |
 | `CANCELLATION_CLOSED` | 409 | cancelling after the event started |
+| `INVALID_RATING` | 422 | `rating` is not a whole number from 1 to 5 |
+| `INVALID_COMMENT` | 422 | `comment` is not text, or longer than 1000 characters |
+| `FEEDBACK_NOT_OPEN` | 409 | the event has not ended, or the attendee held no confirmed seat |
+| `ALREADY_REVIEWED` | 409 | the attendee already rated this event |
 
 The existing `UNAUTHENTICATED` (401) and `FORBIDDEN` (403, for Organizers and Admins on
 `/bookings`) also apply.

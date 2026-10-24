@@ -50,8 +50,50 @@ export const listAttendees = (
   id: string,
   params: { status?: BookingStatus | ''; page?: number; limit?: number }
 ) =>
-  apiFetch<{ attendees: Attendee[]; pagination: Pagination }>(
+  apiFetch<{ attendees: Attendee[]; pagination: Pagination; summary: CheckInSummary }>(
     `${BASE}/events/${encodeURIComponent(id)}/attendees${toQuery(params)}`
+  );
+
+/** How many hold a seat, and how many of them have arrived. */
+export type CheckInSummary = { confirmed: number; checkedIn: number };
+
+/** A check-in answer. A repeat scan is not an error: alreadyCheckedIn says so. */
+export type CheckInResult = { attendee: Attendee; alreadyCheckedIn: boolean };
+
+/** POST /api/organizer/events/:id/check-in (FR-14) - the text read from a ticket's QR. */
+export const checkInByCode = (id: string, code: string) =>
+  apiFetch<CheckInResult>(`${BASE}/events/${encodeURIComponent(id)}/check-in`, {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+
+/** POST /api/organizer/events/:id/attendees/:registrationId/check-in (FR-14) - from the list. */
+export const checkInById = (id: string, registrationId: string) =>
+  apiFetch<CheckInResult>(
+    `${BASE}/events/${encodeURIComponent(id)}/attendees/${encodeURIComponent(registrationId)}/check-in`,
+    { method: 'POST' }
+  );
+
+/** What attendees said after one of the organizer's events. */
+export type EventFeedback = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  user: { fullName: string };
+};
+export type FeedbackSummary = {
+  count: number;
+  /** One decimal; null when nobody has rated yet. */
+  average: number | null;
+  /** How many gave each number of stars. */
+  distribution: Record<'1' | '2' | '3' | '4' | '5', number>;
+};
+
+/** GET /api/organizer/events/:id/feedback */
+export const listEventFeedback = (id: string, params: { page?: number; limit?: number }) =>
+  apiFetch<{ summary: FeedbackSummary; feedback: EventFeedback[]; pagination: Pagination }>(
+    `${BASE}/events/${encodeURIComponent(id)}/feedback${toQuery(params)}`
   );
 
 /** GET /api/organizer/venues */

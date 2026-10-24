@@ -220,12 +220,65 @@
       "colStatus": "Status",
       "colRegistered": "Registered",
       "empty": "No one has registered for this event yet.",
-      "emptyFiltered": "No registrations with this status."
+      "emptyFiltered": "No registrations with this status.",
+      "colCheckIn": "Check-in",
+      "checkIn": "Check in",
+      "checkedInAt": "In at {time}",
+      "notCheckedIn": "Not yet",
+      "checkedInCount": "{checkedIn, number} of {confirmed, number} checked in",
+      "checkedInNotice": "{name} is checked in.",
+      "scan": "Scan tickets"
     },
     "limit": {
       "title": "Your request is with the admin",
       "body": "You can send one request at first. As soon as an admin approves it, you can send as many as you like.",
       "back": "Back to my events"
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "backToAttendees": "Back to attendees",
+      "scanTitle": "Scan a ticket",
+      "count": "{checkedIn, number} / {confirmed, number}",
+      "countLabel": "checked in of confirmed seats",
+      "resultIn": "Checked in",
+      "resultAlready": "Already checked in at {time}",
+      "resultError": "Not checked in",
+      "manualTitle": "Type the code instead",
+      "manualBody": "If the camera cannot read a ticket, type the code printed under its QR, or find the person in the attendee list.",
+      "codeLabel": "Ticket code",
+      "checkInButton": "Check in",
+      "useList": "Open the attendee list",
+      "closedTitle": "Check-in is not open",
+      "closedNotApproved": "Check-in opens once an admin approves this event.",
+      "closedEnded": "This event has ended, so check-in is closed.",
+      "scanner": {
+        "start": "Start the camera",
+        "starting": "Starting the camera…",
+        "retry": "Try the camera again",
+        "stop": "Stop the camera",
+        "hint": "Hold the ticket’s QR code inside the frame.",
+        "checking": "Checking the ticket…",
+        "videoLabel": "Camera view for scanning tickets",
+        "unsupportedTitle": "This browser cannot scan QR codes",
+        "unsupportedBody": "Use Chrome or Edge (on Android or a computer) to scan. Here you can still type the code or check people in from the attendee list.",
+        "deniedTitle": "Camera permission was refused",
+        "deniedBody": "Allow the camera for this site in the browser settings, then try again.",
+        "failedTitle": "The camera could not start",
+        "failedBody": "Another app may be using it. Close it and try again."
+      }
+    },
+    "ratings": "Ratings",
+    "feedbackPage": {
+      "title": "Ratings",
+      "commentsTitle": "What attendees said",
+      "stars": "{count, plural, one {# star} other {# stars}}",
+      "starsShort": "{count, plural, one {# star} other {# stars}}",
+      "averageLabel": "Average {average, number} out of 5",
+      "ratingsCount": "{count, plural, one {From # rating} other {From # ratings}}",
+      "noComment": "No comment, just a rating.",
+      "emptyTitle": "No ratings yet",
+      "emptyNotEnded": "Attendees can rate the event once it ends.",
+      "emptyEnded": "No attendee has rated this event yet."
     }
   },
   "Admin": {
@@ -234,7 +287,8 @@
       "events": "Events",
       "users": "Users",
       "categories": "Categories",
-      "broadcast": "Broadcast"
+      "broadcast": "Broadcast",
+      "analytics": "Analytics"
     },
     "overview": {
       "title": "Overview",
@@ -329,6 +383,64 @@
       "confirmSend": "Yes, send",
       "sending": "Sending…",
       "sent": "The announcement was sent. Recipients: {count}"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "How events are booked, attended and rated across the campus.",
+      "totals": {
+        "label": "Totals",
+        "approvedEvents": "Approved events",
+        "confirmedBookings": "Confirmed bookings",
+        "attendanceRate": "Attendance at past events",
+        "averageRating": "Average rating (out of 5)",
+        "details": "{attendees, plural, one {# attendee} other {# attendees}} and {organizers, plural, one {# organizer} other {# organizers}} · {pending, plural, =0 {no requests waiting} one {# request waiting} other {# requests waiting}} · {cancelled, plural, one {# cancelled booking} other {# cancelled bookings}} · {checkedIn, number} of {confirmed, number} seats at past events used · {ratings, plural, one {# rating} other {# ratings}}"
+      },
+      "months": {
+        "title": "Bookings by month",
+        "subtitle": "Confirmed bookings for approved events, by the month the event takes place.",
+        "columnLabel": "{month}: {bookings, plural, one {# booking} other {# bookings}}, {events, plural, one {# event} other {# events}}, {checkIns, number} checked in",
+        "bookings": "{count, plural, one {# booking} other {# bookings}}",
+        "eventsAndCheckIns": "{events, plural, one {# event} other {# events}} · {checkIns, number} checked in",
+        "showTable": "Show as a table",
+        "month": "Month",
+        "events": "Events",
+        "bookingsCol": "Bookings",
+        "checkInsCol": "Checked in"
+      },
+      "categories": {
+        "title": "By category",
+        "subtitle": "Approved events only, busiest first.",
+        "category": "Category",
+        "events": "Events",
+        "bookings": "Bookings",
+        "checkIns": "Checked in",
+        "rating": "Rating"
+      },
+      "top": {
+        "title": "Most booked events",
+        "subtitle": "The five approved events with the most confirmed bookings.",
+        "event": "Event",
+        "booked": "Booked",
+        "filled": "Seats filled",
+        "attended": "Attended",
+        "rating": "Rating",
+        "ofCapacity": "{bookings, number} / {capacity, number}",
+        "notYet": "Not yet"
+      },
+      "predictions": {
+        "title": "Expected turnout",
+        "subtitle": "How many seats upcoming events are expected to fill, and how many people are expected to come.",
+        "loading": "Calculating…",
+        "unavailable": "Predictions are not available right now: the analytics service is not running or is still waking up. Everything above is unaffected.",
+        "nothingUpcoming": "There are no upcoming approved events to predict.",
+        "methodModel": "Predicted by a model trained on {count, plural, one {# past event} other {# past events}}.",
+        "methodBaseline": "Based on the average of past events in the same category ({count, plural, =0 {no past events yet} one {# past event} other {# past events}}). A trained model takes over from 12 past events.",
+        "showUp": "About {rate} of booked seats are used.",
+        "legendBooked": "Booked now",
+        "legendExpected": "Expected by the event",
+        "row": "{booked, number} booked now · about {expected, number} expected · about {attend, number} expected to attend · {capacity, number} seats",
+        "retry": "Try again"
+      }
     }
   },
   "NotFound": {
@@ -387,7 +499,18 @@
     "ALREADY_REVIEWED": "You have already rated this event",
     "INVALID_PHONE": "Enter a valid phone number (8 to 15 digits)",
     "INVALID_ORGANIZATION": "The club or department name is too long (120 characters at most)",
-    "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved."
+    "PENDING_LIMIT_REACHED": "You already have a request waiting for approval. You can send more once it is approved.",
+    "NOTIFICATION_NOT_FOUND": "This notification no longer exists",
+    "INVALID_CODE": "That is not a ticket code. Check it and try again.",
+    "TICKET_NOT_FOUND": "No booking matches this ticket.",
+    "TICKET_FOR_OTHER_EVENT": "This ticket is for a different event.",
+    "TICKET_CANCELLED": "This booking was cancelled.",
+    "CHECK_IN_CLOSED": "Check-in is closed for this event.",
+    "INVALID_MESSAGE": "Write a message of up to 2000 characters.",
+    "INVALID_LOCALE": "That language is not supported.",
+    "SESSION_NOT_FOUND": "This conversation has ended. Start a new one.",
+    "CHATBOT_UNAVAILABLE": "The assistant is not available right now. Please try again later.",
+    "ANALYTICS_UNAVAILABLE": "Predictions are not available right now."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
@@ -513,7 +636,8 @@
     "qrLabel": "Ticket QR code",
     "hint": "Show this code at the entrance to check in.",
     "checkedIn": "You checked in to this event",
-    "done": "Done"
+    "done": "Done",
+    "codeLabel": "Ticket code"
   },
   "Feedback": {
     "ratingLabel": "Your rating",
@@ -533,6 +657,78 @@
     "submitting": "Sending…",
     "thanks": "Thank you! Your feedback was sent.",
     "already": "You have already rated this event.",
-    "unavailable": "Rating events is not available yet. Please try again later."
+    "yourRating": "Your rating:"
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "subtitle": "Bookings, decisions on your events and announcements, newest first.",
+    "navLabel": "Sections",
+    "bellLabel": "{count, plural, =0 {Notifications} one {Notifications, # unread} other {Notifications, # unread}}",
+    "area": {
+      "ORGANIZER": "Organizer dashboard",
+      "ADMIN": "Admin dashboard",
+      "ATTENDEE": "My account"
+    },
+    "filterLabel": "Show",
+    "filterAll": "All",
+    "filterUnread": "{count, plural, =0 {Unread} other {Unread (#)}}",
+    "markAll": "Mark all as read",
+    "markingAll": "Marking…",
+    "markRead": "Mark as read",
+    "unreadMark": "Unread:",
+    "emptyTitle": "No notifications yet",
+    "emptyBody": "Booking confirmations, decisions on your events and announcements will appear here.",
+    "emptyUnreadTitle": "You are all caught up",
+    "emptyUnreadBody": "There are no unread notifications.",
+    "types": {
+      "BOOKING_CONFIRMATION": {
+        "title": "Seat booked",
+        "body": "Your seat at <event>{title}</event> is confirmed. Your QR ticket is in My bookings."
+      },
+      "CAPACITY_FULL": {
+        "title": "Event full",
+        "body": "Every seat at <event>{title}</event> is now booked."
+      },
+      "EVENT_APPROVED": {
+        "title": "Event approved",
+        "body": "<event>{title}</event> was approved and is now open for booking."
+      },
+      "EVENT_REJECTED": {
+        "title": "Event not approved",
+        "body": "<event>{title}</event> was not approved. You can send a new request."
+      },
+      "BROADCAST": {
+        "label": "Announcement"
+      },
+      "SYSTEM": {
+        "label": "System message"
+      }
+    },
+    "open": {
+      "BOOKING_CONFIRMATION": "Open my bookings",
+      "CAPACITY_FULL": "Open my events",
+      "EVENT_APPROVED": "Open my events",
+      "EVENT_REJECTED": "Open my events"
+    }
+  },
+  "Assistant": {
+    "open": "Open the AI assistant",
+    "title": "Campus assistant",
+    "subtitle": "Ask about upcoming events",
+    "newChat": "New conversation",
+    "close": "Close the assistant",
+    "welcome": "Hi! I can tell you what is on around campus, when and where. What would you like to know?",
+    "suggest": {
+      "week": "What events are on this week?",
+      "ai": "Are there any workshops about AI?",
+      "book": "How do I book a seat?"
+    },
+    "you": "You",
+    "assistant": "Assistant",
+    "thinking": "Thinking…",
+    "inputLabel": "Your message",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "disclaimer": "Answers come from AI and can be wrong. Check the event page before you go."
   }
 }

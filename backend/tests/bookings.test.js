@@ -12,6 +12,7 @@ jest.mock('../src/lib/prisma', () => ({
     update: jest.fn(),
   },
   notification: { create: jest.fn(), findFirst: jest.fn() },
+  feedback: { findMany: jest.fn() },
   $queryRaw: jest.fn(),
   $transaction: jest.fn(),
 }));
@@ -77,6 +78,7 @@ const dbBooking = (overrides = {}) => ({
 beforeEach(() => {
   jest.resetAllMocks();
   prisma.$transaction.mockImplementation((fn) => fn(prisma));
+  prisma.feedback.findMany.mockResolvedValue([]);
 });
 
 // ---------------------------------------------------------------- auth guard
@@ -364,10 +366,24 @@ describe('GET /bookings (FR-08)', () => {
     expect(cancelled.qrCode).toBeNull();
     expect(cancelled.canCancel).toBe(false);
     expect(past.canCancel).toBe(false);
+    expect(upcoming.myRating).toBeNull();
 
     const args = prisma.registration.findMany.mock.calls[0][0];
     expect(args.where).toEqual({ userId: 'user-1' });
     expect(args.orderBy[0]).toEqual({ event: { startsAt: 'desc' } });
+  });
+
+  it("adds the attendee's own rating to a booking of an event they rated", async () => {
+    prisma.registration.findMany.mockResolvedValueOnce([dbBooking()]);
+    prisma.feedback.findMany.mockResolvedValueOnce([{ eventId: EVENT_ID, rating: 4 }]);
+
+    const res = await request(app).get(BASE).set('Cookie', sessionFor());
+
+    expect(res.body.data.bookings[0].myRating).toBe(4);
+    expect(prisma.feedback.findMany.mock.calls[0][0].where).toEqual({
+      userId: 'user-1',
+      eventId: { in: [EVENT_ID] },
+    });
   });
 
   it('filters by status', async () => {

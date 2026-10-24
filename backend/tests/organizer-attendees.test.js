@@ -55,7 +55,10 @@ describe('GET /organizer/events/:id/attendees (FR-14)', () => {
   it('lists attendees of the organizer’s own event, without their QR codes', async () => {
     prisma.event.findUnique.mockResolvedValueOnce({ organizerId: ORGANIZER_ID });
     prisma.registration.findMany.mockResolvedValueOnce([attendeeRow()]);
-    prisma.registration.count.mockResolvedValueOnce(1);
+    prisma.registration.count
+      .mockResolvedValueOnce(1) // matching rows
+      .mockResolvedValueOnce(1) // confirmed
+      .mockResolvedValueOnce(0); // checked in
 
     const res = await request(app).get(BASE).set('Cookie', sessionFor());
 
@@ -63,6 +66,7 @@ describe('GET /organizer/events/:id/attendees (FR-14)', () => {
     expect(res.body.data.attendees).toHaveLength(1);
     expect(res.body.data.attendees[0].user.email).toBe('sara@example.com');
     expect(res.body.data.attendees[0].qrCode).toBeUndefined();
+    expect(res.body.data.summary).toEqual({ confirmed: 1, checkedIn: 0 });
     expect(prisma.registration.findMany.mock.calls[0][0].where).toEqual({ eventId: EVENT_ID });
   });
 
