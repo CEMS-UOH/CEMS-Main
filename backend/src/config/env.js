@@ -26,6 +26,10 @@ const config = {
   // since it is not required for the rest of the app to run.
   grokApiKey: process.env.GROK_API_KEY || '',
   grokModel: process.env.GROK_MODEL || '',
+  // FR-20 attendance predictions: where the Python analytics service listens (in Docker,
+  // http://analytics:8000). Optional - without it the admin analytics page still shows every
+  // descriptive number and says predictions are unavailable.
+  analyticsUrl: process.env.ANALYTICS_URL || '',
 };
 
 // Fail fast on a missing JWT_SECRET. Called from src/index.js at startup, NOT from app.js,
