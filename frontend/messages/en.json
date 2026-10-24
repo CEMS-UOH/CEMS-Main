@@ -446,7 +446,11 @@
     "TICKET_NOT_FOUND": "No booking matches this ticket.",
     "TICKET_FOR_OTHER_EVENT": "This ticket is for a different event.",
     "TICKET_CANCELLED": "This booking was cancelled.",
-    "CHECK_IN_CLOSED": "Check-in is closed for this event."
+    "CHECK_IN_CLOSED": "Check-in is closed for this event.",
+    "INVALID_MESSAGE": "Write a message of up to 2000 characters.",
+    "INVALID_LOCALE": "That language is not supported.",
+    "SESSION_NOT_FOUND": "This conversation has ended. Start a new one.",
+    "CHATBOT_UNAVAILABLE": "The assistant is not available right now. Please try again later."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
@@ -646,5 +650,25 @@
       "EVENT_APPROVED": "Open my events",
       "EVENT_REJECTED": "Open my events"
     }
+  },
+  "Assistant": {
+    "open": "Open the AI assistant",
+    "title": "Campus assistant",
+    "subtitle": "Ask about upcoming events",
+    "newChat": "New conversation",
+    "close": "Close the assistant",
+    "welcome": "Hi! I can tell you what is on around campus, when and where. What would you like to know?",
+    "suggest": {
+      "week": "What events are on this week?",
+      "ai": "Are there any workshops about AI?",
+      "book": "How do I book a seat?"
+    },
+    "you": "You",
+    "assistant": "Assistant",
+    "thinking": "Thinking…",
+    "inputLabel": "Your message",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "disclaimer": "Answers come from AI and can be wrong. Check the event page before you go."
   }
 }

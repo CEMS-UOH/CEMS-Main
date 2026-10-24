@@ -26,6 +26,7 @@ import {
 } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import NotificationBell from '@/components/NotificationBell';
+import ChatAssistant from '@/components/ChatAssistant';
 import PageHeader from '@/components/PageHeader';
 import { FRAME, TEXT_LINK } from '@/components/styles';
 import { Link } from '@/i18n/navigation';
@@ -110,6 +111,7 @@ function Header({ user }: { user: PublicUser | null }) {
           <LocaleSwitcher />
           {user ? (
             <>
+              <ChatAssistant userId={user.id} />
               <NotificationBell />
               <Button href="/me" variant="secondary" size="sm" icon={<UserIcon />} className="sm:max-w-48">
                 <span className="truncate max-sm:sr-only">{user.fullName}</span>

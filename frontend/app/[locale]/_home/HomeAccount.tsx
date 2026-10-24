@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
 import { GridIcon, UserIcon } from '@/components/Icons';
 import NotificationBell from '@/components/NotificationBell';
+import ChatAssistant from '@/components/ChatAssistant';
 import { getMe, type PublicUser } from '@/lib/api';
 import { HOME_BY_ROLE } from '@/lib/roleHome';
 
@@ -31,6 +32,7 @@ export default function HomeAccount() {
     const isAttendee = user.role === 'ATTENDEE';
     return (
       <>
+        <ChatAssistant userId={user.id} />
         <NotificationBell />
         <Button
           href={HOME_BY_ROLE[user.role]}

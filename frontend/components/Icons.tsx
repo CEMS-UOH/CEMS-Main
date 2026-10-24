@@ -208,6 +208,25 @@ export function MegaphoneIcon({ className = 'size-4' }: Props) {
   );
 }
 
+/** The AI assistant: a speech bubble with a small spark. */
+export function ChatIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M20 12.5a7.5 7.5 0 0 1-11 6.6L4 20l1-4.3A7.5 7.5 0 1 1 20 12.5Z" />
+      <path d="M12.5 9v4M10.5 11h4" />
+    </svg>
+  );
+}
+
+/** Send a message. Points along the reading direction; flip it in Arabic with rtl:-scale-x-100. */
+export function SendIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5" />
+    </svg>
+  );
+}
+
 /** Check-in: scanning a ticket's QR code. */
 export function ScanIcon({ className = 'size-4' }: Props) {
   return (
