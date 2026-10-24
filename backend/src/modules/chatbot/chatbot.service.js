@@ -28,27 +28,54 @@ async function loadUpcomingEvents() {
   return events.map((e) => ({ ...e, title: e.title.slice(0, MAX_EVENT_TITLE_LENGTH) }));
 }
 
-// Event times are given in campus time (Asia/Riyadh, UTC+3), the clock every user reads -
-// in UTC the assistant would tell people an hour three hours off.
-const campusTime = (date) =>
-  `${date.toLocaleString('sv-SE', { timeZone: 'Asia/Riyadh', hour12: false }).slice(0, 16)} (${date.toLocaleDateString('en-US', { timeZone: 'Asia/Riyadh', weekday: 'long' })})`;
+// Event times are written out for the model in campus time (Asia/Riyadh, UTC+3) and already in
+// the reader's language, so it can copy them as they are - in UTC it would tell people an hour
+// three hours off, and left to itself it formats dates inconsistently.
+const DATE_FORMAT = {
+  ar: new Intl.DateTimeFormat('ar-u-ca-gregory-nu-latn', {
+    timeZone: 'Asia/Riyadh', weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit',
+  }),
+  en: new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Riyadh', weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit',
+  }),
+};
 
 function buildSystemPrompt(locale, events) {
-  const language = locale === 'ar' ? 'Arabic' : 'English';
+  const lang = locale === 'ar' ? 'ar' : 'en';
+  const language = lang === 'ar' ? 'Arabic' : 'English';
   const eventLines = events.length
     ? events
-        .map((e) => `- ${e.title} | ${campusTime(e.startsAt)} | ${e.venue?.name ?? 'TBA'} | ${e.category.name}`)
+        .map((e) => `- ${e.title} | ${DATE_FORMAT[lang].format(e.startsAt)} | ${e.venue?.name ?? 'TBA'} | ${e.category.name}`)
         .join('\n')
     : '(no upcoming approved events right now)';
 
   return [
-    'You are the SCEMS assistant for the Smart Campus Event Manager System at the University of Hail.',
-    'Help the user find and understand campus events. Only discuss SCEMS and the events listed below -',
-    'politely decline anything else, and never invent an event, date or detail that is not listed.',
-    `Reply in ${language}, regardless of what language this system message is written in.`,
-    'Keep answers short and factual.',
+    'You are the assistant of the Smart Campus Event Manager System (SCEMS) at the University of Hail.',
+    'You help people find campus events and use SCEMS.',
     '',
-    'Upcoming approved events (title | start, campus time UTC+3 | venue | category):',
+    'Rules:',
+    `1. Reply in ${language} only.`,
+    '2. Answer exactly what was asked. When the question is about a topic, a day or a kind of event,',
+    '   mention ONLY the events below that match it (by title or category). If none match, say so in',
+    '   one sentence and offer to show all upcoming events. List every event only when asked for all.',
+    '3. Any question about events is on topic - including events ABOUT a subject ("events about AI",',
+    '   "فعاليات عن الذكاء الاصطناعي", "sports events"), about a day, a place or a category, and follow-up',
+    '   questions about events already mentioned ("which one is first?"). Only when the message asks',
+    '   for something else entirely (write a poem, solve homework, explain a general topic, other',
+    '   websites) politely decline in one short sentence, say what you can help with, and list no events.',
+    '4. Plain text only: no tables, no markdown, no headings, no bold. For several events write one',
+    '   line per event starting with "- ": title, then date and time, then venue.',
+    '5. Copy titles, dates, times and venues exactly as written below. Never invent an event, a date,',
+    '   a price or any detail that is not listed.',
+    '6. Be brief: at most 6 lines.',
+    '',
+    'How SCEMS works (for "how do I" questions): browse events on the Events page; open an event and',
+    'press Book to reserve a seat (Attendee accounts only); the QR ticket is in My bookings and is',
+    'scanned at the door; a booking can be cancelled from My bookings until the event starts; after',
+    'an event ends, attendees who held a seat can rate it from My bookings. Organizers create events',
+    'from their dashboard and an admin approves them.',
+    '',
+    'Upcoming approved events (title | start, campus time | venue | category):',
     eventLines,
   ].join('\n');
 }
