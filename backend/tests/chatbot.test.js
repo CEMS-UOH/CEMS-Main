@@ -87,6 +87,8 @@ describe('POST /chatbot (FR-23)', () => {
     const { input } = askGrok.mock.calls[0][0];
     expect(input[0].role).toBe('system');
     expect(input[0].content).toMatch(/AI Workshop/);
+    // 10:00 UTC is 13:00 on campus (Asia/Riyadh, UTC+3).
+    expect(input[0].content).toMatch(/2026-12-01 13:00 \(Tuesday\)/);
     expect(input[0].content).toMatch(/Reply in English/);
     expect(input[input.length - 1]).toEqual({ role: 'user', content: 'What events are coming up?' });
 

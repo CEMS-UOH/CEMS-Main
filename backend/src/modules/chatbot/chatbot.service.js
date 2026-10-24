@@ -28,11 +28,16 @@ async function loadUpcomingEvents() {
   return events.map((e) => ({ ...e, title: e.title.slice(0, MAX_EVENT_TITLE_LENGTH) }));
 }
 
+// Event times are given in campus time (Asia/Riyadh, UTC+3), the clock every user reads -
+// in UTC the assistant would tell people an hour three hours off.
+const campusTime = (date) =>
+  `${date.toLocaleString('sv-SE', { timeZone: 'Asia/Riyadh', hour12: false }).slice(0, 16)} (${date.toLocaleDateString('en-US', { timeZone: 'Asia/Riyadh', weekday: 'long' })})`;
+
 function buildSystemPrompt(locale, events) {
   const language = locale === 'ar' ? 'Arabic' : 'English';
   const eventLines = events.length
     ? events
-        .map((e) => `- ${e.title} | ${e.startsAt.toISOString()} | ${e.venue?.name ?? 'TBA'} | ${e.category.name}`)
+        .map((e) => `- ${e.title} | ${campusTime(e.startsAt)} | ${e.venue?.name ?? 'TBA'} | ${e.category.name}`)
         .join('\n')
     : '(no upcoming approved events right now)';
 
@@ -43,7 +48,7 @@ function buildSystemPrompt(locale, events) {
     `Reply in ${language}, regardless of what language this system message is written in.`,
     'Keep answers short and factual.',
     '',
-    'Upcoming approved events (title | start time UTC | venue | category):',
+    'Upcoming approved events (title | start, campus time UTC+3 | venue | category):',
     eventLines,
   ].join('\n');
 }
