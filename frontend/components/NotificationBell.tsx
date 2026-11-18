@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { usePathname } from '@/i18n/navigation';
-import { listNotifications, onNotificationsChanged } from '@/lib/notifications';
+import { getUnreadCount, onNotificationsChanged } from '@/lib/notifications';
 import Button from './Button';
 import { BellIcon } from './Icons';
 
@@ -18,7 +18,7 @@ export default function NotificationBell() {
   const [unread, setUnread] = useState(0);
 
   const refresh = useCallback(async () => {
-    const result = await listNotifications({ limit: 1 });
+    const result = await getUnreadCount();
     // Any failure keeps the last known count; the bell itself still works as a link.
     if (result.ok) setUnread(result.data.unreadCount);
   }, []);

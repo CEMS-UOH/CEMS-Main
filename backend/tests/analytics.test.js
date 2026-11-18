@@ -162,10 +162,10 @@ describe('GET /api/admin/analytics/predictions', () => {
           startsAt: new Date('2026-09-01T15:00:00Z'),
           endsAt: new Date('2026-09-01T17:00:00Z'),
           createdAt: new Date('2026-08-20T15:00:00Z'),
-          registrations: [{ id: 'r1' }, { id: 'r2' }],
         },
       ])
       .mockResolvedValueOnce([upcomingEvent]);
+    prisma.registration.groupBy.mockResolvedValueOnce([{ eventId: 'past-1', _count: { _all: 2 } }]);
     global.fetch.mockResolvedValueOnce({
       ok: true,
       status: 200,

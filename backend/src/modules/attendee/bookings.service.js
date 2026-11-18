@@ -159,7 +159,13 @@ async function listBookings({ userId, status }) {
 async function cancel({ userId, bookingId }) {
   const booking = await prisma.registration.findUnique({
     where: { id: bookingId },
-    select: { id: true, userId: true, status: true, event: { select: { startsAt: true } } },
+    select: {
+      id: true,
+      userId: true,
+      status: true,
+      checkedInAt: true,
+      event: { select: { startsAt: true } },
+    },
   });
 
   if (!booking || booking.userId !== userId) {
@@ -171,10 +177,22 @@ async function cancel({ userId, bookingId }) {
   if (booking.event.startsAt <= new Date()) {
     throw new HttpError(409, 'A booking cannot be cancelled after the event starts', 'CANCELLATION_CLOSED');
   }
+  // Check-in opens before the start (doors open early). Someone already scanned in at the door
+  // is inside: cancelling now would free a seat that is in use and undercount attendance.
+  if (booking.checkedInAt) {
+    throw new HttpError(409, 'You have already been checked in at the door', 'ALREADY_CHECKED_IN');
+  }
 
-  const updated = await prisma.registration.update({
-    where: { id: bookingId },
+  // Conditional, so a scan landing between the check above and this write still wins.
+  const { count } = await prisma.registration.updateMany({
+    where: { id: bookingId, status: 'CONFIRMED', checkedInAt: null },
     data: { status: 'CANCELLED' },
+  });
+  if (count === 0) {
+    throw new HttpError(409, 'You have already been checked in at the door', 'ALREADY_CHECKED_IN');
+  }
+  const updated = await prisma.registration.findUnique({
+    where: { id: bookingId },
     select: BOOKING_SELECT,
   });
   return toPublicBooking(updated);

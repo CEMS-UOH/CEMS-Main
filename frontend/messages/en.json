@@ -510,7 +510,8 @@
     "INVALID_LOCALE": "That language is not supported.",
     "SESSION_NOT_FOUND": "This conversation has ended. Start a new one.",
     "CHATBOT_UNAVAILABLE": "The assistant is not available right now. Please try again later.",
-    "ANALYTICS_UNAVAILABLE": "Predictions are not available right now."
+    "ANALYTICS_UNAVAILABLE": "Predictions are not available right now.",
+    "ALREADY_CHECKED_IN": "You have already been checked in at the door, so this booking can no longer be cancelled"
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",

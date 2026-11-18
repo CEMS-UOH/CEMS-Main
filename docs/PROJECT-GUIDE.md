@@ -159,9 +159,9 @@
 
 | الجزء | الأمر | العدد |
 |---|---|---|
-| الخادم (Jest + Supertest) | `cd backend && npm test` | 341 اختبار |
+| الخادم (Jest + Supertest) | `cd backend && npm test` | 349 اختبار |
 | شاشات الحاضر (node:test) | `cd frontend && npm run test:attendee` | 21 اختبار |
-| نموذج التحليلات (unittest) | `cd analytics && python -m unittest -v` | 5 اختبارات |
+| نموذج التحليلات (unittest) | `cd analytics && python -m unittest -v` | 7 اختبارات |
 | بناء الواجهة | `cd frontend && npm run build` | — |
 
 الـ CI على GitHub يشغّل الخادم وبناء الواجهة واختبارات التحليلات على كل Pull Request.

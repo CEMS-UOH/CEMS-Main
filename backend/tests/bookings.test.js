@@ -10,6 +10,7 @@ jest.mock('../src/lib/prisma', () => ({
     count: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    updateMany: jest.fn(),
   },
   notification: { create: jest.fn(), findFirst: jest.fn() },
   feedback: { findMany: jest.fn() },
@@ -422,8 +423,10 @@ describe('POST /bookings/:id/cancel (FR-07)', () => {
   });
 
   it('cancels the caller’s own booking before the event', async () => {
-    prisma.registration.findUnique.mockResolvedValueOnce(owned());
-    prisma.registration.update.mockResolvedValueOnce(dbBooking({ status: 'CANCELLED' }));
+    prisma.registration.findUnique
+      .mockResolvedValueOnce(owned())
+      .mockResolvedValueOnce(dbBooking({ status: 'CANCELLED' }));
+    prisma.registration.updateMany.mockResolvedValueOnce({ count: 1 });
 
     const res = await cancel();
 
@@ -431,10 +434,36 @@ describe('POST /bookings/:id/cancel (FR-07)', () => {
     expect(res.body.data.booking.status).toBe('CANCELLED');
     expect(res.body.data.booking.qrCode).toBeNull();
     expect(res.body.data.booking.canCancel).toBe(false);
-    expect(prisma.registration.update.mock.calls[0][0]).toMatchObject({
-      where: { id: BOOKING_ID },
+    expect(prisma.registration.updateMany.mock.calls[0][0]).toEqual({
+      where: { id: BOOKING_ID, status: 'CONFIRMED', checkedInAt: null },
       data: { status: 'CANCELLED' },
     });
+  });
+
+  it('refuses to cancel once the attendee has been checked in at the door', async () => {
+    prisma.registration.findUnique.mockResolvedValueOnce(owned({ checkedInAt: new Date() }));
+
+    const res = await cancel();
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ALREADY_CHECKED_IN');
+    expect(prisma.registration.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('loses cleanly to a scan that lands at the same moment', async () => {
+    prisma.registration.findUnique.mockResolvedValueOnce(owned());
+    prisma.registration.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const res = await cancel();
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ALREADY_CHECKED_IN');
+  });
+
+  it('does not offer cancelling for a checked-in booking', async () => {
+    prisma.registration.findMany.mockResolvedValueOnce([dbBooking({ checkedInAt: new Date() })]);
+    const res = await request(app).get(BASE).set('Cookie', sessionFor());
+    expect(res.body.data.bookings[0].canCancel).toBe(false);
   });
 
   it("hides someone else's booking as 404 and changes nothing", async () => {

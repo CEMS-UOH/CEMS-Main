@@ -39,6 +39,15 @@ async function list(req, res, next) {
   }
 }
 
+/** GET /api/notifications/unread-count */
+async function unreadCount(req, res, next) {
+  try {
+    return ok(res, await service.countUnread(req.user.id));
+  } catch (e) {
+    return next(e);
+  }
+}
+
 /** POST /api/notifications/:id/read */
 async function readOne(req, res, next) {
   if (!isUuid(req.params.id)) {
@@ -61,4 +70,4 @@ async function readAll(req, res, next) {
   }
 }
 
-module.exports = { list, readOne, readAll };
+module.exports = { list, unreadCount, readOne, readAll };

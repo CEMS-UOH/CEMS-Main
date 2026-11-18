@@ -36,6 +36,7 @@ wrote.
 | Method and path | Success `data` |
 |---|---|
 | `GET /api/notifications?unread=&page=&limit=` | `{ notifications: Notification[], unreadCount, pagination: { page, limit, total, totalPages } }` |
+| `GET /api/notifications/unread-count` | `{ unreadCount }` - one cheap query, for the header bell |
 | `POST /api/notifications/:id/read` | `{ notification: Notification }` |
 | `POST /api/notifications/read-all` | `{ updated: number }` |
 

@@ -37,6 +37,9 @@ export const listNotifications = ({
   return apiFetch<NotificationPage>(`/api/notifications?${query}`);
 };
 
+/** The header bell's number - one cheap request. */
+export const getUnreadCount = () => apiFetch<{ unreadCount: number }>('/api/notifications/unread-count');
+
 export const markNotificationRead = (id: string) =>
   apiFetch<{ notification: AppNotification }>(
     `/api/notifications/${encodeURIComponent(id)}/read`,

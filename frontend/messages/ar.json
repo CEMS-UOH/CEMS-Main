@@ -393,7 +393,7 @@
         "confirmedBookings": "الحجوزات المؤكدة",
         "attendanceRate": "نسبة الحضور في الفعاليات المنتهية",
         "averageRating": "متوسط التقييم (من 5)",
-        "details": "الحضور: {attendees, number} · المنظمون: {organizers, number} · طلبات بانتظار الاعتماد: {pending, number} · حجوزات ملغاة: {cancelled, number} · حضر {checkedIn, number} من {confirmed, number} في الفعاليات المنتهية · عدد التقييمات: {ratings, number}"
+        "details": "حسابات الحاضرين: {attendees, number} · حسابات المنظمين: {organizers, number} · طلبات بانتظار الاعتماد: {pending, number} · حجوزات ملغاة: {cancelled, number} · حضر {checkedIn, number} من {confirmed, number} في الفعاليات المنتهية · عدد التقييمات: {ratings, number}"
       },
       "months": {
         "title": "الحجوزات حسب الشهر",
@@ -510,7 +510,8 @@
     "INVALID_LOCALE": "هذه اللغة غير مدعومة.",
     "SESSION_NOT_FOUND": "انتهت هذه المحادثة. ابدأ محادثة جديدة.",
     "CHATBOT_UNAVAILABLE": "المساعد غير متاح الآن. حاول مرة أخرى لاحقًا.",
-    "ANALYTICS_UNAVAILABLE": "التوقعات غير متاحة الآن."
+    "ANALYTICS_UNAVAILABLE": "التوقعات غير متاحة الآن.",
+    "ALREADY_CHECKED_IN": "تم تسجيل حضورك عند الباب، لذلك لا يمكن إلغاء هذا الحجز"
   },
   "AttendeeNav": {
     "productName": "نظام إدارة فعاليات الحرم الجامعي الذكي",

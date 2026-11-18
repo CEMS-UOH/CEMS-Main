@@ -8,6 +8,7 @@ const controller = require('./notifications.controller');
 router.use(requireAuth);
 
 router.get('/', controller.list);
+router.get('/unread-count', controller.unreadCount);
 router.post('/read-all', controller.readAll);
 router.post('/:id/read', controller.readOne);
 

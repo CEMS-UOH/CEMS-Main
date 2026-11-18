@@ -33,6 +33,11 @@ async function listNotifications({ userId, unreadOnly, page, limit }) {
   };
 }
 
+/** Just the number for the header bell - one query, asked on every page change. */
+async function countUnread(userId) {
+  return { unreadCount: await prisma.notification.count({ where: { userId, isRead: false } }) };
+}
+
 /** Someone else's notification is reported exactly like a missing one. */
 async function markRead({ userId, id }) {
   const found = await prisma.notification.findUnique({
@@ -57,4 +62,4 @@ async function markAllRead(userId) {
   return { updated: count };
 }
 
-module.exports = { listNotifications, markRead, markAllRead };
+module.exports = { listNotifications, countUnread, markRead, markAllRead };

@@ -48,11 +48,12 @@ export default function CheckInPage() {
   const [code, setCode] = useState('');
   const last = useRef<{ code: string; at: number } | null>(null);
 
+  /** Sends one code. Resolves to true when the API accepted it (in, or already in). */
   const send = useCallback(
-    async (raw: string) => {
+    async (raw: string): Promise<boolean> => {
       // A typed code may be copied with the spaces the ticket shows between groups.
       const value = raw.replace(/\s+/g, '');
-      if (!value || busy) return;
+      if (!value || busy) return false;
       setBusy(true);
       const result = await checkInByCode(id, value);
       setBusy(false);
@@ -81,6 +82,7 @@ export default function CheckInPage() {
       // Hold the result briefly before the camera reads the next ticket.
       setHolding(true);
       setTimeout(() => setHolding(false), RESULT_HOLD_MS);
+      return result.ok;
     },
     [busy, id, format, errorMessage, query]
   );
@@ -175,7 +177,10 @@ export default function CheckInPage() {
               onSubmit={(e) => {
                 e.preventDefault();
                 last.current = null;
-                send(code).then(() => setCode(''));
+                // Keep a mistyped code in the box so one wrong character can be fixed, not retyped.
+                send(code).then((accepted) => {
+                  if (accepted) setCode('');
+                });
               }}
             >
               <h2 className="type-h3 text-text">{t('manualTitle')}</h2>

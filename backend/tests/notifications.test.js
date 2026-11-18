@@ -107,6 +107,25 @@ describe('GET /api/notifications', () => {
   });
 });
 
+describe('GET /api/notifications/unread-count', () => {
+  it('returns only the caller’s unread count, with one query', async () => {
+    prisma.notification.count.mockResolvedValueOnce(4);
+
+    const res = await request(app).get(`${BASE}/unread-count`).set('Cookie', sessionFor());
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ unreadCount: 4 });
+    expect(prisma.notification.count).toHaveBeenCalledTimes(1);
+    expect(prisma.notification.count.mock.calls[0][0]).toEqual({ where: { userId: 'user-1', isRead: false } });
+    expect(prisma.notification.findMany).not.toHaveBeenCalled();
+  });
+
+  it('returns 401 without a session', async () => {
+    const res = await request(app).get(`${BASE}/unread-count`);
+    expect(res.status).toBe(401);
+  });
+});
+
 describe('POST /api/notifications/:id/read', () => {
   it('marks the caller’s own notification read', async () => {
     prisma.notification.findUnique.mockResolvedValueOnce({ userId: 'user-1', isRead: false });

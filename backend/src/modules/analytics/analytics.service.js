@@ -227,7 +227,6 @@ async function getPredictions(now = new Date()) {
         _count: {
           select: { registrations: { where: { status: 'CONFIRMED' } } },
         },
-        registrations: { where: { status: 'CONFIRMED', checkedInAt: { not: null } }, select: { id: true } },
       },
       orderBy: { startsAt: 'desc' },
       take: MAX_HISTORY,
@@ -245,6 +244,16 @@ async function getPredictions(now = new Date()) {
 
   if (upcoming.length === 0) return { method: 'none', trainedOn: past.length, predictions: [] };
 
+  // How many were checked in at each past event: one grouped query, not every row.
+  const checkInRows = past.length
+    ? await prisma.registration.groupBy({
+        by: ['eventId'],
+        where: { eventId: { in: past.map((e) => e.id) }, status: 'CONFIRMED', checkedInAt: { not: null } },
+        _count: { _all: true },
+      })
+    : [];
+  const checkInsByEvent = new Map(checkInRows.map((row) => [row.eventId, row._count._all]));
+
   let response;
   try {
     response = await fetch(`${analyticsUrl.replace(/\/+$/, '')}/predict-attendance`, {
@@ -257,7 +266,7 @@ async function getPredictions(now = new Date()) {
         history: past.map((e) => ({
           ...features(e),
           bookings: e._count.registrations,
-          checkIns: e.registrations.length,
+          checkIns: checkInsByEvent.get(e.id) ?? 0,
         })),
         upcoming: upcoming.map((e) => ({ ...features(e), bookings: e._count.registrations })),
       }),

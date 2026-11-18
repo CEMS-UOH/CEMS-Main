@@ -135,6 +135,7 @@ Only APPROVED events that have not ended yet are listed, soonest first.
 | `BOOKING_NOT_FOUND` | 404 | unknown booking, or someone else's |
 | `ALREADY_CANCELLED` | 409 | cancelling twice |
 | `CANCELLATION_CLOSED` | 409 | cancelling after the event started |
+| `ALREADY_CHECKED_IN` | 409 | cancelling after being checked in at the door (check-in opens before the start) |
 | `INVALID_RATING` | 422 | `rating` is not a whole number from 1 to 5 |
 | `INVALID_COMMENT` | 422 | `comment` is not text, or longer than 1000 characters |
 | `FEEDBACK_NOT_OPEN` | 409 | the event has not ended, or the attendee held no confirmed seat |
