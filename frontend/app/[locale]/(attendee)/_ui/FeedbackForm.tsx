@@ -1,8 +1,7 @@
 'use client';
 
-// Rate an event after attending: 1-5 stars and an optional comment.
-// The API route is proposed, not built yet (see submitFeedback in attendee-api.ts); until it
-// exists the API answers NOT_FOUND and the form says rating is not available yet.
+// Rate an event after attending: 1-5 stars and an optional comment
+// (POST /api/attendee/events/:id/feedback). Once given, <GivenRating> shows it instead.
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Button from '@/components/Button';
@@ -20,6 +19,21 @@ type Props = {
 };
 
 const RATINGS = [1, 2, 3, 4, 5] as const;
+
+/** The stars an attendee already gave, read-only. */
+export function GivenRating({ rating }: { rating: number }) {
+  const t = useTranslations('Feedback');
+  return (
+    <p className="flex items-center gap-2 text-sm text-text-muted">
+      <span>{t('yourRating')}</span>
+      <span className="flex text-accent" role="img" aria-label={t('stars', { count: rating })}>
+        {RATINGS.map((value) => (
+          <StarIcon key={value} filled={value <= rating} className="size-5" />
+        ))}
+      </span>
+    </p>
+  );
+}
 
 export default function FeedbackForm({ eventId, idPrefix, onSubmitted }: Props) {
   const t = useTranslations('Feedback');
@@ -55,7 +69,7 @@ export default function FeedbackForm({ eventId, idPrefix, onSubmitted }: Props) 
       setDone('already');
       return;
     }
-    setError(result.code === 'NOT_FOUND' ? t('unavailable') : errorMessage(result.code));
+    setError(errorMessage(result.code));
   }
 
   const shown = hovered || rating;

@@ -9,7 +9,8 @@ admin frontend (Role 5). Every response uses the standard envelope from
 Every route requires a session cookie and the `ADMIN` role (`requireAuth` +
 `requireRole('ADMIN')`). All dates are ISO-8601 strings in UTC. All ids are UUIDs.
 
-**FR-20 (analytics) is out of scope for this module** - Role 6 builds those endpoints.
+**FR-20 (analytics)** lives in its own module, `../analytics` (Role 6), mounted at
+`/api/admin/analytics` behind the same admin guard - see `../analytics/API.md`.
 
 ## Not in the original FR list - added for usability
 

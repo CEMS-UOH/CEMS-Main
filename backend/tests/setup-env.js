@@ -6,3 +6,4 @@ process.env.JWT_SECRET = 'test-only-secret-not-used-anywhere-real';
 process.env.BCRYPT_ROUNDS = '4'; // keep bcrypt fast in tests; production uses 12
 process.env.CORS_ORIGINS = 'http://localhost:3000';
 process.env.COOKIE_DOMAIN = '';
+process.env.ANALYTICS_URL = 'http://analytics.test'; // never called for real: tests mock fetch

@@ -18,7 +18,7 @@ import { FOCUS_RING } from '@/components/styles';
 import { useQuery } from '../_lib/useQuery';
 import { BookingBadge } from '../_ui/Badges';
 import CancelBooking from '../_ui/CancelBooking';
-import FeedbackForm from '../_ui/FeedbackForm';
+import FeedbackForm, { GivenRating } from '../_ui/FeedbackForm';
 import { CalendarIcon, PinIcon, TicketIcon } from '@/components/Icons';
 import { EmptyState, ErrorState, LoadingBlock } from '../_ui/States';
 import TicketDialog from '../_ui/TicketDialog';
@@ -262,7 +262,9 @@ function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthentic
               onUnauthenticated={onUnauthenticated}
             />
           ) : null}
-          {feedbackOpen && !rating ? (
+          {feedbackOpen && booking.myRating ? (
+            <GivenRating rating={booking.myRating} />
+          ) : feedbackOpen && !rating ? (
             <Button type="button" variant="secondary" size="sm" onClick={() => setRating(true)}>
               {t('rate')}
             </Button>
@@ -270,7 +272,7 @@ function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthentic
         </div>
       </div>
 
-      {feedbackOpen && rating ? (
+      {feedbackOpen && rating && !booking.myRating ? (
         <div className="border-t border-border pt-4">
           <FeedbackForm eventId={booking.event.id} idPrefix={`booking-${booking.id}`} />
         </div>

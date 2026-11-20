@@ -19,5 +19,6 @@ router.use('/api/attendee', require('./modules/attendee'));
 router.use('/api/organizer', require('./modules/organizer'));
 router.use('/api/admin', require('./modules/admin'));
 router.use('/api/chatbot', require('./modules/chatbot'));
+router.use('/api/notifications', require('./modules/notifications'));
 
 module.exports = router;

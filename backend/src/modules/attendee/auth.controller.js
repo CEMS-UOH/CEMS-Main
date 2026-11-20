@@ -8,6 +8,7 @@ const {
   normalizePhone,
 } = require('../../lib/validate');
 const { setSessionCookie, clearSessionCookie, signToken } = require('../../lib/session');
+const loginThrottle = require('../../lib/loginThrottle');
 const authService = require('./auth.service');
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -90,11 +91,22 @@ async function login(req, res, next) {
     return fail(res, 'Incorrect email or password', 401, 'INVALID_CREDENTIALS');
   }
 
+  // Too many wrong passwords for this account recently: refuse before checking this one
+  // (see lib/loginThrottle.js). Same answer whether or not the account exists.
+  const account = normalizeEmail(email);
+  const gate = loginThrottle.check(account);
+  if (!gate.allowed) {
+    res.set('Retry-After', String(gate.retryAfterSeconds));
+    return fail(res, 'Too many failed attempts. Try again later.', 429, 'TOO_MANY_ATTEMPTS');
+  }
+
   try {
-    const user = await authService.login({ email: normalizeEmail(email), password });
+    const user = await authService.login({ email: account, password });
+    loginThrottle.recordSuccess(account);
     setSessionCookie(res, signToken(user));
     return ok(res, { user });
   } catch (e) {
+    if (e.code === 'INVALID_CREDENTIALS') loginThrottle.recordFailure(account);
     return next(e);
   }
 }

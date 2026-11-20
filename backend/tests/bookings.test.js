@@ -10,8 +10,10 @@ jest.mock('../src/lib/prisma', () => ({
     count: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    updateMany: jest.fn(),
   },
   notification: { create: jest.fn(), findFirst: jest.fn() },
+  feedback: { findMany: jest.fn() },
   $queryRaw: jest.fn(),
   $transaction: jest.fn(),
 }));
@@ -77,6 +79,7 @@ const dbBooking = (overrides = {}) => ({
 beforeEach(() => {
   jest.resetAllMocks();
   prisma.$transaction.mockImplementation((fn) => fn(prisma));
+  prisma.feedback.findMany.mockResolvedValue([]);
 });
 
 // ---------------------------------------------------------------- auth guard
@@ -364,10 +367,24 @@ describe('GET /bookings (FR-08)', () => {
     expect(cancelled.qrCode).toBeNull();
     expect(cancelled.canCancel).toBe(false);
     expect(past.canCancel).toBe(false);
+    expect(upcoming.myRating).toBeNull();
 
     const args = prisma.registration.findMany.mock.calls[0][0];
     expect(args.where).toEqual({ userId: 'user-1' });
     expect(args.orderBy[0]).toEqual({ event: { startsAt: 'desc' } });
+  });
+
+  it("adds the attendee's own rating to a booking of an event they rated", async () => {
+    prisma.registration.findMany.mockResolvedValueOnce([dbBooking()]);
+    prisma.feedback.findMany.mockResolvedValueOnce([{ eventId: EVENT_ID, rating: 4 }]);
+
+    const res = await request(app).get(BASE).set('Cookie', sessionFor());
+
+    expect(res.body.data.bookings[0].myRating).toBe(4);
+    expect(prisma.feedback.findMany.mock.calls[0][0].where).toEqual({
+      userId: 'user-1',
+      eventId: { in: [EVENT_ID] },
+    });
   });
 
   it('filters by status', async () => {
@@ -406,8 +423,10 @@ describe('POST /bookings/:id/cancel (FR-07)', () => {
   });
 
   it('cancels the caller’s own booking before the event', async () => {
-    prisma.registration.findUnique.mockResolvedValueOnce(owned());
-    prisma.registration.update.mockResolvedValueOnce(dbBooking({ status: 'CANCELLED' }));
+    prisma.registration.findUnique
+      .mockResolvedValueOnce(owned())
+      .mockResolvedValueOnce(dbBooking({ status: 'CANCELLED' }));
+    prisma.registration.updateMany.mockResolvedValueOnce({ count: 1 });
 
     const res = await cancel();
 
@@ -415,10 +434,36 @@ describe('POST /bookings/:id/cancel (FR-07)', () => {
     expect(res.body.data.booking.status).toBe('CANCELLED');
     expect(res.body.data.booking.qrCode).toBeNull();
     expect(res.body.data.booking.canCancel).toBe(false);
-    expect(prisma.registration.update.mock.calls[0][0]).toMatchObject({
-      where: { id: BOOKING_ID },
+    expect(prisma.registration.updateMany.mock.calls[0][0]).toEqual({
+      where: { id: BOOKING_ID, status: 'CONFIRMED', checkedInAt: null },
       data: { status: 'CANCELLED' },
     });
+  });
+
+  it('refuses to cancel once the attendee has been checked in at the door', async () => {
+    prisma.registration.findUnique.mockResolvedValueOnce(owned({ checkedInAt: new Date() }));
+
+    const res = await cancel();
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ALREADY_CHECKED_IN');
+    expect(prisma.registration.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('loses cleanly to a scan that lands at the same moment', async () => {
+    prisma.registration.findUnique.mockResolvedValueOnce(owned());
+    prisma.registration.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const res = await cancel();
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ALREADY_CHECKED_IN');
+  });
+
+  it('does not offer cancelling for a checked-in booking', async () => {
+    prisma.registration.findMany.mockResolvedValueOnce([dbBooking({ checkedInAt: new Date() })]);
+    const res = await request(app).get(BASE).set('Cookie', sessionFor());
+    expect(res.body.data.bookings[0].canCancel).toBe(false);
   });
 
   it("hides someone else's booking as 404 and changes nothing", async () => {

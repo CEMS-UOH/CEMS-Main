@@ -37,6 +37,9 @@ enum NotificationType {
   CAPACITY_FULL
   BROADCAST
   SYSTEM
+  // FR-17: tells the organizer the admin's decision on their event request.
+  EVENT_APPROVED
+  EVENT_REJECTED
 }
 
 // 1) Users - attendees (students, faculty, visitors), organizers, admins

@@ -20,7 +20,7 @@ import { useQuery } from '../../_lib/useQuery';
 import { CategoryBadge, SeatsBadge } from '../../_ui/Badges';
 import CancelBooking from '../../_ui/CancelBooking';
 import EventImage from '../../_ui/EventImage';
-import FeedbackForm from '../../_ui/FeedbackForm';
+import FeedbackForm, { GivenRating } from '../../_ui/FeedbackForm';
 import { BackIcon, CalendarIcon, CheckIcon, PaperclipIcon, PinIcon, SeatIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import { EmptyState, ErrorState, LoadingBlock } from '../../_ui/States';
 import TicketDialog from '../../_ui/TicketDialog';
@@ -372,7 +372,11 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
           {booking ? (
             <div className="flex flex-col gap-3">
               <h2 className="type-h3 text-text">{t('rateTitle')}</h2>
-              <FeedbackForm eventId={id} idPrefix={`event-${id}`} />
+              {booking.myRating ? (
+                <GivenRating rating={booking.myRating} />
+              ) : (
+                <FeedbackForm eventId={id} idPrefix={`event-${id}`} />
+              )}
             </div>
           ) : null}
         </div>

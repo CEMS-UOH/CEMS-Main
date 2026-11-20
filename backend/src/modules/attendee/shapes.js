@@ -54,13 +54,16 @@ function toPublicEvent(event) {
   return { ...rest, seatsTaken, seatsLeft, isFull: seatsLeft === 0 };
 }
 
-/** A cancelled booking no longer carries a usable QR code; `canCancel` drives the UI button. */
+/**
+ * A cancelled booking no longer carries a usable QR code; `canCancel` drives the UI button
+ * (not after the start, and not once checked in at the door).
+ */
 function toPublicBooking(booking, now = new Date()) {
   const confirmed = booking.status === 'CONFIRMED';
   return {
     ...booking,
     qrCode: confirmed ? booking.qrCode : null,
-    canCancel: confirmed && booking.event.startsAt > now,
+    canCancel: confirmed && !booking.checkedInAt && booking.event.startsAt > now,
   };
 }
 

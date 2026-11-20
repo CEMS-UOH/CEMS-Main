@@ -8,15 +8,16 @@ Show errors by `code`, translated through the `Errors` namespace (CLAUDE.md rule
 Requires a session cookie (`requireAuth`). **No role restriction** - Attendee, Organizer and
 Admin may all use the assistant.
 
-## LEADER OVERRIDE: Grok (xAI), not Anthropic
+## LEADER DECISION: Groq, not Anthropic (and not xAI)
 
-CLAUDE.md originally named the Anthropic Claude API for FR-23. By the Leader's explicit
-instruction for this task, **FR-23 uses Grok (xAI) instead** - no Anthropic SDK was added.
-CLAUDE.md and README.md are updated to match in this same change.
+CLAUDE.md originally named the Anthropic Claude API for FR-23; the Leader first switched it to
+xAI's Grok, then to **Groq** (groq.com - a different company), whose key the team holds.
+No SDK was added.
 
-The backend calls `https://api.x.ai/v1/responses` directly with Node's built-in `fetch` (no new
-dependency) - see `backend/src/modules/chatbot/grok.js` for the full integration notes,
-confirmed against xAI's official docs on 2026-10-07. **The browser never talks to Grok
+The backend calls Groq's OpenAI-compatible `https://api.groq.com/openai/v1/chat/completions`
+with Node's built-in `fetch` - see `backend/src/modules/chatbot/groq.js` for the integration
+notes, confirmed against Groq's docs on 2026-10-24. Default model: **`openai/gpt-oss-120b`**
+(Groq's largest production model; Arabic and English). **The browser never talks to Groq
 directly** - only this backend endpoint does (CLAUDE.md rule 9).
 
 ## Endpoint
@@ -45,9 +46,9 @@ type ChatResponse = { sessionId: string; reply: string };
 - The assistant only knows about **APPROVED events that have not ended yet** (soonest 15,
   server-side, from the database) - it cannot discuss PENDING/REJECTED/CANCELLED events, and is
   instructed not to invent details. It is scoped to SCEMS and politely declines anything else.
-- Conversation history (up to the last 10 messages) is resent to Grok on every call for
-  continuity, since the integration explicitly disables Grok's own server-side conversation
-  storage (`store: false` - see `grok.js`) in favour of our own `ChatSession` table.
+- Conversation history (up to the last 10 messages) is resent on every call for continuity -
+  the chat API keeps no history itself; ours lives in the `ChatSession` table.
+- Event times are given to the model in campus time (Asia/Riyadh, UTC+3).
 
 ## Error codes (add these to `frontend/messages/{ar,en}.json` under `Errors`)
 
@@ -56,7 +57,7 @@ type ChatResponse = { sessionId: string; reply: string };
 | `INVALID_MESSAGE` | 422 | missing, blank, or over 2000 characters |
 | `INVALID_LOCALE` | 422 | `locale` is present but not `"ar"` or `"en"` |
 | `SESSION_NOT_FOUND` | 404 | malformed, unknown, or someone else's `sessionId` |
-| `CHATBOT_UNAVAILABLE` | 503 | `GROK_API_KEY`/`GROK_MODEL` missing, or the Grok call failed/timed out/returned nothing usable - never a crash |
+| `CHATBOT_UNAVAILABLE` | 503 | `GROQ_API_KEY` missing, or the Groq call failed/timed out/returned nothing usable - never a crash |
 
 The existing `UNAUTHENTICATED` (401) also applies. There is no `FORBIDDEN` (403) case - every
 role may use this endpoint.
@@ -66,8 +67,8 @@ role may use this endpoint.
 Add to `.env` (see the repo-root `.env.example`):
 
 ```
-GROK_API_KEY="xai-..."
-GROK_MODEL="grok-4.7"
+GROQ_API_KEY="gsk_..."
+GROQ_MODEL="openai/gpt-oss-120b"   # optional - this is the default
 ```
 
 Neither is required for the rest of the app to run - `assertRuntimeConfig()` does not check

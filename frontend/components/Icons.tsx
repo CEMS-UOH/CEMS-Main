@@ -168,6 +168,15 @@ export function GlobeIcon({ className = 'size-4' }: Props) {
   );
 }
 
+/** Analytics: a small column chart. */
+export function ChartIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 20h16M7 16v-4M12 16V7M17 16v-6" />
+    </svg>
+  );
+}
+
 /** Dashboard sections. */
 export function GridIcon({ className = 'size-4' }: Props) {
   return (
@@ -204,6 +213,45 @@ export function MegaphoneIcon({ className = 'size-4' }: Props) {
     <svg {...base} className={className}>
       <path d="M4 10v4a1 1 0 0 0 1 1h2.5l7.5 4V5l-7.5 4H5a1 1 0 0 0-1 1Z" />
       <path d="M18 9.5a3.5 3.5 0 0 1 0 5" />
+    </svg>
+  );
+}
+
+/** The AI assistant: a speech bubble with a small spark. */
+export function ChatIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M20 12.5a7.5 7.5 0 0 1-11 6.6L4 20l1-4.3A7.5 7.5 0 1 1 20 12.5Z" />
+      <path d="M12.5 9v4M10.5 11h4" />
+    </svg>
+  );
+}
+
+/** Send a message. Points along the reading direction; flip it in Arabic with rtl:-scale-x-100. */
+export function SendIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5" />
+    </svg>
+  );
+}
+
+/** Check-in: scanning a ticket's QR code. */
+export function ScanIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 8.5V6a2 2 0 0 1 2-2h2.5M15.5 4H18a2 2 0 0 1 2 2v2.5M20 15.5V18a2 2 0 0 1-2 2h-2.5M8.5 20H6a2 2 0 0 1-2-2v-2.5" />
+      <path d="M4 12h16" />
+    </svg>
+  );
+}
+
+/** Notifications: the bell in every signed-in header. */
+export function BellIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 10a6 6 0 0 1 12 0c0 4.5 1.5 6 2 6.5H4c.5-.5 2-2 2-6.5Z" />
+      <path d="M10 19.5a2 2 0 0 0 4 0" />
     </svg>
   );
 }

@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useApiError } from '@/lib/useApiError';
 
-// Error codes specific to the attendee API (backend/src/modules/attendee/API.md), plus the
-// proposed feedback codes (see submitFeedback in attendee-api.ts). Each has a key under "Errors"
+// Error codes specific to the attendee API (backend/src/modules/attendee/API.md), including
+// the feedback codes. Each has a key under "Errors"
 // in messages/ar.json and messages/en.json. Shared codes (NETWORK, UNAUTHENTICATED, FORBIDDEN,
 // ...) go to the shared useApiError, which also supplies the translated fallback for anything
 // unknown - the UI never shows the server's English text.
@@ -18,6 +18,7 @@ const ATTENDEE_CODES = [
   'BOOKING_NOT_FOUND',
   'ALREADY_CANCELLED',
   'CANCELLATION_CLOSED',
+  'ALREADY_CHECKED_IN',
   'INVALID_RATING',
   'INVALID_COMMENT',
   'FEEDBACK_NOT_OPEN',

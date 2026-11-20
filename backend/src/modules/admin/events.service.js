@@ -9,36 +9,60 @@ const { EVENT_SELECT, toPublicEvent } = require('./shapes');
 
 const NOT_FOUND = () => new HttpError(404, 'Event not found', 'EVENT_NOT_FOUND');
 
-async function loadPendingEvent(eventId) {
-  const event = await prisma.event.findUnique({ where: { id: eventId }, select: EVENT_SELECT });
-  if (!event) throw NOT_FOUND();
-  if (event.status !== 'PENDING') {
-    throw new HttpError(409, 'Only a PENDING event can be approved or rejected', 'EVENT_NOT_PENDING');
-  }
-  return event;
+const NOT_PENDING = () =>
+  new HttpError(409, 'Only a PENDING event can be approved or rejected', 'EVENT_NOT_PENDING');
+
+// Same reason as BOOKING_TX_OPTIONS in attendee/bookings.service.js: four round trips to a
+// database far from the API can pass Prisma's 5 s default.
+const DECISION_TX_OPTIONS = { timeout: 30000, maxWait: 10000 };
+
+// What the organizer is told, by decision. The UI shows these by `type` in the reader's
+// language; title is the event title and body is the stored English fallback.
+const DECISIONS = {
+  APPROVED: { type: 'EVENT_APPROVED', verb: 'approved' },
+  REJECTED: { type: 'EVENT_REJECTED', verb: 'rejected' },
+};
+
+/**
+ * FR-17: approve or reject a PENDING event, and tell its organizer in the same transaction.
+ * The status change is conditional on the event still being PENDING, so two admins deciding
+ * at the same moment cannot both succeed (and the organizer is never notified twice).
+ */
+async function decide(eventId, status) {
+  const { type, verb } = DECISIONS[status];
+  return prisma.$transaction(async (tx) => {
+    const current = await tx.event.findUnique({
+      where: { id: eventId },
+      select: { id: true, title: true, status: true, organizerId: true },
+    });
+    if (!current) throw NOT_FOUND();
+    if (current.status !== 'PENDING') throw NOT_PENDING();
+
+    const { count } = await tx.event.updateMany({
+      where: { id: eventId, status: 'PENDING' },
+      data: { status },
+    });
+    if (count === 0) throw NOT_PENDING();
+
+    await tx.notification.create({
+      data: {
+        userId: current.organizerId,
+        type,
+        title: current.title,
+        body: `Your event "${current.title}" (id: ${current.id}) was ${verb} by an admin.`,
+      },
+    });
+
+    const event = await tx.event.findUnique({ where: { id: eventId }, select: EVENT_SELECT });
+    return toPublicEvent(event);
+  }, DECISION_TX_OPTIONS);
 }
 
 /** FR-17 */
-async function approveEvent(eventId) {
-  await loadPendingEvent(eventId);
-  const event = await prisma.event.update({
-    where: { id: eventId },
-    data: { status: 'APPROVED' },
-    select: EVENT_SELECT,
-  });
-  return toPublicEvent(event);
-}
+const approveEvent = (eventId) => decide(eventId, 'APPROVED');
 
 /** FR-17 */
-async function rejectEvent(eventId) {
-  await loadPendingEvent(eventId);
-  const event = await prisma.event.update({
-    where: { id: eventId },
-    data: { status: 'REJECTED' },
-    select: EVENT_SELECT,
-  });
-  return toPublicEvent(event);
-}
+const rejectEvent = (eventId) => decide(eventId, 'REJECTED');
 
 /**
  * FR-22: permanent delete of ANY event, any status, any owner. Unlike the organizer's own

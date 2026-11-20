@@ -35,6 +35,8 @@ export type Booking = {
   checkedInAt: string | null;
   createdAt: string;
   canCancel: boolean;
+  /** The attendee's own rating of this event (1..5), null if not rated. Only on GET /bookings. */
+  myRating?: number | null;
   event: {
     id: string;
     title: string;
@@ -99,13 +101,8 @@ export const cancelBooking = (bookingId: string) =>
   );
 
 // --- Feedback (rating 1..5 + optional comment) ---
-// PROPOSED CONTRACT - not in the API yet. The Feedback table exists in schema.prisma but
-// backend/src/modules/attendee has no route for it. Requested from Role 2 in the PR:
-//   POST /api/attendee/events/:id/feedback  body { rating: 1..5, comment?: string (<= 1000) }
-//   201 { feedback: { id, rating, comment, createdAt } }
-//   422 INVALID_RATING | INVALID_COMMENT, 404 EVENT_NOT_FOUND,
-//   409 FEEDBACK_NOT_OPEN (no confirmed booking, or the event has not ended), 409 ALREADY_REVIEWED
-// Until it exists the API answers 404 NOT_FOUND, which the form shows as "not available yet".
+// POST /api/attendee/events/:id/feedback - see backend/src/modules/attendee/API.md.
+// Open after the event ends, to an attendee who held a confirmed seat; once per event.
 export type Feedback = { id: string; rating: number; comment: string | null; createdAt: string };
 
 export const FEEDBACK_COMMENT_MAX = 1000;

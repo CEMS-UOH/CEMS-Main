@@ -3,7 +3,16 @@
 // health.test.js.
 jest.mock('../src/lib/prisma', () => ({
   user: { findUnique: jest.fn() },
-  event: { findUnique: jest.fn(), update: jest.fn(), delete: jest.fn(), findMany: jest.fn(), count: jest.fn() },
+  event: {
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn(),
+    delete: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
+  },
+  notification: { create: jest.fn() },
+  $transaction: jest.fn(),
 }));
 
 const request = require('supertest');
@@ -52,7 +61,11 @@ const dbEvent = (overrides = {}) => ({
   ...overrides,
 });
 
-beforeEach(() => jest.resetAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  // Interactive transactions run against the same mocked client.
+  prisma.$transaction.mockImplementation((fn) => fn(prisma));
+});
 
 describe('admin events auth', () => {
   it.each([
@@ -71,40 +84,64 @@ describe('admin events auth', () => {
       .post(`${BASE}/${EVENT_ID}/approve`)
       .set('Cookie', sessionFor({ ...admin, role }));
     expect(res.status).toBe(403);
-    expect(prisma.event.update).not.toHaveBeenCalled();
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 });
 
 describe('POST /admin/events/:id/approve and /reject (FR-17)', () => {
-  it('approves a PENDING event', async () => {
-    prisma.event.findUnique.mockResolvedValueOnce(dbEvent({ status: 'PENDING' }));
-    prisma.event.update.mockResolvedValueOnce(dbEvent({ status: 'APPROVED' }));
+  const pendingRow = { id: EVENT_ID, title: 'AI Workshop', status: 'PENDING', organizerId: 'organizer-1' };
+
+  it('approves a PENDING event and notifies its organizer', async () => {
+    prisma.event.findUnique
+      .mockResolvedValueOnce(pendingRow)
+      .mockResolvedValueOnce(dbEvent({ status: 'APPROVED' }));
+    prisma.event.updateMany.mockResolvedValueOnce({ count: 1 });
 
     const res = await request(app).post(`${BASE}/${EVENT_ID}/approve`).set('Cookie', sessionFor());
 
     expect(res.status).toBe(200);
     expect(res.body.data.event.status).toBe('APPROVED');
-    expect(prisma.event.update.mock.calls[0][0].data).toEqual({ status: 'APPROVED' });
+    expect(prisma.event.updateMany.mock.calls[0][0]).toEqual({
+      where: { id: EVENT_ID, status: 'PENDING' },
+      data: { status: 'APPROVED' },
+    });
+    const { data } = prisma.notification.create.mock.calls[0][0];
+    expect(data).toMatchObject({ userId: 'organizer-1', type: 'EVENT_APPROVED', title: 'AI Workshop' });
   });
 
-  it('rejects a PENDING event', async () => {
-    prisma.event.findUnique.mockResolvedValueOnce(dbEvent({ status: 'PENDING' }));
-    prisma.event.update.mockResolvedValueOnce(dbEvent({ status: 'REJECTED' }));
+  it('rejects a PENDING event and notifies its organizer', async () => {
+    prisma.event.findUnique
+      .mockResolvedValueOnce(pendingRow)
+      .mockResolvedValueOnce(dbEvent({ status: 'REJECTED' }));
+    prisma.event.updateMany.mockResolvedValueOnce({ count: 1 });
 
     const res = await request(app).post(`${BASE}/${EVENT_ID}/reject`).set('Cookie', sessionFor());
 
     expect(res.status).toBe(200);
     expect(res.body.data.event.status).toBe('REJECTED');
+    expect(prisma.notification.create.mock.calls[0][0].data.type).toBe('EVENT_REJECTED');
   });
 
   it('refuses to approve a non-PENDING event with 409', async () => {
-    prisma.event.findUnique.mockResolvedValueOnce(dbEvent({ status: 'APPROVED' }));
+    prisma.event.findUnique.mockResolvedValueOnce({ ...pendingRow, status: 'APPROVED' });
 
     const res = await request(app).post(`${BASE}/${EVENT_ID}/approve`).set('Cookie', sessionFor());
 
     expect(res.status).toBe(409);
     expect(res.body.error.code).toBe('EVENT_NOT_PENDING');
-    expect(prisma.event.update).not.toHaveBeenCalled();
+    expect(prisma.event.updateMany).not.toHaveBeenCalled();
+    expect(prisma.notification.create).not.toHaveBeenCalled();
+  });
+
+  it('loses a race cleanly: another admin decided first, so 409 and no notification', async () => {
+    prisma.event.findUnique.mockResolvedValueOnce(pendingRow);
+    prisma.event.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    const res = await request(app).post(`${BASE}/${EVENT_ID}/reject`).set('Cookie', sessionFor());
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('EVENT_NOT_PENDING');
+    expect(prisma.notification.create).not.toHaveBeenCalled();
   });
 
   it('returns 404 for an unknown event', async () => {

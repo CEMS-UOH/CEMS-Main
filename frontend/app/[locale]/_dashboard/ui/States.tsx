@@ -19,6 +19,6 @@ export function ErrorState({ code, onRetry }: { code: string; onRetry?: () => vo
   return <Shared.ErrorState message={errorMessage(code)} retryLabel={t('retry')} onRetry={onRetry} />;
 }
 
-export function EmptyState(props: { title: string; body?: string; action?: ReactNode }) {
+export function EmptyState(props: { title: string; body?: string; action?: ReactNode; icon?: ReactNode }) {
   return <Shared.EmptyState {...props} />;
 }
