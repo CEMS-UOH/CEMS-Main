@@ -732,5 +732,15 @@
     "placeholder": "Type your question…",
     "send": "Send",
     "disclaimer": "Answers come from AI and can be wrong. Check the event page before you go."
+  },
+  "Recommendations": {
+    "title": "Recommended for you",
+    "basisHistory": "Picked from the events you booked and how you rated them.",
+    "basisPopular": "Popular right now. Book or rate a few events and these will follow your interests.",
+    "reason": {
+      "CATEGORY": "Because you book <cat>{category}</cat> events",
+      "ORGANIZER": "From an organizer you liked",
+      "POPULAR": "Popular right now"
+    }
   }
 }

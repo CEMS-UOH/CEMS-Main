@@ -65,6 +65,8 @@
 **إضافات خارج قائمة الـ FR** (موثّقة لأن الشاشات تحتاجها):
 - **التقييمات** بعد الفعالية: `POST /api/attendee/events/:id/feedback` و `GET /api/organizer/events/:id/feedback`.
   (شاشة التقييم موجودة في التصاميم الـ 17، لكن ما لها رقم FR — اسألوا المشرف تحت أي FR تُحسب.)
+- **مقترحة لك**: أعلى صفحة الفعاليات للحاضر، حسب الفئات والمنظمين اللي يحجز لهم ويقيّمهم
+  (`GET /api/attendee/recommendations`). الحساب الجديد يشوف الأكثر طلبًا.
 - **صندوق الإشعارات** لكل الأدوار: `GET /api/notifications` + تحديد كمقروء.
 - **تسجيل المنظم بنفسه** مع حد "طلب واحد قبل أول موافقة".
 
@@ -159,7 +161,7 @@
 
 | الجزء | الأمر | العدد |
 |---|---|---|
-| الخادم (Jest + Supertest) | `cd backend && npm test` | 349 اختبار |
+| الخادم (Jest + Supertest) | `cd backend && npm test` | 364 اختبار |
 | شاشات الحاضر (node:test) | `cd frontend && npm run test:attendee` | 21 اختبار |
 | نموذج التحليلات (unittest) | `cd analytics && python -m unittest -v` | 7 اختبارات |
 | بناء الواجهة | `cd frontend && npm run build` | — |

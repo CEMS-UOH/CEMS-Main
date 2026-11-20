@@ -168,6 +168,16 @@ export function GlobeIcon({ className = 'size-4' }: Props) {
   );
 }
 
+/** Suggestions: a small four-point spark. */
+export function SparkIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z" />
+      <path d="M18.5 15.5c.3 1.6.9 2.2 2.5 2.5-1.6.3-2.2.9-2.5 2.5-.3-1.6-.9-2.2-2.5-2.5 1.6-.3 2.2-.9 2.5-2.5Z" />
+    </svg>
+  );
+}
+
 /** Analytics: a small column chart. */
 export function ChartIcon({ className = 'size-4' }: Props) {
   return (
