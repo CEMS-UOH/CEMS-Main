@@ -22,6 +22,7 @@ import { useQuery } from '../_lib/useQuery';
 import EventCard from '../_ui/EventCard';
 import FilterBar from '../_ui/FilterBar';
 import Pager from '../_ui/Pager';
+import Recommendations from '../_ui/Recommendations';
 import { EmptyState, ErrorState, LoadingCards } from '../_ui/States';
 
 const PAGE_SIZE = 48; // the API allows up to 50; the text search covers what is loaded
@@ -79,6 +80,10 @@ function EventsFeed() {
   return (
     <div className="flex flex-col gap-8">
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
+
+      {/* Suggestions only on the plain first page: once someone filters or searches, they know
+          what they want. */}
+      {!filtered && search.trim() === '' && filters.page === 1 ? <Recommendations /> : null}
 
       <FilterBar
         filters={filters}

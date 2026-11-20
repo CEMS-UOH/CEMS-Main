@@ -27,7 +27,7 @@ It covers 23 functional requirements (FR-01..FR-23) and 16 non-functional requir
 ## 🚀 Key Features | المميزات الأساسية
 * **AI Assistant (FR-23):** Conversational help for finding events, powered by Groq (model openai/gpt-oss-120b).
   (مساعد ذكي للبحث عن الفعاليات والإجابة على الاستفسارات)
-* **AI Recommendation:** Personalized event suggestions.
+* **Recommendations:** "Recommended for you" - upcoming events picked from each attendee's bookings and ratings.
   (توصيات ذكية للفعاليات بناءً على اهتمامات الحضور)
 * **QR-Based Attendance:** Digital sign-in system.
   (نظام تحضير رقمي باستخدام كود QR)
@@ -158,7 +158,7 @@ Honest list of what the foundation does **not** do yet. None of these block the 
 **Scope**
 13. The official NFR mentions a **React Native** mobile app; we build a responsive web app
     instead (open decision #1).
-14. No E2E tests yet (Playwright is planned for Sprint 6). Backend: 349 Jest/Supertest tests;
+14. No E2E tests yet (Playwright is planned for Sprint 6). Backend: 364 Jest/Supertest tests;
     attendee screens: 21 node:test tests; analytics service: 7 unittest tests.
 
 ## Roles

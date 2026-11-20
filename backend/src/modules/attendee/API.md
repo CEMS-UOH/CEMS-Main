@@ -92,6 +92,7 @@ type Booking = {
 | FR-05, FR-06 | `POST /api/attendee/bookings` body `{ eventId }` | Attendee | `201 { booking: Booking }` |
 | FR-08 | `GET /api/attendee/bookings?status=` | Attendee | `{ bookings: Booking[] }` |
 | FR-07 | `POST /api/attendee/bookings/:id/cancel` | Attendee | `{ booking: Booking }` |
+| Suggestions | `GET /api/attendee/recommendations` | Attendee | `{ basis: "history" | "popular", events: (Event & { reason })[] }` |
 | Rating | `POST /api/attendee/events/:id/feedback` body `{ rating, comment? }` | Attendee | `201 { feedback: { id, rating, comment, createdAt } }` |
 
 ### `GET /events` query parameters (all optional)
@@ -114,6 +115,17 @@ Only APPROVED events that have not ended yet are listed, soonest first.
 - Booking again after cancelling is allowed while seats remain; it gets a new QR code.
 - `GET /bookings` returns the full history, newest event first. `status` is `CONFIRMED` or `CANCELLED`.
   Each booking also carries `myRating` (1..5, or `null`): the attendee's own rating of that event.
+
+### Recommended for you
+
+Up to 4 upcoming events the attendee can still book (approved, not started, not full, not already
+booked), from their own history - see the header of `recommendations.service.js` for the scoring:
+
+- each confirmed booking adds interest in that event's category and organizer; a 4-5 star rating
+  adds more, a 1-2 star rating takes some away;
+- `reason` per event: `CATEGORY` (a category they book), `ORGANIZER` (an organizer they liked) or
+  `POPULAR`;
+- `basis: "popular"` when there is no usable history yet: the most-booked upcoming events.
 
 ### Rating an event
 

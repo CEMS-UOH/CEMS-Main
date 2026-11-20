@@ -78,6 +78,16 @@ export const listEvents = (filters: EventFilters = {}) =>
     `/api/attendee/events${eventsQuery(filters)}`
   );
 
+// --- Recommended for you (Attendee) - backend/src/modules/attendee/recommendations.service.js ---
+/** Why an event was suggested: the attendee's favourite category, an organizer they liked, or popular. */
+export type RecommendationReason = 'CATEGORY' | 'ORGANIZER' | 'POPULAR';
+export type Recommendations = {
+  /** 'history' = from the attendee's bookings and ratings; 'popular' = not enough history yet. */
+  basis: 'history' | 'popular';
+  events: (AttendeeEvent & { reason: RecommendationReason })[];
+};
+export const getRecommendations = () => apiFetch<Recommendations>('/api/attendee/recommendations');
+
 // --- FR-09: one event (public) ---
 export const getEvent = (id: string) =>
   apiFetch<{ event: EventDetails }>(`/api/attendee/events/${encodeURIComponent(id)}`);
