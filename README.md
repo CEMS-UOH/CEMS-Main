@@ -115,8 +115,10 @@ Honest list of what the foundation does **not** do yet. None of these block the 
    get the supervisor's written agreement that open registration is acceptable.
 2. **No email verification** - addresses are never confirmed to exist or belong to the user.
 3. **No password reset / forgot-password flow.**
-4. **No rate limiting or lockout on login**, so the endpoint is open to brute-force guessing.
-   Worth adding `express-rate-limit` before the load test in Sprint 5.
+4. **Login guessing is throttled per account** (5 wrong passwords in 15 minutes lock that
+   email for 15 minutes - `backend/src/lib/loginThrottle.js`, no dependency). Not per IP on
+   purpose: behind the site's proxy many users share one IP. Someone who knows an email can
+   keep that login locked by failing on purpose; the lock lifts by itself.
 5. **No server-side token revocation.** Logout clears the cookie, but the JWT itself stays
    valid until it expires (7 days). A token copied before logout would still work. Mitigated
    by `requireAuth` re-loading the user each request, so deactivating an account via

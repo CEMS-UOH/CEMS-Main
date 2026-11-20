@@ -511,7 +511,8 @@
     "SESSION_NOT_FOUND": "This conversation has ended. Start a new one.",
     "CHATBOT_UNAVAILABLE": "The assistant is not available right now. Please try again later.",
     "ANALYTICS_UNAVAILABLE": "Predictions are not available right now.",
-    "ALREADY_CHECKED_IN": "You have already been checked in at the door, so this booking can no longer be cancelled"
+    "ALREADY_CHECKED_IN": "You have already been checked in at the door, so this booking can no longer be cancelled",
+    "TOO_MANY_ATTEMPTS": "Too many wrong passwords for this account. Wait 15 minutes, then try again."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",

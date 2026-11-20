@@ -11,6 +11,7 @@ const prisma = require('../src/lib/prisma');
 const app = require('../src/app');
 const { COOKIE_NAME, signToken } = require('../src/lib/session');
 const requireRole = require('../src/middleware/requireRole');
+const loginThrottle = require('../src/lib/loginThrottle');
 
 const BASE = '/api/attendee/auth';
 
@@ -29,7 +30,10 @@ const withPassword = (plain, overrides = {}) => ({
   ...overrides,
 });
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  loginThrottle.reset();
+});
 
 // ---------------------------------------------------------------- FR-01 register
 
@@ -300,6 +304,87 @@ describe('POST /login (FR-02)', () => {
     expect(res.status).toBe(403);
     expect(res.body.error.code).toBe('ACCOUNT_INACTIVE');
     expect(res.headers['set-cookie']).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------- login throttle
+
+describe('POST /login - too many wrong passwords', () => {
+  const tryLogin = (password, email = 'sara@example.com') =>
+    request(app).post(`${BASE}/login`).send({ email, password });
+
+  it(`locks the account after ${loginThrottle.MAX_FAILURES} wrong passwords, even for the right one`, async () => {
+    for (let i = 0; i < loginThrottle.MAX_FAILURES; i++) {
+      prisma.user.findUnique.mockResolvedValueOnce(withPassword('longenough1'));
+      const res = await tryLogin('wrong-password');
+      expect(res.status).toBe(401);
+    }
+
+    const locked = await tryLogin('longenough1');
+
+    expect(locked.status).toBe(429);
+    expect(locked.body.error.code).toBe('TOO_MANY_ATTEMPTS');
+    expect(Number(locked.headers['retry-after'])).toBeGreaterThan(0);
+    expect(locked.headers['set-cookie']).toBeUndefined();
+    // Refused before the password is even looked at.
+    expect(prisma.user.findUnique).toHaveBeenCalledTimes(loginThrottle.MAX_FAILURES);
+  });
+
+  it('counts the email case-insensitively, so changing case does not reset the count', async () => {
+    for (let i = 0; i < loginThrottle.MAX_FAILURES; i++) {
+      prisma.user.findUnique.mockResolvedValueOnce(null);
+      await tryLogin('wrong-password', i % 2 ? 'SARA@example.com' : 'sara@EXAMPLE.com');
+    }
+    const res = await tryLogin('anything', 'Sara@Example.com');
+    expect(res.status).toBe(429);
+  });
+
+  it('only locks the account being guessed', async () => {
+    for (let i = 0; i < loginThrottle.MAX_FAILURES; i++) {
+      prisma.user.findUnique.mockResolvedValueOnce(null);
+      await tryLogin('wrong-password', 'victim@example.com');
+    }
+    prisma.user.findUnique.mockResolvedValueOnce(withPassword('longenough1'));
+
+    const res = await tryLogin('longenough1');
+
+    expect(res.status).toBe(200);
+  });
+
+  it('starts counting again after a successful login', async () => {
+    for (let i = 0; i < loginThrottle.MAX_FAILURES - 1; i++) {
+      prisma.user.findUnique.mockResolvedValueOnce(withPassword('longenough1'));
+      await tryLogin('wrong-password');
+    }
+    prisma.user.findUnique.mockResolvedValueOnce(withPassword('longenough1'));
+    expect((await tryLogin('longenough1')).status).toBe(200);
+
+    prisma.user.findUnique.mockResolvedValueOnce(withPassword('longenough1'));
+    expect((await tryLogin('wrong-password')).status).toBe(401); // not 429
+  });
+
+  it('does not count a disabled account with the right password as a guess', async () => {
+    for (let i = 0; i < loginThrottle.MAX_FAILURES + 1; i++) {
+      prisma.user.findUnique.mockResolvedValueOnce(withPassword('longenough1', { isActive: false }));
+      const res = await tryLogin('longenough1');
+      expect(res.status).toBe(403);
+    }
+  });
+});
+
+describe('loginThrottle', () => {
+  it('lifts the lock by itself after the window', () => {
+    const t0 = 1_000_000;
+    for (let i = 0; i < loginThrottle.MAX_FAILURES; i++) loginThrottle.recordFailure('a@x.com', t0);
+    expect(loginThrottle.check('a@x.com', t0 + 1000).allowed).toBe(false);
+    expect(loginThrottle.check('a@x.com', t0 + loginThrottle.WINDOW_MS + 1).allowed).toBe(true);
+  });
+
+  it('forgets old failures outside the window', () => {
+    const t0 = 1_000_000;
+    for (let i = 0; i < loginThrottle.MAX_FAILURES - 1; i++) loginThrottle.recordFailure('b@x.com', t0);
+    loginThrottle.recordFailure('b@x.com', t0 + loginThrottle.WINDOW_MS + 1);
+    expect(loginThrottle.check('b@x.com', t0 + loginThrottle.WINDOW_MS + 2).allowed).toBe(true);
   });
 });
 
