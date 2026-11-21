@@ -209,7 +209,7 @@ async function deleteEvent(organizerId, eventId) {
 /** Not in the FR list - see the file header note. */
 async function listOwnEvents({ organizerId, status, page, limit }) {
   const where = { organizerId, ...(status ? { status } : {}) };
-  const [events, total] = await Promise.all([
+  const [events, total, byStatus] = await Promise.all([
     prisma.event.findMany({
       where,
       select: EVENT_SELECT,
@@ -218,10 +218,21 @@ async function listOwnEvents({ organizerId, status, page, limit }) {
       take: limit,
     }),
     prisma.event.count({ where }),
+    // The dashboard's counters (and the new-organizer request limit) come with the list, in
+    // the same round trip, instead of one request per status.
+    prisma.event.groupBy({ by: ['status'], where: { organizerId }, _count: { _all: true } }),
   ]);
+  const count = (s) => byStatus.find((row) => row.status === s)?._count._all ?? 0;
   return {
     events: events.map((e) => toPublicEvent(e)),
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    totals: {
+      all: byStatus.reduce((sum, row) => sum + row._count._all, 0),
+      pending: count('PENDING'),
+      approved: count('APPROVED'),
+      rejected: count('REJECTED'),
+      cancelled: count('CANCELLED'),
+    },
   };
 }
 

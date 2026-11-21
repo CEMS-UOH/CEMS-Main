@@ -502,20 +502,27 @@ describe('DELETE /organizer/events/:id (FR-12)', () => {
 // ---------------------------------------------------------------- list / details
 
 describe('GET /organizer/events', () => {
-  it('lists only the caller’s own events', async () => {
+  it('lists only the caller’s own events, with per-status totals in the same answer', async () => {
     prisma.event.findMany.mockResolvedValueOnce([dbEvent()]);
     prisma.event.count.mockResolvedValueOnce(1);
+    prisma.event.groupBy.mockResolvedValueOnce([
+      { status: 'PENDING', _count: { _all: 1 } },
+      { status: 'APPROVED', _count: { _all: 3 } },
+    ]);
 
     const res = await request(app).get(BASE).set('Cookie', sessionFor());
 
     expect(res.status).toBe(200);
     expect(res.body.data.events).toHaveLength(1);
+    expect(res.body.data.totals).toEqual({ all: 4, pending: 1, approved: 3, rejected: 0, cancelled: 0 });
+    expect(prisma.event.groupBy.mock.calls[0][0].where).toEqual({ organizerId: ORGANIZER_ID });
     expect(prisma.event.findMany.mock.calls[0][0].where).toEqual({ organizerId: ORGANIZER_ID });
   });
 
   it('filters by status', async () => {
     prisma.event.findMany.mockResolvedValueOnce([]);
     prisma.event.count.mockResolvedValueOnce(0);
+    prisma.event.groupBy.mockResolvedValueOnce([]);
 
     const res = await request(app).get(`${BASE}?status=APPROVED`).set('Cookie', sessionFor());
 

@@ -25,7 +25,7 @@ import Pager from '../_ui/Pager';
 import Recommendations from '../_ui/Recommendations';
 import { EmptyState, ErrorState, LoadingCards } from '../_ui/States';
 
-const PAGE_SIZE = 48; // the API allows up to 50; the text search covers what is loaded
+const PAGE_SIZE = 50; // the API maximum; the text search and the filter choices use what is loaded
 const OPTIONS_SAMPLE = 50;
 
 export default function EventsPage() {
@@ -45,10 +45,6 @@ function EventsFeed() {
   const filters = parseFeedFilters(searchParams);
   const [search, setSearch] = useState('');
 
-  // Filter choices come from the upcoming events themselves (see filterOptions in rules.ts).
-  const optionsQuery = useQuery('attendee-event-options', () => listEvents({ limit: OPTIONS_SAMPLE }));
-  const optionEvents = optionsQuery.data?.events;
-  const options = useMemo(() => filterOptions(optionEvents ?? [], locale), [optionEvents, locale]);
 
   const feed = useQuery(
     `attendee-events:${filters.category}:${filters.venue}:${filters.date}:${filters.page}`,
@@ -61,6 +57,16 @@ function EventsFeed() {
         limit: PAGE_SIZE,
       })
   );
+
+  // Filter choices come from the upcoming events themselves (see filterOptions in rules.ts).
+  // Unfiltered, the feed already holds them - asking again would send the same heavy query
+  // twice at once. Only a filtered feed (or a later page) needs a separate first-page sample.
+  const filteredFeed = hasActiveFilters(filters) || filters.page > 1;
+  const optionsQuery = useQuery(filteredFeed ? 'attendee-event-options' : null, () =>
+    listEvents({ limit: OPTIONS_SAMPLE })
+  );
+  const optionEvents = filteredFeed ? optionsQuery.data?.events : feed.data?.events;
+  const options = useMemo(() => filterOptions(optionEvents ?? [], locale), [optionEvents, locale]);
 
   const loaded = feed.data?.events;
   const shown = useMemo(() => searchEvents(loaded ?? [], search), [loaded, search]);

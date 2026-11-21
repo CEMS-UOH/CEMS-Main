@@ -59,7 +59,7 @@ type Attendee = {
 | FR | Method and path | Success `data` |
 |---|---|---|
 | FR-10 | `POST /api/organizer/events` | `201 { event: OrganizerEvent }` |
-| — | `GET /api/organizer/events?status=&page=&limit=` | `{ events: OrganizerEvent[], pagination }` |
+| — | `GET /api/organizer/events?status=&page=&limit=` | `{ events: OrganizerEvent[], pagination, totals: { all, pending, approved, rejected, cancelled } }` - totals ignore the filter |
 | — | `GET /api/organizer/events/:id` | `{ event: OrganizerEvent }` |
 | FR-11, FR-13, FR-16 | `PATCH /api/organizer/events/:id` | `{ event: OrganizerEvent }` |
 | FR-12 | `DELETE /api/organizer/events/:id` | `{ deleted: true }` |

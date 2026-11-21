@@ -1,11 +1,11 @@
 'use client';
 
 // Organizer dashboard: the organizer's own events with their approval status and bookings.
-// Calls GET /api/organizer/events (list + per-status totals) and DELETE /api/organizer/events/:id.
+// Calls GET /api/organizer/events (list + per-status totals, one request) and
+// DELETE /api/organizer/events/:id.
 import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import FormMessage from '@/components/FormMessage';
-import type { ApiResult } from '@/lib/api';
 import Button from '@/components/Button';
 import { PlusIcon } from '@/components/Icons';
 import { SelectField } from '@/components/FormField';
@@ -23,32 +23,6 @@ import EventCard from '../_ui/EventCard';
 
 const PAGE_SIZE = 10;
 
-type Counts = { total: number; pending: number; approved: number; rejected: number };
-
-/** Four tiny requests in parallel - the list endpoint returns the total for any status filter. */
-async function loadCounts(): Promise<ApiResult<Counts>> {
-  const [all, pending, approved, rejected] = await Promise.all([
-    listMyEvents({ limit: 1 }),
-    listMyEvents({ status: 'PENDING', limit: 1 }),
-    listMyEvents({ status: 'APPROVED', limit: 1 }),
-    listMyEvents({ status: 'REJECTED', limit: 1 }),
-  ]);
-  if (!all.ok) return all;
-  if (!pending.ok) return pending;
-  if (!approved.ok) return approved;
-  if (!rejected.ok) return rejected;
-  return {
-    ok: true,
-    status: 200,
-    data: {
-      total: all.data.pagination.total,
-      pending: pending.data.pagination.total,
-      approved: approved.data.pagination.total,
-      rejected: rejected.data.pagination.total,
-    },
-  };
-}
-
 export default function OrganizerDashboardPage() {
   const t = useTranslations('Organizer');
   const tCommon = useTranslations('Dashboard');
@@ -61,19 +35,20 @@ export default function OrganizerDashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
-  const counts = useApiQuery('organizer-counts', loadCounts);
+  const list = useApiQuery(`organizer-events:${status}:${page}`, () =>
+    listMyEvents({ status, page, limit: PAGE_SIZE })
+  );
+  // The counters come with the list (one request). They do not depend on the filter, so the
+  // last answer's totals stay right while a new page or filter loads.
+  const totals = list.data?.totals;
   // A new organizer may have one request waiting until an admin approves their first event
   // (enforced by the API). While that applies, "New event" is replaced by an explanation.
-  const limited = counts.data ? isRequestLimited(counts.data) : false;
+  const limited = totals ? isRequestLimited(totals) : false;
   const newEventButton = (
     <Button href="/organizer/events/new" icon={<PlusIcon />}>
       {t('newEvent')}
     </Button>
   );
-  const list = useApiQuery(`organizer-events:${status}:${page}`, () =>
-    listMyEvents({ status, page, limit: PAGE_SIZE })
-  );
-
   async function onDelete(event: OrganizerEvent) {
     setNotice(null);
     setDeletingId(event.id);
@@ -85,7 +60,6 @@ export default function OrganizerDashboardPage() {
       return;
     }
     setNotice({ kind: 'success', text: t('deleted') });
-    counts.reload();
     // Deleting the only event on the last page would leave an empty page behind.
     if (list.data && list.data.events.length === 1 && page > 1) setPage(page - 1);
     else list.reload();
@@ -107,20 +81,17 @@ export default function OrganizerDashboardPage() {
       ) : null}
 
       <section aria-label={t('statsLabel')}>
-        {counts.loading ? (
+        {list.loading ? (
           <LoadingState />
-        ) : counts.errorCode || !counts.data ? (
-          <ErrorState code={counts.errorCode ?? 'UNKNOWN'} onRetry={counts.reload} />
+        ) : !totals ? (
+          // The list below shows the error and its retry button; one is enough.
+          null
         ) : (
           <StatGrid>
-            <StatTile label={t('stats.total')} value={format.number(counts.data.total)} />
-            <StatTile
-              label={t('stats.pending')}
-              value={format.number(counts.data.pending)}
-              highlight
-            />
-            <StatTile label={t('stats.approved')} value={format.number(counts.data.approved)} />
-            <StatTile label={t('stats.rejected')} value={format.number(counts.data.rejected)} />
+            <StatTile label={t('stats.total')} value={format.number(totals.all)} />
+            <StatTile label={t('stats.pending')} value={format.number(totals.pending)} highlight />
+            <StatTile label={t('stats.approved')} value={format.number(totals.approved)} />
+            <StatTile label={t('stats.rejected')} value={format.number(totals.rejected)} />
           </StatGrid>
         )}
       </section>

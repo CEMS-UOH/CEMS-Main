@@ -47,7 +47,7 @@ domains: leave `COOKIE_DOMAIN` empty and do **not** set `NEXT_PUBLIC_API_URL`.
    |---|---|
    | `NODE_ENV` | `production` |
    | `PORT` | `5000` |
-   | `DATABASE_URL` | same as your `.env` (pooler, port 6543, `?pgbouncer=true`) |
+   | `DATABASE_URL` | the pooler in **session mode**: port **5432**, ending `?connection_limit=5` (as in `.env.example` - about 5x fewer round trips than port 6543) |
    | `DIRECT_URL` | same as your `.env` |
    | `JWT_SECRET` | a **new** long random string (not the development one) |
    | `CORS_ORIGINS` | the Vercel address, e.g. `https://scems.vercel.app` (fill in after step 3, then redeploy) |
