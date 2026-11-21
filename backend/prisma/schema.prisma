@@ -5,7 +5,11 @@
 // =====================================================================
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // One SQL query per findMany, with related rows (category, venue, organizer, counts) joined
+  // in, instead of one extra query per relation. The database is far from the API (Frankfurt),
+  // so every avoided round trip is felt on every page. No effect on the schema or migrations.
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {

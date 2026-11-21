@@ -65,7 +65,7 @@ export default function DashboardShell({ area, nav, children }: Props) {
   if (session.loading) {
     return (
       <main className={GATE}>
-        <LoadingState label={t('checkingSession')} />
+        <LoadingState label={t('checkingSession')} variant="spinner" />
       </main>
     );
   }

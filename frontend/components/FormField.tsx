@@ -10,7 +10,7 @@
 // Uses logical classes only so it flips correctly for RTL and LTR.
 
 const CONTROL_BASE =
-  'w-full min-w-0 min-h-11 rounded-lg border border-border bg-surface px-3 py-2.5 text-start text-base text-text outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-text-muted/70 hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-text-muted disabled:hover:border-border aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/20';
+  'w-full min-w-0 min-h-11 rounded-lg border border-border bg-surface px-3 py-2.5 text-start text-base text-text shadow-[inset_0_1px_2px_rgb(16_24_21/0.04)] outline-none transition-[border-color,box-shadow,background-color] duration-150 ease-[var(--ease-out-expo)] placeholder:text-text-muted/70 hover:border-primary/40 focus:border-primary focus:ring-[3px] focus:ring-primary/15 disabled:bg-background disabled:text-text-muted disabled:hover:border-border aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/20';
 
 /**
  * The look of a single-line input or select. Exported for the rare control that cannot use

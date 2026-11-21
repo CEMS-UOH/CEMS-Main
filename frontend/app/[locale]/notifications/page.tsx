@@ -70,7 +70,7 @@ export default function NotificationsPage() {
       <Header user={session.data?.user ?? null} />
       <main id="notifications-main" className={`${FRAME} flex flex-1 flex-col gap-6 pt-8 pb-16 sm:pt-10`}>
         {session.loading ? (
-          <LoadingState label={tDash('checkingSession')} />
+          <LoadingState label={tDash('checkingSession')} variant="spinner" />
         ) : session.errorCode || !session.data ? (
           <ErrorState code={session.errorCode ?? 'UNKNOWN'} onRetry={session.reload} />
         ) : (

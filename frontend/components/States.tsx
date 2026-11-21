@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 import Button from './Button';
 import Card from './Card';
 import { AlertIcon, InboxIcon, SpinnerIcon } from './Icons';
+import { SHIMMER } from './styles';
 
 /** The round tinted badge that sits above the text in every state. */
 function StateMark({ tone, children }: { tone: 'primary' | 'danger'; children: ReactNode }) {
@@ -21,13 +22,36 @@ function StateMark({ tone, children }: { tone: 'primary' | 'danger'; children: R
 
 const BLOCK = 'flex flex-col items-center gap-3 px-6 py-10 text-center sm:py-12';
 
-export function LoadingState({ label }: { label: string }) {
+/**
+ * Loading. By default a skeleton - a few rows in the shape of a list, with light passing over
+ * them - so the page already has its layout while the data travels. `spinner` is for the
+ * moments with no layout to promise yet (checking the session).
+ */
+export function LoadingState({ label, variant = 'skeleton' }: { label: string; variant?: 'skeleton' | 'spinner' }) {
+  if (variant === 'spinner') {
+    return (
+      <Card padded={false} role="status" aria-live="polite" className={BLOCK}>
+        <StateMark tone="primary">
+          <SpinnerIcon className="size-6" />
+        </StateMark>
+        <p className="text-sm text-text-muted">{label}</p>
+      </Card>
+    );
+  }
   return (
-    <Card padded={false} role="status" aria-live="polite" className={BLOCK}>
-      <StateMark tone="primary">
-        <SpinnerIcon className="size-6" />
-      </StateMark>
-      <p className="text-sm text-text-muted">{label}</p>
+    <Card padded={false} role="status" aria-live="polite" className="animate-fade-in overflow-hidden">
+      <span className="sr-only">{label}</span>
+      <ul aria-hidden className="divide-y divide-border">
+        {[0.9, 0.7, 0.8].map((width, i) => (
+          <li key={i} className="flex items-center gap-4 px-5 py-4 sm:px-6">
+            <span className={`size-10 shrink-0 rounded-lg ${SHIMMER}`} />
+            <span className="flex min-w-0 flex-1 flex-col gap-2.5">
+              <span className={`h-3.5 rounded-full ${SHIMMER}`} style={{ width: `${width * 60}%` }} />
+              <span className={`h-3 rounded-full ${SHIMMER}`} style={{ width: `${width * 85}%` }} />
+            </span>
+          </li>
+        ))}
+      </ul>
     </Card>
   );
 }

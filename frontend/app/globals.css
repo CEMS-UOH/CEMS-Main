@@ -50,10 +50,79 @@
   --font-ar: var(--font-tajawal), 'Segoe UI', Tahoma, sans-serif;
   --font-en: var(--font-jakarta), 'Segoe UI', system-ui, sans-serif;
 
-  /* Motion. One easing and one short entrance for the whole app - nothing bounces or loops
-     except the loading spinner. */
+  /* Motion. Confident deceleration for arrivals, a quick accelerate for exits, and short
+     durations: feedback 120 ms, state changes 200 ms, overlays 320 ms. Nothing bounces; only
+     the spinner and the loading shimmer loop. */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-quick: cubic-bezier(0.4, 0, 1, 1);
   --animate-rise: rise 0.6s var(--ease-out-soft) both;
+  --animate-fade-in: fade-in 0.2s var(--ease-out-expo) both;
+  --animate-pop: pop 0.32s var(--ease-out-expo) both;
+  --animate-sheet-in: sheet-in 0.32s var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-ticket: ticket-print 0.62s var(--ease-out-expo) backwards;
+  --animate-qr-in: qr-in 0.5s var(--ease-out-expo) 0.28s backwards;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* A count that changed: a short swell, so the eye catches it without a loop. */
+  @keyframes pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.12);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* A panel opening from the button that opened it (transform-origin is set where used). */
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92) translateY(0.5rem);
+    }
+  }
+
+  /* Loading placeholders: a soft band of light passing over the shape of what is coming. */
+  @keyframes shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -100% 0;
+    }
+  }
+
+  /* The booking ticket comes out like a printed ticket: revealed top to bottom. */
+  @keyframes ticket-print {
+    from {
+      clip-path: inset(0 0 100% 0 round 1rem);
+      transform: translateY(-0.75rem);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 1rem);
+      transform: none;
+    }
+  }
+
+  /* ...and its QR code settles into focus once the ticket is out. */
+  @keyframes qr-in {
+    from {
+      opacity: 0;
+      filter: blur(6px);
+      transform: scale(0.94);
+    }
+  }
 
   @keyframes rise {
     from {
@@ -134,6 +203,27 @@ html {
   color: var(--color-primary-dark);
 }
 
+/* The parts of the page the browser draws itself, in the same palette as the rest. */
+html {
+  color-scheme: light;
+  caret-color: var(--color-primary);
+  accent-color: var(--color-primary);
+  scrollbar-color: color-mix(in oklab, var(--color-primary-dark) 28%, transparent) transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: from-font;
+}
+
+/* Numbers in tables line up in columns. */
+table,
+time,
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Locale-driven typeface: layout.tsx sets dir="rtl|ltr" on <html>, this maps it
    to the matching font family without any per-component font classes. */
 html[dir='rtl'] {
@@ -190,5 +280,22 @@ html[dir='ltr'] {
 @media (prefers-reduced-motion: reduce) {
   .animate-rise {
     animation: none;
+  }
+  /* Keep the meaning, drop the movement: what appears still fades in, nothing travels or
+     scales, and the shimmer stands still. */
+  .animate-sheet-in,
+  .animate-ticket,
+  .animate-qr-in,
+  .animate-pop {
+    animation: fade-in 0.2s ease-out both;
+  }
+  .animate-shimmer {
+    animation: none;
+  }
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

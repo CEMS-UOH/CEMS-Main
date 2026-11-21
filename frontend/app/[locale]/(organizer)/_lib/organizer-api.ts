@@ -15,9 +15,12 @@ import type {
 
 const BASE = '/api/organizer';
 
+/** How many of the organizer's events are in each status (whatever the list's filter). */
+export type EventTotals = { all: number; pending: number; approved: number; rejected: number; cancelled: number };
+
 /** GET /api/organizer/events */
 export const listMyEvents = (params: { status?: EventStatus | ''; page?: number; limit?: number }) =>
-  apiFetch<{ events: OrganizerEvent[]; pagination: Pagination }>(
+  apiFetch<{ events: OrganizerEvent[]; pagination: Pagination; totals: EventTotals }>(
     `${BASE}/events${toQuery(params)}`
   );
 

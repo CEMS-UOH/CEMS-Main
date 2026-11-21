@@ -144,7 +144,7 @@ export default function ChatAssistant({ userId }: { userId: string }) {
           onKeyDown={(e) => {
             if (e.key === 'Escape') close();
           }}
-          className="fixed inset-x-2 bottom-2 z-30 flex max-h-[min(36rem,calc(100dvh-1rem))] animate-rise flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card-hover)] sm:inset-x-auto sm:end-6 sm:bottom-6 sm:w-[24rem]"
+          className="fixed inset-x-2 bottom-2 z-30 flex max-h-[min(36rem,calc(100dvh-1rem))] origin-bottom animate-sheet-in flex-col ltr:sm:origin-bottom-right rtl:sm:origin-bottom-left overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card-hover)] sm:inset-x-auto sm:end-6 sm:bottom-6 sm:w-[24rem]"
         >
           <header className="flex items-center gap-3 border-b border-border bg-primary-dark px-4 py-3 text-white">
             <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-white/15">
