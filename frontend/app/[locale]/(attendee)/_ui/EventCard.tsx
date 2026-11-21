@@ -21,8 +21,13 @@ export default function EventCard({ event }: { event: AttendeeEvent }) {
       href={`/events/${event.id}`}
       className={`group flex w-full flex-col overflow-hidden ${cardClasses({ padded: false, interactive: true })} ${FOCUS_RING}`}
     >
-      <div className="relative">
-        <EventImage src={event.imageUrl} alt="" className="aspect-[16/9] w-full" />
+      <div className="relative overflow-hidden">
+        {/* The picture leans in a little on hover: the whole card is one link. */}
+        <EventImage
+          src={event.imageUrl}
+          alt=""
+          className="aspect-[16/9] w-full transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-[1.03] motion-reduce:transform-none"
+        />
         <div
           aria-hidden
           className="absolute start-3 top-3 flex min-w-12 flex-col items-center rounded-lg bg-surface/95 px-2 py-1 leading-tight shadow-[var(--shadow-card)]"

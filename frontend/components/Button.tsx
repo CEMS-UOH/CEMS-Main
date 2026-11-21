@@ -44,20 +44,23 @@ type LinkProps = StyleProps &
 
 type Props = ButtonProps | LinkProps;
 
+// Timing: 150 ms with a confident deceleration on the way in; the press itself is quicker
+// (75 ms) so a click is felt the instant it happens, not after.
 const base =
-  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-medium transition-[background-color,border-color,color,box-shadow,transform,filter] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transform-none motion-reduce:transition-none [&_svg]:shrink-0';
+  'relative inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-[background-color,border-color,color,box-shadow,transform,filter] duration-150 ease-[var(--ease-out-expo)] active:duration-75 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transform-none [&_svg]:shrink-0';
 
 // `not-disabled:` (rather than `enabled:`) so the same rules also reach the link form,
 // which has no disabled state of its own.
 const lift =
-  'not-disabled:hover:-translate-y-px not-disabled:active:translate-y-0 not-disabled:active:scale-[0.98]';
+  'not-disabled:hover:-translate-y-px not-disabled:active:translate-y-0 not-disabled:active:scale-[0.97]';
 
 const variantClasses: Record<Variant, string> = {
-  primary: `bg-primary text-white shadow-[var(--shadow-card)] focus-visible:outline-primary not-disabled:hover:bg-primary-dark not-disabled:hover:shadow-[var(--shadow-card-hover)] not-disabled:active:shadow-none ${lift}`,
-  secondary: `border border-primary/30 bg-surface text-primary focus-visible:outline-primary not-disabled:hover:border-primary/60 not-disabled:hover:bg-primary-light not-disabled:hover:text-primary-dark not-disabled:active:bg-primary-light ${lift}`,
+  // A hairline of light along the top edge gives the filled buttons a made, physical feel.
+  primary: `bg-primary text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14),var(--shadow-card)] focus-visible:outline-primary not-disabled:hover:bg-primary-dark not-disabled:hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.1),var(--shadow-card-hover)] not-disabled:active:shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)] ${lift}`,
+  secondary: `border border-primary/30 bg-surface text-primary shadow-[0_1px_2px_rgb(16_24_21/0.04)] focus-visible:outline-primary not-disabled:hover:border-primary/60 not-disabled:hover:bg-primary-light not-disabled:hover:text-primary-dark not-disabled:active:bg-primary-light not-disabled:active:shadow-none ${lift}`,
   ghost:
     'bg-transparent text-primary focus-visible:outline-primary not-disabled:hover:bg-primary-light not-disabled:hover:text-primary-dark not-disabled:active:scale-[0.98] not-disabled:active:bg-primary-light',
-  danger: `bg-danger text-white shadow-[var(--shadow-card)] focus-visible:outline-danger not-disabled:hover:brightness-90 not-disabled:hover:shadow-[var(--shadow-card-hover)] not-disabled:active:shadow-none ${lift}`,
+  danger: `bg-danger text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14),var(--shadow-card)] focus-visible:outline-danger not-disabled:hover:brightness-90 not-disabled:hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.1),var(--shadow-card-hover)] not-disabled:active:shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)] ${lift}`,
 };
 
 const disabledClasses: Record<Variant, string> = {

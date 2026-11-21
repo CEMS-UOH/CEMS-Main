@@ -8,9 +8,9 @@ import { useTranslations } from 'next-intl';
 import * as Shared from '@/components/States';
 import { useDashboardError } from '../lib/useDashboardError';
 
-export function LoadingState({ label }: { label?: string }) {
+export function LoadingState({ label, variant }: { label?: string; variant?: 'skeleton' | 'spinner' }) {
   const t = useTranslations('Dashboard');
-  return <Shared.LoadingState label={label ?? t('loading')} />;
+  return <Shared.LoadingState label={label ?? t('loading')} variant={variant} />;
 }
 
 export function ErrorState({ code, onRetry }: { code: string; onRetry?: () => void }) {

@@ -21,3 +21,10 @@ export const FRAME_WIDE = 'mx-auto w-full max-w-[120rem] px-4 sm:px-6 lg:px-[5vw
 
 /** Narrow frame for a single form or card (login, register, account, not found). */
 export const FRAME_NARROW = 'mx-auto w-full max-w-md px-4 sm:px-6';
+
+/**
+ * A loading placeholder's surface: a soft band of light sweeping across, in the reading
+ * direction (it runs the other way in Arabic). Stands still for reduced motion.
+ */
+export const SHIMMER =
+  'bg-[linear-gradient(90deg,var(--color-background)_30%,color-mix(in_oklab,var(--color-border)_80%,white)_50%,var(--color-background)_70%)] bg-[length:300%_100%] animate-shimmer rtl:[animation-direction:reverse]';
