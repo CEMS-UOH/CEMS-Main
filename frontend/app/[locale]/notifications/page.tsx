@@ -25,6 +25,7 @@ import {
   UserIcon,
 } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
 import PageHeader from '@/components/PageHeader';
@@ -110,6 +111,7 @@ function Header({ user }: { user: PublicUser | null }) {
       nav={nav}
       tools={
         <>
+          <ThemeSwitcher />
           <LocaleSwitcher />
           {user ? (
             <>
@@ -208,7 +210,7 @@ function Inbox() {
                 setPage(1);
               }}
               className={`min-h-9 cursor-pointer rounded-md px-3 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                pressed ? 'bg-primary text-white' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
+                pressed ? 'bg-primary text-on-fill' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
               }`}
             >
               {filter.label}

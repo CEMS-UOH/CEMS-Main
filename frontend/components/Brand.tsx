@@ -36,7 +36,7 @@ export default function Brand({ name, href, compact = false }: Props) {
         Decorative here: the product name right beside it says the same thing. `unoptimized`
         serves the supplied file itself rather than a re-encoded copy.
       */}
-      <span className="block size-10 shrink-0 overflow-hidden">
+      <span className="block size-10 shrink-0 overflow-hidden dark:rounded-md">
         <Image
           src="/logo.webp"
           alt=""

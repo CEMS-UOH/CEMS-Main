@@ -261,7 +261,7 @@ function DayCell({ dayKey, inMonth, isToday, isPast, isSelected, events, onSelec
           aria-hidden
           className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-medium tabular-nums sm:self-start ${
             isToday
-              ? 'bg-primary font-bold text-white'
+              ? 'bg-primary font-bold text-on-fill'
               : !inMonth || isPast
                 ? 'text-text-muted/60'
                 : 'text-text'
@@ -289,7 +289,7 @@ function DayCell({ dayKey, inMonth, isToday, isPast, isSelected, events, onSelec
                 className={`pointer-events-auto block truncate rounded-sm px-1.5 py-0.5 text-start text-xs leading-5 transition-colors duration-150 ${FOCUS_RING} ${
                   event.isFull
                     ? 'bg-background text-text-muted hover:bg-border'
-                    : 'bg-primary-light text-primary-dark hover:bg-primary hover:text-white'
+                    : 'bg-primary-light text-primary-dark hover:bg-primary hover:text-on-fill'
                 }`}
               >
                 <span className="font-bold tabular-nums">

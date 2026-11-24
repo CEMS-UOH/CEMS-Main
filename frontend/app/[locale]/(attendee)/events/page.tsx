@@ -228,7 +228,7 @@ function ViewSwitch({ view, onView }: { view: View; onView: (view: View) => void
             aria-pressed={on}
             onClick={() => onView(o.key)}
             className={`flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-150 ${FOCUS_RING} ${
-              on ? 'bg-primary text-white' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
+              on ? 'bg-primary text-on-fill' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
             }`}
           >
             {o.icon}

@@ -13,6 +13,7 @@ import Badge from '@/components/Badge';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
 import { FRAME, FRAME_NARROW, TEXT_LINK } from '@/components/styles';
@@ -128,6 +129,7 @@ export default function DashboardShell({ area, nav, children }: Props) {
               <span className="hidden max-w-48 truncate text-sm text-text-muted lg:inline">
                 {user.fullName}
               </span>
+              <ThemeSwitcher />
               <LocaleSwitcher />
               <NotificationBell />
               <Button variant="secondary" size="sm" onClick={onLogout} loading={loggingOut}>

@@ -19,7 +19,7 @@ export default function QrCode({ value, label, className = '' }: { value: string
       aria-label={label}
       viewBox={`0 0 ${symbol.extent} ${symbol.extent}`}
       shapeRendering="crispEdges"
-      className={`block bg-white ${className}`}
+      className={`theme-light block bg-white ${className}`}
     >
       <rect width={symbol.extent} height={symbol.extent} fill="#ffffff" />
       <path d={symbol.path} fill="#000000" />

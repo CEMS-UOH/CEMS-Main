@@ -166,12 +166,12 @@ function Tabs({
             tabIndex={selected ? 0 : -1}
             onClick={() => onTab(key)}
             className={`flex min-h-10 flex-1 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150 ${FOCUS_RING} ${
-              selected ? 'bg-primary text-white' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
+              selected ? 'bg-primary text-on-fill' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
             }`}
           >
             {t(key)}
             <span
-              className={`rounded-full px-2 text-xs tabular-nums ${selected ? 'bg-white/20 text-white' : 'bg-background text-text-muted'}`}
+              className={`rounded-full px-2 text-xs tabular-nums ${selected ? 'bg-on-fill/20 text-on-fill' : 'bg-background text-text-muted'}`}
             >
               {counts[key]}
             </span>

@@ -1,9 +1,10 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Plus_Jakarta_Sans, Tajawal } from 'next/font/google';
 import { routing } from '@/i18n/routing';
+import { THEME_INIT_SCRIPT } from '@/lib/theme';
 import '../globals.css';
 
 // Arabic UI text uses Tajawal (matches the University of Hail portal), English UI
@@ -35,6 +36,14 @@ export async function generateMetadata({
   return { title: t('title'), description: t('metaDescription') };
 }
 
+// The phone's own browser bar takes the page colour in either theme.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#151e1a' },
+  ],
+};
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
@@ -55,7 +64,12 @@ export default async function LocaleLayout({
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} className={`${tajawal.variable} ${jakarta.variable}`}>
+    // data-theme is set by the script below before the first paint (light/dark, see
+    // lib/theme.ts), so the server's HTML and the browser's differ on purpose.
+    <html lang={locale} dir={dir} className={`${tajawal.variable} ${jakarta.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-screen bg-background text-text">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

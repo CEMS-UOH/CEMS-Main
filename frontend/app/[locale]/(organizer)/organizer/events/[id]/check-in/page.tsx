@@ -216,10 +216,10 @@ function OutcomeCard({ outcome }: { outcome: Outcome }) {
 
   const look =
     outcome.kind === 'in'
-      ? { box: 'border-success/40 bg-success-light', mark: 'bg-success text-white', icon: <CheckIcon className="size-6" /> }
+      ? { box: 'border-success/40 bg-success-light', mark: 'bg-success text-on-fill', icon: <CheckIcon className="size-6" /> }
       : outcome.kind === 'already'
-        ? { box: 'border-accent/50 bg-accent-light', mark: 'bg-accent text-white', icon: <AlertIcon className="size-6" /> }
-        : { box: 'border-danger/40 bg-danger-light', mark: 'bg-danger text-white', icon: <AlertIcon className="size-6" /> };
+        ? { box: 'border-accent/50 bg-accent-light', mark: 'bg-accent text-on-fill', icon: <AlertIcon className="size-6" /> }
+        : { box: 'border-danger/40 bg-danger-light', mark: 'bg-danger text-on-fill', icon: <AlertIcon className="size-6" /> };
 
   return (
     <div className={`flex animate-rise items-center gap-4 rounded-lg border p-5 text-start ${look.box}`}>

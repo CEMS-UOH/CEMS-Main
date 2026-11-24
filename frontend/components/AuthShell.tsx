@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Brand from './Brand';
 import HeaderBar from './HeaderBar';
 import LocaleSwitcher from './LocaleSwitcher';
+import ThemeSwitcher from './ThemeSwitcher';
 import { FRAME_NARROW } from './styles';
 
 export default function AuthShell({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,12 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col">
       {/* White like the other headers: the logo file has a white background of its own. */}
       <header className="border-b border-border bg-surface">
-        <HeaderBar start={<Brand name={t('title')} href="/" />} tools={<LocaleSwitcher />} />
+        <HeaderBar start={<Brand name={t('title')} href="/" />} tools={
+          <>
+            <ThemeSwitcher />
+            <LocaleSwitcher />
+          </>
+        } />
       </header>
       <main className={`${FRAME_NARROW} flex flex-1 flex-col justify-center gap-6 pt-10 pb-16`}>
         {children}

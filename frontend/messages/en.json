@@ -885,5 +885,11 @@
       "empty": "Certificates appear here once you are checked in at an event's door.",
       "open": "View"
     }
+  },
+  "Theme": {
+    "label": "Theme: {current}. Switch to {next}",
+    "system": "same as device",
+    "light": "light",
+    "dark": "dark"
   }
 }

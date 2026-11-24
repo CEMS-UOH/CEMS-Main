@@ -41,7 +41,7 @@ export default function TicketDialog({ booking, onClose }: Props) {
       onClick={(e) => {
         if (e.target === e.currentTarget) e.currentTarget.close();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-lg border border-border bg-surface p-0 text-text shadow-[var(--shadow-card-hover)] backdrop:bg-primary-dark/60 backdrop:backdrop-blur-[2px] open:animate-ticket open:backdrop:animate-fade-in"
+      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-lg border border-border bg-surface p-0 text-text shadow-[var(--shadow-card-hover)] backdrop:bg-scrim/60 backdrop:backdrop-blur-[2px] open:animate-ticket open:backdrop:animate-fade-in"
     >
       {booking?.qrCode ? (
         <div className="flex flex-col gap-5 p-5 text-start">
@@ -77,7 +77,7 @@ export default function TicketDialog({ booking, onClose }: Props) {
           {/* The tear line of a paper ticket: event above, the part scanned at the door below. */}
           <div aria-hidden className="-mx-5 border-t-2 border-dashed border-border" />
 
-          <div className="mx-auto w-full max-w-64 animate-qr-in rounded-lg border border-border bg-white p-2">
+          <div className="mx-auto w-full max-w-64 animate-qr-in rounded-lg border border-border bg-white p-2 theme-light">
             <QrCode value={booking.qrCode} label={t('qrLabel')} className="h-auto w-full" />
           </div>
 

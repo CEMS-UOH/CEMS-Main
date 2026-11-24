@@ -88,7 +88,7 @@ export default function WaitlistPanel({ eventId, onStale }: Props) {
           <div className="flex items-center gap-3 rounded-lg bg-primary-light px-4 py-3">
             <span
               aria-hidden
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-white tabular-nums"
+              className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-on-fill tabular-nums"
             >
               {place.position}
             </span>

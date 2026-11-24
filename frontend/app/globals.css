@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* dark: utilities follow the chosen theme (html[data-theme]), not only the system setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 /*
  * SCEMS design tokens.
  *
@@ -14,6 +17,9 @@
  *
  * Tailwind 4 turns every --color-* token below into utilities automatically:
  * bg-primary, text-primary, border-primary, bg-background, etc.
+ *
+ * Dark mode re-points the same tokens (see "Dark theme" below), so screens never name a
+ * theme: they say bg-surface or text-primary and get the right colour in either one.
  */
 @theme {
   --color-primary: #1f7a52;
@@ -34,6 +40,12 @@
   --color-danger-light: #fbecea;
   --color-success: #1f7a52;
   --color-success-light: #e6f2ec;
+
+  /* Text and icons that sit ON a filled colour (a primary button, the unread badge, a
+     selected tab). White here; near-black in the dark theme, where the fills turn bright. */
+  --color-on-fill: #ffffff;
+  /* The dim layer behind a dialog. Always dark, in both themes. */
+  --color-scrim: #123b2e;
 
   /* Charts. A lighter step of primary for a second, related measure (e.g. "expected" next to
      "booked now"). Checked with the dataviz validator as a one-hue ramp with primary:
@@ -226,6 +238,92 @@ html {
   accent-color: var(--color-primary);
   scrollbar-color: color-mix(in oklab, var(--color-primary-dark) 28%, transparent) transparent;
   -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * Dark theme. <html data-theme="dark"> - set before the first paint by the script in
+ * app/[locale]/layout.tsx from the visitor's choice (components/ThemeSwitcher.tsx), or from
+ * the system setting when they have not chosen.
+ *
+ * Not an inverted light theme: a deep green-black (the brand's own hue, very dark) with
+ * surfaces a step lighter, so cards still lift off the page; the brand green brightens so it
+ * reads as text, and fills carry near-black text (--color-on-fill). Every text pair was
+ * checked: body 14:1, muted 7:1, green text 7.9:1, text on a green button 8.8:1.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-primary: #55c592;
+  --color-primary-dark: #a6e5c3;
+  --color-primary-light: #173a2b;
+  --color-accent: #dcb543;
+  --color-accent-dark: #ecd07a;
+  --color-accent-light: #352c12;
+
+  --color-background: #0e1512;
+  --color-surface: #151e1a;
+
+  --color-text: #e6ece9;
+  --color-text-muted: #9eaba4;
+  --color-border: #28332e;
+
+  --color-danger: #f08a80;
+  --color-danger-light: #3b1c1a;
+  --color-success: #55c592;
+  --color-success-light: #173a2b;
+
+  --color-on-fill: #06140d;
+  --color-scrim: #000000;
+
+  /* One-hue ramp with primary, checked with the dataviz validator against the dark surface. */
+  --color-chart-soft: #17865a;
+
+  /* Shadows can't lighten, so on a dark page they go deeper and the hairline border does
+     more of the work. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.28);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+/*
+ * Paper stays paper: the printable certificate, the ticket's QR and every QR code are light
+ * whatever the theme (a scanner needs dark on light, and a certificate is printed). Put
+ * theme-light on the element and everything inside it uses the light tokens again.
+ */
+.theme-light {
+  color-scheme: light;
+  color: #1a1f1c;
+
+  --color-primary: #1f7a52;
+  --color-primary-dark: #123b2e;
+  --color-primary-light: #e6f2ec;
+  --color-accent: #c9a227;
+  --color-accent-dark: #8a6a1a;
+  --color-accent-light: #f6eed7;
+  --color-background: #f5f6f6;
+  --color-surface: #ffffff;
+  --color-text: #1a1f1c;
+  --color-text-muted: #5b6560;
+  --color-border: #e3e7e5;
+  --color-danger: #b3261e;
+  --color-danger-light: #fbecea;
+  --color-success: #1f7a52;
+  --color-success-light: #e6f2ec;
+  --color-on-fill: #ffffff;
+  --shadow-card: 0 1px 2px rgba(16, 24, 21, 0.04), 0 8px 20px rgba(16, 24, 21, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(16, 24, 21, 0.06), 0 12px 28px rgba(16, 24, 21, 0.09);
+}
+
+/* Switching theme cross-fades the page's colours instead of snapping (only while the switch
+   happens - ThemeSwitcher adds the class for a moment - so nothing else is slowed down). */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition:
+    background-color 200ms var(--ease-out-soft),
+    border-color 200ms var(--ease-out-soft),
+    color 200ms var(--ease-out-soft),
+    fill 200ms var(--ease-out-soft) !important;
 }
 
 a {

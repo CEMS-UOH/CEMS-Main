@@ -97,7 +97,7 @@ function Sheet({ certificate: c }: { certificate: Certificate }) {
   return (
     <article
       aria-label={t('sheetLabel', { name: c.attendeeName })}
-      className="relative mx-auto w-full max-w-5xl animate-fade-in rounded-lg bg-white shadow-[var(--shadow-card-hover)] print:max-w-none print:rounded-none print:shadow-none sm:aspect-[297/210] print:h-screen print:aspect-auto"
+      className="theme-light relative mx-auto w-full max-w-5xl animate-fade-in rounded-lg bg-white shadow-[var(--shadow-card-hover)] print:max-w-none print:rounded-none print:shadow-none sm:aspect-[297/210] print:h-screen print:aspect-auto"
     >
       {/* Two fine frames: green outside, gold inside - the university's colours, drawn thin. */}
       <div aria-hidden className="pointer-events-none absolute inset-3 rounded-md border border-primary/40 sm:inset-5" />

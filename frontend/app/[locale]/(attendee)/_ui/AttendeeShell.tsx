@@ -7,6 +7,7 @@ import AppHeader from '@/components/AppHeader';
 import Button from '@/components/Button';
 import { CalendarIcon, ChartIcon, HeartIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
 import { FRAME } from '@/components/styles';
@@ -74,6 +75,7 @@ function Header() {
       ]}
       tools={
         <>
+          <ThemeSwitcher />
           <LocaleSwitcher />
           {session.status === 'loading' ? (
             <span className="h-9 w-24 animate-pulse rounded-lg bg-background" aria-hidden />
