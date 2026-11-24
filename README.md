@@ -158,8 +158,8 @@ Honest list of what the foundation does **not** do yet. None of these block the 
 **Scope**
 13. The official NFR mentions a **React Native** mobile app; we build a responsive web app
     instead (open decision #1).
-14. No E2E tests yet (Playwright is planned for Sprint 6). Backend: 364 Jest/Supertest tests;
-    attendee screens: 21 node:test tests; analytics service: 7 unittest tests.
+14. No E2E tests yet (Playwright is planned for Sprint 6). Backend: 389 Jest/Supertest tests;
+    attendee screens: 32 node:test tests; frontend lib (xlsx): 7; analytics service: 7 unittest tests.
 
 ## Roles
 1 Leader/Architecture - 2 Backend core + DB - 3 Backend organizer/AI - 4 Frontend attendee - 5 Frontend dashboards - 6 Data analytics - 7 UI/UX + docs - 8 QA + DevOps.
