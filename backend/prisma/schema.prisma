@@ -44,6 +44,10 @@ enum NotificationType {
   // FR-17: tells the organizer the admin's decision on their event request.
   EVENT_APPROVED
   EVENT_REJECTED
+  // Sent the day before and the hour before an event the attendee holds a seat for.
+  EVENT_REMINDER
+  // A seat freed up and went to the first person on the waitlist.
+  WAITLIST_PROMOTED
 }
 
 // 1) Users - attendees (students, faculty, visitors), organizers, admins
@@ -62,11 +66,13 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  organizedEvents Event[]        @relation("EventOrganizer")
+  organizedEvents Event[]         @relation("EventOrganizer")
   registrations   Registration[]
   feedbacks       Feedback[]
   notifications   Notification[]
   chatSessions    ChatSession[]
+  waitlistEntries WaitlistEntry[]
+  favorites       Favorite[]
 
   @@map("users")
 }
@@ -110,14 +116,16 @@ model Event {
   updatedAt   DateTime    @updatedAt
 
   organizerId String
-  organizer   User      @relation("EventOrganizer", fields: [organizerId], references: [id])
+  organizer   User     @relation("EventOrganizer", fields: [organizerId], references: [id])
   venueId     String?
-  venue       Venue?    @relation(fields: [venueId], references: [id])
+  venue       Venue?   @relation(fields: [venueId], references: [id])
   categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
 
   registrations Registration[]
   feedbacks     Feedback[]
+  waitlist      WaitlistEntry[]
+  favoritedBy   Favorite[]
 
   @@index([startsAt])
   @@index([status])
@@ -126,11 +134,14 @@ model Event {
 
 // 5) Registration - a seat booking, with its QR code and check-in time
 model Registration {
-  id          String             @id @default(uuid())
-  status      RegistrationStatus @default(CONFIRMED)
-  qrCode      String             @unique
-  checkedInAt DateTime?
-  createdAt   DateTime           @default(now())
+  id                 String             @id @default(uuid())
+  status             RegistrationStatus @default(CONFIRMED)
+  qrCode             String             @unique
+  checkedInAt        DateTime?
+  createdAt          DateTime           @default(now())
+  // When the "tomorrow" and "in an hour" reminders went out, so each is sent once.
+  dayReminderSentAt  DateTime?
+  hourReminderSentAt DateTime?
 
   eventId String
   event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -186,4 +197,35 @@ model ChatSession {
 
   @@index([userId])
   @@map("chat_sessions")
+}
+
+// 9) WaitlistEntry - an attendee waiting for a seat at a full event. The earliest entry gets
+//    the next freed seat automatically (see attendee/waitlist.service.js).
+model WaitlistEntry {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId, createdAt])
+  @@map("waitlist_entries")
+}
+
+// 10) Favorite - an event an attendee saved to come back to.
+model Favorite {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+  @@map("favorites")
 }

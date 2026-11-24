@@ -11,6 +11,10 @@
 const prisma = require('../../lib/prisma');
 const { HttpError } = require('../../lib/response');
 const { EVENT_SELECT, toPublicEvent } = require('./shapes');
+// Raising the capacity of an approved event hands the new seats to its waitlist.
+const { promoteFromWaitlist } = require('../attendee/waitlist.service');
+
+const WAITLIST_TX_OPTIONS = { timeout: 30000, maxWait: 10000 };
 
 const EDITABLE_FIELDS = [
   'title',
@@ -171,6 +175,17 @@ async function editEvent(organizerId, eventId, changes) {
     if (has(changes, key)) data[key] = changes[key];
   }
   if (has(changes, 'venueId')) data.venueId = changes.venueId || null;
+
+  // More seats on an approved event: give them to the people waiting, in the same
+  // transaction (and under the same event lock as booking), so nobody else takes them first.
+  if (current.status === 'APPROVED' && nextCapacity > current.capacity) {
+    return prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "events" WHERE id = ${eventId} FOR UPDATE`;
+      await tx.event.update({ where: { id: eventId }, data });
+      await promoteFromWaitlist(tx, eventId);
+      return toPublicEvent(await tx.event.findUnique({ where: { id: eventId }, select: EVENT_SELECT }));
+    }, WAITLIST_TX_OPTIONS);
+  }
 
   const updated = await prisma.event.update({ where: { id: eventId }, data, select: EVENT_SELECT });
   return toPublicEvent(updated);

@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const prisma = require('../../lib/prisma');
 const { HttpError } = require('../../lib/response');
 const { BOOKING_SELECT, toPublicBooking } = require('./shapes');
+const { promoteFromWaitlist } = require('./waitlist.service');
 
 // The QR code holds only this random token. It is unguessable (192 bits), so a code cannot be
 // forged for someone else's seat, and it carries no personal data if a ticket is photographed.
@@ -80,6 +81,9 @@ async function book({ userId, eventId }) {
             data: { eventId, userId, qrCode },
             select: BOOKING_SELECT,
           });
+
+      // Holding a seat now: no reason to stay on this event's waitlist.
+      await tx.waitlistEntry.deleteMany({ where: { eventId, userId } });
 
       // FR-06. The UI shows this by `type` in the reader's language; title/body are the
       // stored fallback text.
@@ -164,6 +168,7 @@ async function cancel({ userId, bookingId }) {
       userId: true,
       status: true,
       checkedInAt: true,
+      eventId: true,
       event: { select: { startsAt: true } },
     },
   });
@@ -183,19 +188,28 @@ async function cancel({ userId, bookingId }) {
     throw new HttpError(409, 'You have already been checked in at the door', 'ALREADY_CHECKED_IN');
   }
 
-  // Conditional, so a scan landing between the check above and this write still wins.
-  const { count } = await prisma.registration.updateMany({
-    where: { id: bookingId, status: 'CONFIRMED', checkedInAt: null },
-    data: { status: 'CANCELLED' },
-  });
-  if (count === 0) {
-    throw new HttpError(409, 'You have already been checked in at the door', 'ALREADY_CHECKED_IN');
-  }
-  const updated = await prisma.registration.findUnique({
-    where: { id: bookingId },
-    select: BOOKING_SELECT,
-  });
-  return toPublicBooking(updated);
+  return prisma.$transaction(async (tx) => {
+    // The same event lock as booking, so the freed seat is counted and handed on safely.
+    await tx.$queryRaw`SELECT id FROM "events" WHERE id = ${booking.eventId} FOR UPDATE`;
+
+    // Conditional, so a scan landing between the check above and this write still wins.
+    const { count } = await tx.registration.updateMany({
+      where: { id: bookingId, status: 'CONFIRMED', checkedInAt: null },
+      data: { status: 'CANCELLED' },
+    });
+    if (count === 0) {
+      throw new HttpError(409, 'You have already been checked in at the door', 'ALREADY_CHECKED_IN');
+    }
+
+    // The seat goes straight to the first person on the waitlist, if anyone is waiting.
+    await promoteFromWaitlist(tx, booking.eventId);
+
+    const updated = await tx.registration.findUnique({
+      where: { id: bookingId },
+      select: BOOKING_SELECT,
+    });
+    return toPublicBooking(updated);
+  }, BOOKING_TX_OPTIONS);
 }
 
 module.exports = { book, listBookings, cancel };

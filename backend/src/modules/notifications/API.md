@@ -8,6 +8,8 @@ Covers reading the notifications that other features create:
 | `CAPACITY_FULL` | the booking that fills the last seat | the event's Organizer | FR-15 |
 | `EVENT_APPROVED` / `EVENT_REJECTED` | an Admin deciding on a PENDING event | the event's Organizer | FR-17 |
 | `BROADCAST` | an Admin's announcement | every active user | FR-21 |
+| `EVENT_REMINDER` | the reminder job, a day and an hour before | the Attendee (`body` = start time, ISO) | - |
+| `WAITLIST_PROMOTED` | a freed seat given to the first person waiting | the Attendee | - |
 | `SYSTEM` | reserved, nothing creates it yet | - | - |
 
 Every response uses the standard envelope (`backend/src/lib/response.js`). Requires a session

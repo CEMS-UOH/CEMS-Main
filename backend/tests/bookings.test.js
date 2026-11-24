@@ -14,6 +14,7 @@ jest.mock('../src/lib/prisma', () => ({
   },
   notification: { create: jest.fn(), findFirst: jest.fn() },
   feedback: { findMany: jest.fn() },
+  waitlistEntry: { deleteMany: jest.fn(), findMany: jest.fn(), delete: jest.fn(), count: jest.fn() },
   $queryRaw: jest.fn(),
   $transaction: jest.fn(),
 }));
@@ -80,6 +81,8 @@ beforeEach(() => {
   jest.resetAllMocks();
   prisma.$transaction.mockImplementation((fn) => fn(prisma));
   prisma.feedback.findMany.mockResolvedValue([]);
+  prisma.waitlistEntry.deleteMany.mockResolvedValue({ count: 0 });
+  prisma.waitlistEntry.findMany.mockResolvedValue([]);
 });
 
 // ---------------------------------------------------------------- auth guard

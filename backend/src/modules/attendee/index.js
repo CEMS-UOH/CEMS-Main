@@ -9,5 +9,7 @@ router.use('/auth', require('./auth.routes'));
 router.use('/events', require('./events.routes'));
 router.use('/bookings', require('./bookings.routes'));
 router.use('/recommendations', require('./recommendations.routes'));
+router.use('/waitlist', require('./waitlist.routes'));
+router.use('/favorites', require('./favorites.routes'));
 
 module.exports = router;
