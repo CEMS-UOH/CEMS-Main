@@ -63,6 +63,10 @@
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-ticket: ticket-print 0.62s var(--ease-out-expo) backwards;
   --animate-qr-in: qr-in 0.5s var(--ease-out-expo) 0.28s backwards;
+  /* A chart bar grows from its baseline: up for columns, along the line for bars (works in
+     both reading directions, since it is the size that grows, not a transform). */
+  --animate-grow-up: grow-up 0.6s var(--ease-out-expo) 0.1s backwards;
+  --animate-grow-side: grow-side 0.6s var(--ease-out-expo) 0.1s backwards;
 
   @keyframes fade-in {
     from {
@@ -121,6 +125,18 @@
       opacity: 0;
       filter: blur(6px);
       transform: scale(0.94);
+    }
+  }
+
+  @keyframes grow-up {
+    from {
+      height: 0;
+    }
+  }
+
+  @keyframes grow-side {
+    from {
+      width: 0;
     }
   }
 
@@ -278,7 +294,9 @@ html[dir='ltr'] {
 /* People who ask for less motion get none of the decorative kind. The loading spinner keeps
    turning: it is information, not decoration. */
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise {
+  .animate-rise,
+  .animate-grow-up,
+  .animate-grow-side {
     animation: none;
   }
   /* Keep the meaning, drop the movement: what appears still fades in, nothing travels or

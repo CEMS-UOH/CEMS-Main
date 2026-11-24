@@ -1,7 +1,7 @@
 // Typed calls for the attendee screens (FR-03..FR-09 + feedback). OWNER: Role 4.
 // The JSON contract is backend/src/modules/attendee/API.md (Role 2). Every call goes through the
 // shared apiFetch (CLAUDE.md rule 9), which sends the session cookie and unwraps ok()/fail().
-import { apiFetch } from '@/lib/api';
+import { apiFetch, type ApiResult } from '@/lib/api';
 
 export type Venue = { id: string; name: string; building: string | null; location: string | null };
 export type Category = { id: string; name: string };
@@ -77,6 +77,31 @@ export const listEvents = (filters: EventFilters = {}) =>
   apiFetch<{ events: AttendeeEvent[]; pagination: Pagination }>(
     `/api/attendee/events${eventsQuery(filters)}`
   );
+
+/**
+ * Every upcoming event that matches (no paging), for the calendar view: it needs the whole
+ * month, not one page of 50. Asks for page 1, then any further pages at once; stops at
+ * MAX_PAGES so a huge feed cannot turn one view into dozens of requests.
+ */
+const MAX_PAGES = 10;
+export async function listAllEvents(
+  filters: Omit<EventFilters, 'page' | 'limit' | 'date'> = {}
+): Promise<ApiResult<{ events: AttendeeEvent[]; total: number; truncated: boolean }>> {
+  const first = await listEvents({ ...filters, limit: 50 });
+  if (!first.ok) return first;
+  const pages = Math.min(first.data.pagination.totalPages, MAX_PAGES);
+  const rest = await Promise.all(
+    Array.from({ length: Math.max(pages - 1, 0) }, (_, i) => listEvents({ ...filters, page: i + 2, limit: 50 }))
+  );
+  const failed = rest.find((r) => !r.ok);
+  if (failed) return failed;
+  const events = [first, ...rest].flatMap((r) => (r.ok ? r.data.events : []));
+  return {
+    ok: true,
+    status: 200,
+    data: { events, total: first.data.pagination.total, truncated: first.data.pagination.totalPages > MAX_PAGES },
+  };
+}
 
 // --- Recommended for you (Attendee) - backend/src/modules/attendee/recommendations.service.js ---
 /** Why an event was suggested: the attendee's favourite category, an organizer they liked, or popular. */

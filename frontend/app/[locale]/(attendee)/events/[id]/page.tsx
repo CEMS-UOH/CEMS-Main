@@ -19,6 +19,7 @@ import { useAttendeeError } from '../../_lib/useAttendeeError';
 import { useQuery } from '../../_lib/useQuery';
 import { CategoryBadge, SeatsBadge } from '../../_ui/Badges';
 import CancelBooking from '../../_ui/CancelBooking';
+import EventActions from '../../_ui/EventActions';
 import EventImage from '../../_ui/EventImage';
 import FeedbackForm, { GivenRating } from '../../_ui/FeedbackForm';
 import SaveButton from '../../_ui/SaveButton';
@@ -181,9 +182,11 @@ export default function EventDetailsPage() {
                   <FormMessage kind="error">{booking.error}</FormMessage>
                 </div>
               ) : null}
-              {/* Shown to a signed-in Attendee only (SaveButton renders nothing otherwise). */}
-              <div className="mt-3 empty:hidden">
+              <div className="mt-3 flex flex-col gap-2">
+                {/* Shown to a signed-in Attendee only (SaveButton renders nothing otherwise). */}
                 <SaveButton eventId={event.id} eventTitle={event.title} variant="inline" />
+                {/* Calendar and share are for anyone, signed in or not. */}
+                <EventActions event={event} ended={new Date(event.endsAt).getTime() <= Date.now()} />
               </div>
             </div>
           </Card>

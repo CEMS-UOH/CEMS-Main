@@ -1,6 +1,6 @@
 // Every organizer call, through the shared apiFetch (never a bare fetch - CLAUDE.md rule 9).
 // Contract: backend/src/modules/organizer/API.md.
-import { apiFetch } from '@/lib/api';
+import { apiFetch, type ApiResult } from '@/lib/api';
 import { toQuery } from '../../_dashboard/lib/query';
 import type {
   Attendee,
@@ -56,6 +56,26 @@ export const listAttendees = (
   apiFetch<{ attendees: Attendee[]; pagination: Pagination; summary: CheckInSummary }>(
     `${BASE}/events/${encodeURIComponent(id)}/attendees${toQuery(params)}`
   );
+
+/**
+ * Every attendee of one event (all pages), for the Excel export. Page 1 first, then the rest
+ * at once; MAX_EXPORT_PAGES (50 a page) is far above any campus hall.
+ */
+const MAX_EXPORT_PAGES = 40;
+export async function listAllAttendees(
+  id: string,
+  status: BookingStatus | ''
+): Promise<ApiResult<{ attendees: Attendee[] }>> {
+  const first = await listAttendees(id, { status, page: 1, limit: 50 });
+  if (!first.ok) return first;
+  const pages = Math.min(first.data.pagination.totalPages, MAX_EXPORT_PAGES);
+  const rest = await Promise.all(
+    Array.from({ length: Math.max(pages - 1, 0) }, (_, i) => listAttendees(id, { status, page: i + 2, limit: 50 }))
+  );
+  const failed = rest.find((r) => !r.ok);
+  if (failed) return failed;
+  return { ok: true, status: 200, data: { attendees: [first, ...rest].flatMap((r) => (r.ok ? r.data.attendees : [])) } };
+}
 
 /** How many hold a seat, and how many of them have arrived. */
 export type CheckInSummary = { confirmed: number; checkedIn: number };

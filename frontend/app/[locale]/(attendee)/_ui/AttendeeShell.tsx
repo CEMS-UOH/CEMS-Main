@@ -5,7 +5,7 @@
 import { useTranslations } from 'next-intl';
 import AppHeader from '@/components/AppHeader';
 import Button from '@/components/Button';
-import { CalendarIcon, HeartIcon, TicketIcon, UserIcon } from '@/components/Icons';
+import { CalendarIcon, ChartIcon, HeartIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
@@ -54,7 +54,7 @@ function Header() {
           icon: <TicketIcon />,
           active: pathname.startsWith('/bookings'),
         },
-        // Only an Attendee saves events, so only they see the tab.
+        // Only an Attendee saves events and has an activity record, so only they see these tabs.
         ...(user?.role === 'ATTENDEE'
           ? [
               {
@@ -62,6 +62,12 @@ function Header() {
                 label: t('saved'),
                 icon: <HeartIcon className="size-4" />,
                 active: pathname.startsWith('/saved'),
+              },
+              {
+                href: '/activity',
+                label: t('activity'),
+                icon: <ChartIcon />,
+                active: pathname.startsWith('/activity'),
               },
             ]
           : []),

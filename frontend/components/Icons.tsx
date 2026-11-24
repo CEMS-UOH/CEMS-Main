@@ -307,3 +307,55 @@ export function SpinnerIcon({ className = 'size-4' }: Props) {
     </svg>
   );
 }
+
+/** Share: three linked dots. */
+export function ShareIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1" />
+    </svg>
+  );
+}
+
+/** A calendar with a plus: "add to my calendar". */
+export function CalendarPlusIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4M12 12.5v5M9.5 15h5" />
+    </svg>
+  );
+}
+
+/** Download: an arrow into a tray. */
+export function DownloadIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" />
+      <path d="M4.5 15.5v3a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-3" />
+    </svg>
+  );
+}
+
+/** A link (two chain loops): "copy link". */
+export function LinkIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+      <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+    </svg>
+  );
+}
+
+/** An envelope. */
+export function MailIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3" y="5.5" width="18" height="13" rx="2" />
+      <path d="m3.5 7 8.5 6 8.5-6" />
+    </svg>
+  );
+}

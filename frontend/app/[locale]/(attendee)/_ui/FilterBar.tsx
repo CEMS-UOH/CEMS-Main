@@ -18,9 +18,11 @@ type Props = {
   onFilter: (change: Partial<Pick<FeedFilters, 'category' | 'venue' | 'date'>>) => void;
   onClear: () => void;
   canClear: boolean;
+  /** The calendar view picks its day on the grid, so it hides the date field. */
+  showDate?: boolean;
 };
 
-export default function FilterBar({ filters, options, search, onSearch, onFilter, onClear, canClear }: Props) {
+export default function FilterBar({ filters, options, search, onSearch, onFilter, onClear, canClear, showDate = true }: Props) {
   const t = useTranslations('Events.filters');
 
   return (
@@ -41,7 +43,7 @@ export default function FilterBar({ filters, options, search, onSearch, onFilter
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className={`grid gap-4 ${showDate ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
         <SelectField
           id="filter-category"
           label={t('category')}
@@ -65,13 +67,15 @@ export default function FilterBar({ filters, options, search, onSearch, onFilter
             })),
           ]}
         />
-        <TextField
-          id="filter-date"
-          type="date"
-          label={t('date')}
-          value={filters.date}
-          onChange={(date) => onFilter({ date })}
-        />
+        {showDate ? (
+          <TextField
+            id="filter-date"
+            type="date"
+            label={t('date')}
+            value={filters.date}
+            onChange={(date) => onFilter({ date })}
+          />
+        ) : null}
       </div>
 
       {canClear ? (
