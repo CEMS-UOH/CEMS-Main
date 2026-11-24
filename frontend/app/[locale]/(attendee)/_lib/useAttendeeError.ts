@@ -23,6 +23,9 @@ const ATTENDEE_CODES = [
   'INVALID_COMMENT',
   'FEEDBACK_NOT_OPEN',
   'ALREADY_REVIEWED',
+  'EVENT_NOT_FULL',
+  'ALREADY_WAITLISTED',
+  'NOT_ON_WAITLIST',
 ] as const;
 
 const isAttendeeCode = (code: string) => (ATTENDEE_CODES as readonly string[]).includes(code);

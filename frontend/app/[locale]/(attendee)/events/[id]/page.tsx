@@ -21,7 +21,9 @@ import { CategoryBadge, SeatsBadge } from '../../_ui/Badges';
 import CancelBooking from '../../_ui/CancelBooking';
 import EventImage from '../../_ui/EventImage';
 import FeedbackForm, { GivenRating } from '../../_ui/FeedbackForm';
-import { BackIcon, CalendarIcon, CheckIcon, PaperclipIcon, PinIcon, SeatIcon, TicketIcon, UserIcon } from '@/components/Icons';
+import SaveButton from '../../_ui/SaveButton';
+import WaitlistPanel from '../../_ui/WaitlistPanel';
+import { AwardIcon, BackIcon, CalendarIcon, CheckIcon, PaperclipIcon, PinIcon, SeatIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import { EmptyState, ErrorState, LoadingBlock } from '../../_ui/States';
 import TicketDialog from '../../_ui/TicketDialog';
 
@@ -179,6 +181,10 @@ export default function EventDetailsPage() {
                   <FormMessage kind="error">{booking.error}</FormMessage>
                 </div>
               ) : null}
+              {/* Shown to a signed-in Attendee only (SaveButton renders nothing otherwise). */}
+              <div className="mt-3 empty:hidden">
+                <SaveButton eventId={event.id} eventTitle={event.title} variant="inline" />
+              </div>
             </div>
           </Card>
         </aside>
@@ -320,6 +326,7 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
           <Button type="button" icon={<TicketIcon />} onClick={onShowTicket} className="w-full">
             {t('showTicket')}
           </Button>
+          {booking?.checkedInAt ? <CertificateLink bookingId={booking.id} /> : null}
           {booking?.canCancel ? (
             <CancelBooking
               bookingId={booking.id}
@@ -337,14 +344,8 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
       return <p className={NOTE}>{t('started')}</p>;
 
     case 'full':
-      return (
-        <div className="flex flex-col gap-2">
-          <Button type="button" disabled className="w-full">
-            {t('full')}
-          </Button>
-          <p className={NOTE}>{t('fullHint')}</p>
-        </div>
-      );
+      // A full event offers its waitlist instead of a dead button.
+      return <WaitlistPanel eventId={id} onStale={onStale} />;
 
     case 'guest':
       return (
@@ -369,6 +370,7 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
       return (
         <div className="flex flex-col gap-4 text-start">
           <p className={NOTE}>{t('ended')}</p>
+          {booking?.checkedInAt ? <CertificateLink bookingId={booking.id} /> : null}
           {booking ? (
             <div className="flex flex-col gap-3">
               <h2 className="type-h3 text-text">{t('rateTitle')}</h2>
@@ -382,4 +384,14 @@ function BookingPanel({ action, booking, busy, onBook, onShowTicket, onCancelled
         </div>
       );
   }
+}
+
+/** The attendance certificate, for a seat that was checked in at the door. */
+function CertificateLink({ bookingId }: { bookingId: string }) {
+  const t = useTranslations('Certificate');
+  return (
+    <Button href={`/certificates/${bookingId}`} variant="secondary" icon={<AwardIcon />} className="w-full">
+      {t('open')}
+    </Button>
+  );
 }

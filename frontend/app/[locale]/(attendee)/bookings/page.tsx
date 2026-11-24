@@ -10,7 +10,7 @@ import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import PageHeader from '@/components/PageHeader';
 import { Link, useRouter } from '@/i18n/navigation';
-import { listBookings, type Booking } from '../_lib/attendee-api';
+import { leaveWaitlist, listBookings, listMyWaitlist, type Booking } from '../_lib/attendee-api';
 import { useEventDates } from '../_lib/format';
 import { canGiveFeedback, groupBookings, type BookingTab } from '../_lib/rules';
 import { useSession } from '../_lib/session';
@@ -19,7 +19,7 @@ import { useQuery } from '../_lib/useQuery';
 import { BookingBadge } from '../_ui/Badges';
 import CancelBooking from '../_ui/CancelBooking';
 import FeedbackForm, { GivenRating } from '../_ui/FeedbackForm';
-import { CalendarIcon, PinIcon, TicketIcon } from '@/components/Icons';
+import { AwardIcon, CalendarIcon, PinIcon, QueueIcon, TicketIcon } from '@/components/Icons';
 import { EmptyState, ErrorState, LoadingBlock } from '../_ui/States';
 import TicketDialog from '../_ui/TicketDialog';
 
@@ -84,6 +84,8 @@ export default function MyBookingsPage() {
         <LoadingBlock />
       ) : (
         <>
+          <WaitingList />
+
           <Tabs tab={tab} onTab={setTab} counts={{ upcoming: groups.upcoming.length, past: groups.past.length, cancelled: groups.cancelled.length }} />
 
           <div role="tabpanel" id={`bookings-panel-${tab}`} aria-labelledby={`bookings-tab-${tab}`}>
@@ -190,6 +192,7 @@ type RowProps = {
 
 function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthenticated }: RowProps) {
   const t = useTranslations('MyBookings');
+  const tCertificate = useTranslations('Certificate');
   const tCommon = useTranslations('AttendeeCommon');
   const dates = useEventDates();
   const [rating, setRating] = useState(false);
@@ -262,6 +265,11 @@ function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthentic
               onUnauthenticated={onUnauthenticated}
             />
           ) : null}
+          {booking.checkedInAt && booking.status === 'CONFIRMED' ? (
+            <Button href={`/certificates/${booking.id}`} variant="secondary" size="sm" icon={<AwardIcon />}>
+              {tCertificate('open')}
+            </Button>
+          ) : null}
           {feedbackOpen && booking.myRating ? (
             <GivenRating rating={booking.myRating} />
           ) : feedbackOpen && !rating ? (
@@ -278,5 +286,70 @@ function BookingRow({ booking, onShowTicket, onCancelled, onStale, onUnauthentic
         </div>
       ) : null}
     </Card>
+  );
+}
+
+/**
+ * Events the attendee is waiting for a seat at. Hidden when there are none. A freed seat is
+ * booked for them automatically, so this only shows their place and lets them step out.
+ */
+function WaitingList() {
+  const t = useTranslations('Waitlist');
+  const { user } = useSession();
+  const dates = useEventDates();
+  const query = useQuery(user ? `waitlist:${user.id}` : null, listMyWaitlist);
+  const [leaving, setLeaving] = useState<string | null>(null);
+
+  const places = (query.data?.waitlist ?? []).filter((p) => new Date(p.event.startsAt) > new Date());
+  if (places.length === 0) return null;
+
+  async function onLeave(eventId: string) {
+    setLeaving(eventId);
+    await leaveWaitlist(eventId);
+    setLeaving(null);
+    query.reload();
+  }
+
+  return (
+    <section aria-labelledby="waiting-title" className="flex flex-col gap-3">
+      <h2 id="waiting-title" className="type-h3 flex items-center gap-2 text-start text-text">
+        <QueueIcon className="size-5 text-primary" />
+        {t('sectionTitle')}
+      </h2>
+      <ul className="flex flex-col gap-3">
+        {places.map((place) => (
+          <li key={place.eventId}>
+            <Card className="flex flex-wrap items-center gap-4">
+              <span
+                aria-hidden
+                className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-light text-lg font-bold text-primary-dark tabular-nums"
+              >
+                {place.position}
+              </span>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-start">
+                <Link
+                  href={`/events/${place.eventId}`}
+                  className={`w-fit rounded-sm font-bold text-text underline-offset-4 hover:text-primary hover:underline ${FOCUS_RING}`}
+                >
+                  {place.event.title}
+                </Link>
+                <p className="text-sm text-text-muted">
+                  {t('yourPlace', { position: place.position })} · {dates.range(place.event.startsAt, place.event.endsAt)}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                loading={leaving === place.eventId}
+                onClick={() => onLeave(place.eventId)}
+              >
+                {t('leave')}
+              </Button>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

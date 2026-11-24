@@ -512,7 +512,11 @@
     "CHATBOT_UNAVAILABLE": "The assistant is not available right now. Please try again later.",
     "ANALYTICS_UNAVAILABLE": "Predictions are not available right now.",
     "ALREADY_CHECKED_IN": "You have already been checked in at the door, so this booking can no longer be cancelled",
-    "TOO_MANY_ATTEMPTS": "Too many wrong passwords for this account. Wait 15 minutes, then try again."
+    "TOO_MANY_ATTEMPTS": "Too many wrong passwords for this account. Wait 15 minutes, then try again.",
+    "EVENT_NOT_FULL": "Seats are still available - you can book one now.",
+    "ALREADY_WAITLISTED": "You are already on the waitlist for this event.",
+    "NOT_ON_WAITLIST": "You are not on this waitlist.",
+    "CERTIFICATE_NOT_FOUND": "This certificate does not exist or is no longer valid."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
@@ -520,7 +524,8 @@
     "skipToContent": "Skip to content",
     "events": "Events",
     "bookings": "My bookings",
-    "login": "Log in"
+    "login": "Log in",
+    "saved": "Saved"
   },
   "AttendeeCommon": {
     "loading": "Loading…",
@@ -704,13 +709,23 @@
       },
       "SYSTEM": {
         "label": "System message"
+      },
+      "EVENT_REMINDER": {
+        "title": "Event reminder",
+        "body": "<event>{title}</event> starts {when} ({time}). Your ticket is in My bookings."
+      },
+      "WAITLIST_PROMOTED": {
+        "title": "You got a seat",
+        "body": "A seat freed up at <event>{title}</event> and it is now yours. Your ticket is in My bookings."
       }
     },
     "open": {
       "BOOKING_CONFIRMATION": "Open my bookings",
       "CAPACITY_FULL": "Open my events",
       "EVENT_APPROVED": "Open my events",
-      "EVENT_REJECTED": "Open my events"
+      "EVENT_REJECTED": "Open my events",
+      "EVENT_REMINDER": "Open my ticket",
+      "WAITLIST_PROMOTED": "Open my ticket"
     }
   },
   "Assistant": {
@@ -742,5 +757,54 @@
       "ORGANIZER": "From an organizer you liked",
       "POPULAR": "Popular right now"
     }
+  },
+  "Saved": {
+    "title": "Saved events",
+    "subtitle": "Events you saved with the heart, to come back to.",
+    "save": "Save event",
+    "saved": "Saved",
+    "saveLabel": "Save “{title}”",
+    "unsaveLabel": "Remove “{title}” from saved",
+    "attendeesOnly": "Saving events is for Attendee accounts.",
+    "emptyTitle": "Nothing saved yet",
+    "emptyBody": "Tap the heart on any event to keep it here.",
+    "browse": "Browse events",
+    "past": "Already happened"
+  },
+  "Waitlist": {
+    "fullTitle": "This event is full.",
+    "guestHint": "Log in to join the waitlist: if a seat frees up, it is booked for you automatically.",
+    "loginToJoin": "Log in to join the waitlist",
+    "checking": "Checking your place…",
+    "yourPlace": "You are number {position, number} in line",
+    "howItWorks": "If a seat frees up, it is booked for you automatically and you get a notification with your ticket.",
+    "leave": "Leave the waitlist",
+    "joinHint": "Join the waitlist: the first freed seat goes to the first person in line, automatically.",
+    "join": "Join the waitlist",
+    "joining": "Joining…",
+    "seeAll": "My bookings and waitlists",
+    "sectionTitle": "Waiting for a seat"
+  },
+  "Certificate": {
+    "open": "Attendance certificate",
+    "back": "My bookings",
+    "loading": "Loading the certificate…",
+    "notFoundTitle": "Certificate not found",
+    "notFoundBody": "This certificate does not exist or is no longer valid.",
+    "retry": "Try again",
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "print": "Print or save as PDF",
+    "sheetLabel": "Certificate of attendance for {name}",
+    "verified": "Verified certificate",
+    "title": "Certificate of Attendance",
+    "certifies": "{issuer} certifies that",
+    "attended": "attended",
+    "whenWhere": "{date} · {venue}",
+    "issuedBy": "Issued by",
+    "number": "Certificate no.",
+    "attendedAt": "Checked in {time}",
+    "qrLabel": "QR code to verify this certificate",
+    "scanToVerify": "Scan to verify"
   }
 }

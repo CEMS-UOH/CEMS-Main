@@ -120,6 +120,36 @@ export function StarIcon({ className = 'size-6', filled }: Props & { filled: boo
   );
 }
 
+/** Saved events: an outline heart, filled once saved. */
+export function HeartIcon({ className = 'size-5', filled = false }: Props & { filled?: boolean }) {
+  return (
+    <svg {...base} fill={filled ? 'currentColor' : 'none'} className={className}>
+      <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />
+    </svg>
+  );
+}
+
+/** Attendance certificate: a rosette with ribbons. */
+export function AwardIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="9" r="5.5" />
+      <path d="m8.6 13.3-1.6 7 5-2.5 5 2.5-1.6-7" />
+    </svg>
+  );
+}
+
+/** Waitlist: a small queue of people. */
+export function QueueIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="7" cy="8" r="2.5" />
+      <circle cx="16.5" cy="8" r="2" />
+      <path d="M2.5 19c.5-3 2.3-4.5 4.5-4.5S11 16 11.5 19M13.5 18.5c.4-2.4 1.6-3.6 3-3.6 1.5 0 2.7 1.2 3 3.6" />
+    </svg>
+  );
+}
+
 export function PlusIcon({ className = 'size-4' }: Props) {
   return (
     <svg {...base} className={className}>

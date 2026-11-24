@@ -5,23 +5,26 @@
 import { useTranslations } from 'next-intl';
 import AppHeader from '@/components/AppHeader';
 import Button from '@/components/Button';
-import { CalendarIcon, TicketIcon, UserIcon } from '@/components/Icons';
+import { CalendarIcon, HeartIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
 import { FRAME } from '@/components/styles';
 import { usePathname } from '@/i18n/navigation';
+import { SavedProvider } from '../_lib/saved';
 import { SessionProvider, useSession } from '../_lib/session';
 
 export default function AttendeeShell({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main id="attendee-main" className={`${FRAME} flex-1 pt-8 pb-16 sm:pt-10`}>
-          {children}
-        </main>
-      </div>
+      <SavedProvider>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main id="attendee-main" className={`${FRAME} flex-1 pt-8 pb-16 sm:pt-10`}>
+            {children}
+          </main>
+        </div>
+      </SavedProvider>
     </SessionProvider>
   );
 }
@@ -51,6 +54,17 @@ function Header() {
           icon: <TicketIcon />,
           active: pathname.startsWith('/bookings'),
         },
+        // Only an Attendee saves events, so only they see the tab.
+        ...(user?.role === 'ATTENDEE'
+          ? [
+              {
+                href: '/saved',
+                label: t('saved'),
+                icon: <HeartIcon className="size-4" />,
+                active: pathname.startsWith('/saved'),
+              },
+            ]
+          : []),
       ]}
       tools={
         <>

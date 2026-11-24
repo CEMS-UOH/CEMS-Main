@@ -122,3 +122,39 @@ export const submitFeedback = (eventId: string, input: { rating: number; comment
     `/api/attendee/events/${encodeURIComponent(eventId)}/feedback`,
     { method: 'POST', body: JSON.stringify(input) }
   );
+
+// --- Waitlist for full events - backend/src/modules/attendee/API.md ---
+export type WaitlistPlace = { eventId: string; joinedAt: string; position: number };
+export const joinWaitlist = (eventId: string) =>
+  apiFetch<{ waitlist: WaitlistPlace }>(`/api/attendee/events/${encodeURIComponent(eventId)}/waitlist`, {
+    method: 'POST',
+  });
+export const leaveWaitlist = (eventId: string) =>
+  apiFetch<{ left: boolean }>(`/api/attendee/events/${encodeURIComponent(eventId)}/waitlist`, {
+    method: 'DELETE',
+  });
+export const listMyWaitlist = () =>
+  apiFetch<{ waitlist: (WaitlistPlace & { event: AttendeeEvent })[] }>('/api/attendee/waitlist');
+
+// --- Saved events ---
+export const listSaved = () =>
+  apiFetch<{ events: (AttendeeEvent & { savedAt: string })[] }>('/api/attendee/favorites');
+export const saveEvent = (eventId: string) =>
+  apiFetch<{ saved: boolean }>(`/api/attendee/favorites/${encodeURIComponent(eventId)}`, { method: 'PUT' });
+export const unsaveEvent = (eventId: string) =>
+  apiFetch<{ saved: boolean }>(`/api/attendee/favorites/${encodeURIComponent(eventId)}`, { method: 'DELETE' });
+
+// --- Attendance certificate (public) - backend/src/modules/certificates/API.md ---
+export type Certificate = {
+  id: string;
+  attendeeName: string;
+  eventTitle: string;
+  category: string;
+  venue: string | null;
+  startsAt: string;
+  endsAt: string;
+  issuedBy: string;
+  attendedAt: string;
+};
+export const getCertificate = (id: string) =>
+  apiFetch<{ certificate: Certificate }>(`/api/certificates/${encodeURIComponent(id)}`);
