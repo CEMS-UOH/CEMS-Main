@@ -56,7 +56,7 @@ export default function NotificationBell() {
           // A new key on every change replays the pop, so a new notification gets noticed.
           key={unread}
           aria-hidden
-          className="absolute -top-0.5 -end-0.5 grid animate-pop min-w-5 place-items-center rounded-full bg-danger px-1 text-[0.6875rem] leading-5 font-bold text-white tabular-nums ring-2 ring-surface"
+          className="absolute -top-0.5 -end-0.5 grid animate-pop min-w-5 place-items-center rounded-full bg-danger px-1 text-[0.6875rem] leading-5 font-bold text-on-fill tabular-nums ring-2 ring-surface"
         >
           {unread > 99 ? format.number(99) + '+' : format.number(unread)}
         </span>

@@ -131,7 +131,7 @@ export default function ChatAssistant({ userId }: { userId: string }) {
           onClick={() => setOpen(true)}
           aria-label={t('open')}
           aria-haspopup="dialog"
-          className={`fixed end-4 bottom-4 z-30 grid size-14 cursor-pointer place-items-center rounded-full bg-primary text-white shadow-[var(--shadow-card-hover)] transition-[transform,background-color] duration-150 hover:-translate-y-0.5 hover:bg-primary-dark motion-reduce:transform-none sm:end-6 sm:bottom-6 ${FOCUS_RING}`}
+          className={`fixed end-4 bottom-4 z-30 grid size-14 cursor-pointer place-items-center rounded-full bg-primary text-on-fill shadow-[var(--shadow-card-hover)] transition-[transform,background-color] duration-150 hover:-translate-y-0.5 hover:bg-primary-dark motion-reduce:transform-none sm:end-6 sm:bottom-6 ${FOCUS_RING}`}
         >
           <ChatIcon className="size-7" />
         </button>
@@ -146,21 +146,21 @@ export default function ChatAssistant({ userId }: { userId: string }) {
           }}
           className="fixed inset-x-2 bottom-2 z-30 flex max-h-[min(36rem,calc(100dvh-1rem))] origin-bottom animate-sheet-in flex-col ltr:sm:origin-bottom-right rtl:sm:origin-bottom-left overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card-hover)] sm:inset-x-auto sm:end-6 sm:bottom-6 sm:w-[24rem]"
         >
-          <header className="flex items-center gap-3 border-b border-border bg-primary-dark px-4 py-3 text-white">
-            <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-white/15">
+          <header className="flex items-center gap-3 border-b border-border bg-primary-dark px-4 py-3 text-on-fill">
+            <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-on-fill/15">
               <ChatIcon className="size-5" />
             </span>
             <div className="flex min-w-0 flex-1 flex-col text-start">
               <h2 id="assistant-title" className="text-base font-bold">
                 {t('title')}
               </h2>
-              <p className="truncate text-xs text-white/75">{t('subtitle')}</p>
+              <p className="truncate text-xs text-on-fill/75">{t('subtitle')}</p>
             </div>
             {chat.turns.length > 0 ? (
               <button
                 type="button"
                 onClick={startOver}
-                className={`cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-white/85 hover:bg-white/10 hover:text-white ${FOCUS_RING}`}
+                className={`cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-on-fill/85 hover:bg-on-fill/10 hover:text-on-fill ${FOCUS_RING}`}
               >
                 {t('newChat')}
               </button>
@@ -169,7 +169,7 @@ export default function ChatAssistant({ userId }: { userId: string }) {
               type="button"
               onClick={close}
               aria-label={t('close')}
-              className={`grid size-9 cursor-pointer place-items-center rounded-md text-white/85 hover:bg-white/10 hover:text-white ${FOCUS_RING}`}
+              className={`grid size-9 cursor-pointer place-items-center rounded-md text-on-fill/85 hover:bg-on-fill/10 hover:text-on-fill ${FOCUS_RING}`}
             >
               <CloseIcon className="size-5" />
             </button>
@@ -200,7 +200,7 @@ export default function ChatAssistant({ userId }: { userId: string }) {
                   dir="auto"
                   className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-line [overflow-wrap:anywhere] ${
                     turn.role === 'user'
-                      ? 'self-end bg-primary text-white'
+                      ? 'self-end bg-primary text-on-fill'
                       : 'self-start bg-background text-text'
                   }`}
                 >

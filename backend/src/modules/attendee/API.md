@@ -92,6 +92,11 @@ type Booking = {
 | FR-05, FR-06 | `POST /api/attendee/bookings` body `{ eventId }` | Attendee | `201 { booking: Booking }` |
 | FR-08 | `GET /api/attendee/bookings?status=` | Attendee | `{ bookings: Booking[] }` |
 | FR-07 | `POST /api/attendee/bookings/:id/cancel` | Attendee | `{ booking: Booking }` |
+| Waitlist | `POST /api/attendee/events/:id/waitlist` | Attendee | `201 { waitlist: { eventId, joinedAt, position } }` |
+| Waitlist | `DELETE /api/attendee/events/:id/waitlist` | Attendee | `{ left: true }` |
+| Waitlist | `GET /api/attendee/waitlist` | Attendee | `{ waitlist: { eventId, joinedAt, position, event }[] }` |
+| Saved | `GET /api/attendee/favorites` | Attendee | `{ events: (Event & { savedAt })[] }` |
+| Saved | `PUT` / `DELETE /api/attendee/favorites/:eventId` | Attendee | `{ saved: true }` / `{ saved: false }` (both idempotent) |
 | Suggestions | `GET /api/attendee/recommendations` | Attendee | `{ basis: "history" | "popular", events: (Event & { reason })[] }` |
 | Rating | `POST /api/attendee/events/:id/feedback` body `{ rating, comment? }` | Attendee | `201 { feedback: { id, rating, comment, createdAt } }` |
 
@@ -115,6 +120,22 @@ Only APPROVED events that have not ended yet are listed, soonest first.
 - Booking again after cancelling is allowed while seats remain; it gets a new QR code.
 - `GET /bookings` returns the full history, newest event first. `status` is `CONFIRMED` or `CANCELLED`.
   Each booking also carries `myRating` (1..5, or `null`): the attendee's own rating of that event.
+
+### Waitlist
+
+- Join only while the event is **full** (`409 EVENT_NOT_FULL` otherwise - book instead), approved and
+  not started (`409 BOOKING_CLOSED`), and not already booked (`409 ALREADY_BOOKED`); once per
+  event (`409 ALREADY_WAITLISTED`). `position` is 1-based.
+- **A freed seat goes to the earliest person waiting, automatically**, in the same transaction
+  that freed it: a cancellation, or the organizer raising the capacity. They get a confirmed
+  booking with a fresh QR code and a `WAITLIST_PROMOTED` notification. Booking a seat directly
+  removes your own waitlist entry.
+
+### Reminders
+
+Every attendee holding a confirmed seat gets an `EVENT_REMINDER` notification the day before
+and the hour before the event (each once; `body` is the event start as an ISO date). The
+backend checks every 5 minutes (`reminders.service.js`, started in `src/index.js`).
 
 ### Recommended for you
 
@@ -147,6 +168,9 @@ booked), from their own history - see the header of `recommendations.service.js`
 | `BOOKING_NOT_FOUND` | 404 | unknown booking, or someone else's |
 | `ALREADY_CANCELLED` | 409 | cancelling twice |
 | `CANCELLATION_CLOSED` | 409 | cancelling after the event started |
+| `EVENT_NOT_FULL` | 409 | joining a waitlist while seats remain |
+| `ALREADY_WAITLISTED` | 409 | joining the same waitlist twice |
+| `NOT_ON_WAITLIST` | 404 | leaving a waitlist you are not on |
 | `TOO_MANY_ATTEMPTS` | 429 | login: 5 wrong passwords for this email in 15 minutes; locked for 15 minutes (`Retry-After` header, seconds) |
 | `ALREADY_CHECKED_IN` | 409 | cancelling after being checked in at the door (check-in opens before the start) |
 | `INVALID_RATING` | 422 | `rating` is not a whole number from 1 to 5 |

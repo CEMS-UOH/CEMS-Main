@@ -56,11 +56,11 @@ const lift =
 
 const variantClasses: Record<Variant, string> = {
   // A hairline of light along the top edge gives the filled buttons a made, physical feel.
-  primary: `bg-primary text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14),var(--shadow-card)] focus-visible:outline-primary not-disabled:hover:bg-primary-dark not-disabled:hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.1),var(--shadow-card-hover)] not-disabled:active:shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)] ${lift}`,
+  primary: `bg-primary text-on-fill shadow-[inset_0_1px_0_rgb(255_255_255/0.14),var(--shadow-card)] focus-visible:outline-primary not-disabled:hover:bg-primary-dark not-disabled:hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.1),var(--shadow-card-hover)] not-disabled:active:shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)] ${lift}`,
   secondary: `border border-primary/30 bg-surface text-primary shadow-[0_1px_2px_rgb(16_24_21/0.04)] focus-visible:outline-primary not-disabled:hover:border-primary/60 not-disabled:hover:bg-primary-light not-disabled:hover:text-primary-dark not-disabled:active:bg-primary-light not-disabled:active:shadow-none ${lift}`,
   ghost:
     'bg-transparent text-primary focus-visible:outline-primary not-disabled:hover:bg-primary-light not-disabled:hover:text-primary-dark not-disabled:active:scale-[0.98] not-disabled:active:bg-primary-light',
-  danger: `bg-danger text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14),var(--shadow-card)] focus-visible:outline-danger not-disabled:hover:brightness-90 not-disabled:hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.1),var(--shadow-card-hover)] not-disabled:active:shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)] ${lift}`,
+  danger: `bg-danger text-on-fill shadow-[inset_0_1px_0_rgb(255_255_255/0.14),var(--shadow-card)] focus-visible:outline-danger not-disabled:hover:brightness-90 not-disabled:hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.1),var(--shadow-card-hover)] not-disabled:active:shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)] ${lift}`,
 };
 
 const disabledClasses: Record<Variant, string> = {

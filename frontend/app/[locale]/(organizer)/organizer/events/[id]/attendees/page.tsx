@@ -4,18 +4,23 @@
 // Calls GET /api/organizer/events/:id, GET /api/organizer/events/:id/attendees and
 // POST /api/organizer/events/:id/attendees/:registrationId/check-in (the door's fallback for
 // someone who cannot show their QR; scanning lives on the check-in page).
+//
+// "Export to Excel" builds a real .xlsx in the browser (lib/xlsx.ts) from every page of the
+// list, with the status filter applied: name, email, booking status, registered, checked in.
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import Badge from '@/components/Badge';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import FormMessage from '@/components/FormMessage';
 import { Link } from '@/i18n/navigation';
 import { SelectField } from '@/components/FormField';
-import { BackIcon, CheckIcon, ScanIcon } from '@/components/Icons';
+import { BackIcon, CheckIcon, DownloadIcon, ScanIcon } from '@/components/Icons';
 import { TEXT_LINK } from '@/components/styles';
 import PageHeader from '@/components/PageHeader';
+import { downloadFile, safeFileName } from '@/lib/download';
+import { buildXlsx, XLSX_TYPE } from '@/lib/xlsx';
 import Pagination from '../../../../../_dashboard/ui/Pagination';
 import { EmptyState, ErrorState, LoadingState } from '../../../../../_dashboard/ui/States';
 import { BookingStatusBadge } from '../../../../../_dashboard/ui/StatusBadges';
@@ -23,7 +28,7 @@ import { CAMPUS_TIME_ZONE, DATE_TIME_FORMAT } from '../../../../../_dashboard/li
 import { BOOKING_STATUSES, type BookingStatus } from '../../../../../_dashboard/lib/types';
 import { bothOk, useApiQuery } from '../../../../../_dashboard/lib/useApiQuery';
 import { useDashboardError } from '../../../../../_dashboard/lib/useDashboardError';
-import { checkInById, getMyEvent, listAttendees } from '../../../../_lib/organizer-api';
+import { checkInById, getMyEvent, listAllAttendees, listAttendees } from '../../../../_lib/organizer-api';
 
 const PAGE_SIZE = 50;
 
@@ -43,6 +48,8 @@ export default function AttendeesPage() {
   const [page, setPage] = useState(1);
   const [checkingId, setCheckingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const locale = useLocale();
 
   const query = useApiQuery(`organizer-attendees:${id}:${status}:${page}`, async () =>
     bothOk(
@@ -75,6 +82,41 @@ export default function AttendeesPage() {
     query.reload();
   }
 
+  async function onExport() {
+    if (!event) return;
+    setNotice(null);
+    setExporting(true);
+    const result = await listAllAttendees(id, status);
+    setExporting(false);
+    if (!result.ok) {
+      setNotice({ kind: 'error', text: errorMessage(result.code) });
+      return;
+    }
+    // Real Excel dates (sortable), shown in campus time (UTC+3).
+    const when = (iso: string | null) => (iso ? new Date(iso) : null);
+    const bytes = buildXlsx({
+      name: t('sheetName'),
+      rtl: locale === 'ar',
+      utcOffsetMinutes: 180,
+      columns: [
+        { header: t('colName'), width: 28 },
+        { header: t('colEmail'), width: 32 },
+        { header: t('colStatus'), width: 14 },
+        { header: t('colRegistered'), width: 24 },
+        { header: t('colCheckedInAt'), width: 24 },
+      ],
+      rows: result.data.attendees.map((a) => [
+        a.user.fullName,
+        a.user.email,
+        tStatus(a.status),
+        when(a.createdAt),
+        when(a.checkedInAt),
+      ]),
+    });
+    downloadFile(`${safeFileName(event.title)}-${t('fileSuffix')}.xlsx`, bytes, XLSX_TYPE);
+    setNotice({ kind: 'success', text: t('exported', { count: result.data.attendees.length }) });
+  }
+
   return (
     <>
       <PageHeader
@@ -87,11 +129,18 @@ export default function AttendeesPage() {
           </Link>
         }
         actions={
-          checkInOpen ? (
-            <Button href={`/organizer/events/${id}/check-in`} icon={<ScanIcon />}>
-              {t('scan')}
-            </Button>
-          ) : undefined
+          <>
+            {pagination && pagination.total > 0 ? (
+              <Button type="button" variant="secondary" icon={<DownloadIcon />} loading={exporting} onClick={onExport}>
+                {exporting ? t('exporting') : t('export')}
+              </Button>
+            ) : null}
+            {checkInOpen ? (
+              <Button href={`/organizer/events/${id}/check-in`} icon={<ScanIcon />}>
+                {t('scan')}
+              </Button>
+            ) : null}
+          </>
         }
       />
 

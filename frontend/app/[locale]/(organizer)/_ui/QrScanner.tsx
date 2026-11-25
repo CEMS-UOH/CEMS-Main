@@ -129,7 +129,7 @@ export default function QrScanner({ onCode, paused }: Props) {
     <div className="flex flex-col gap-4">
       {/* The video is always in the page (so it can be started), shown only while live. */}
       <div
-        className={`relative aspect-square w-full overflow-hidden rounded-lg bg-text ${live ? '' : 'hidden'}`}
+        className={`relative aspect-square w-full overflow-hidden rounded-lg bg-black ${live ? '' : 'hidden'}`}
       >
         <video
           ref={videoRef}
@@ -141,7 +141,7 @@ export default function QrScanner({ onCode, paused }: Props) {
         {/* Where to hold the ticket. */}
         <div aria-hidden className="pointer-events-none absolute inset-[18%] rounded-lg border-4 border-white/85 shadow-[0_0_0_100vmax_rgb(0_0_0/0.35)]" />
         {paused ? (
-          <div aria-hidden className="absolute inset-0 bg-text/30" />
+          <div aria-hidden className="absolute inset-0 bg-black/30" />
         ) : null}
       </div>
 

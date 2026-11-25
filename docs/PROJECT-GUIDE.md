@@ -70,6 +70,20 @@
 - **صندوق الإشعارات** لكل الأدوار: `GET /api/notifications` + تحديد كمقروء.
 - **تسجيل المنظم بنفسه** مع حد "طلب واحد قبل أول موافقة".
 
+**ميزات إضافية للحاضر والمنظم** (فرع `feature/attendee-extras`):
+
+| الميزة | وش تسوي | API | الشاشة |
+|---|---|---|---|
+| **قائمة الانتظار** | إذا امتلأت الفعالية ينضم الحاضر للقائمة؛ أول ما يُلغى مقعد (أو يزيد المنظم السعة) يُحجز تلقائيًا لأقدم واحد ويوصله إشعار | `POST/DELETE /api/attendee/events/:id/waitlist`، `GET /api/attendee/waitlist` | صفحة الفعالية و `/bookings` |
+| **المحفوظة** ❤ | يحفظ الفعالية لوقت لاحق | `GET/PUT/DELETE /api/attendee/favorites` | القلب على البطاقة و `/saved` |
+| **شهادة حضور** | لكل حجز سُجّل حضوره عند الباب؛ تُطبع أو تُحفظ PDF، وفيها QR يتحقق منها أي أحد | `GET /api/certificates/:id` (عامة) | `/certificates/:id` |
+| **التذكيرات** | إشعار قبل الفعالية بيوم وبساعة (يشتغل في الخادم كل 5 دقائق) | — | الجرس 🔔 |
+| **عرض التقويم** | الفعاليات في شبكة شهرية (الأسبوع يبدأ الأحد، بتوقيت الحرم) | نفس `GET /api/attendee/events` | `/events?view=calendar` |
+| **أضف لتقويمي + مشاركة** | رابط Google Calendar أو ملف ‎.ics مع تذكير، ومشاركة (واتساب، نسخ الرابط، البريد) | — (في المتصفح) | صفحة الفعالية |
+| **تصدير Excel** | المنظم ينزّل قائمة المسجلين كملف ‎.xlsx حقيقي (عربي من اليمين، تواريخ قابلة للفرز) | نفس `GET .../attendees` | `/organizer/events/:id/attendees` |
+| **نشاطي** | أرقام الحاضر: الفعاليات اللي حضرها، الساعات، نسبة الحضور، رسم شهري، الفئات، الشهادات | نفس `GET /api/attendee/bookings` | `/activity` |
+| **الوضع الداكن** | زر في كل ترويسة: مثل الجهاز ← فاتح ← داكن. الشهادة ورموز QR تبقى بيضاء | — | كل الشاشات |
+
 التفاصيل الكاملة لكل endpoint (الأشكال، الأخطاء) في ملفات `API.md` داخل كل مجلد في
 `backend/src/modules/`.
 
@@ -102,7 +116,7 @@
 | `backend/src/modules/notifications` | صندوق الإشعارات لكل الأدوار |
 | `backend/src/modules/analytics` | الإحصائيات (FR-20) ونقل طلب التوقع لخدمة Python |
 | `backend/src/modules/chatbot` | المساعد الذكي (Groq) |
-| `backend/prisma/schema.prisma` | جداول قاعدة البيانات (8 جداول) |
+| `backend/prisma/schema.prisma` | جداول قاعدة البيانات (10 جداول) |
 | `analytics/app/model.py` | نموذج توقّع الحضور (مشروح خطوة بخطوة في أول الملف) |
 | `frontend/app/[locale]/…` | كل الشاشات، مقسّمة حسب الدور: `(attendee)`، `(organizer)`، `(admin)` |
 | `frontend/components` | المكونات المشتركة (الأزرار، البطاقات، الجرس، المساعد…) |
@@ -152,8 +166,9 @@
    `npm run db:seed:demo` (منظم تجريبي و4 فعاليات).
 
 **تحديث قاعدة البيانات** (للمسؤول عنها فقط): `cd backend && npm run prisma:deploy` يطبّق
-أي migration جديد. في هذا الفرع migration جديد واحد: إضافة نوعي إشعار
-(`EVENT_APPROVED`، `EVENT_REJECTED`) — لازم يُطبَّق قبل تشغيل الموافقة/الرفض.
+أي migration جديد. آخر migration: `20261124120000_add_waitlist_favorites_reminders`
+(جدولا قائمة الانتظار والمحفوظة، حقلا التذكير في الحجز، ونوعا إشعار جديدان) — طُبّق على قاعدة
+التطوير، ولازم يُطبَّق على أي قاعدة ثانية قبل تشغيل هذه الميزات.
 
 ---
 
@@ -161,12 +176,14 @@
 
 | الجزء | الأمر | العدد |
 |---|---|---|
-| الخادم (Jest + Supertest) | `cd backend && npm test` | 364 اختبار |
-| شاشات الحاضر (node:test) | `cd frontend && npm run test:attendee` | 21 اختبار |
+| الخادم (Jest + Supertest) | `cd backend && npm test` | 389 اختبار |
+| شاشات الحاضر (node:test) | `cd frontend && npm run test:attendee` | 32 اختبار |
+| أدوات الواجهة: ملف Excel (node:test) | `cd frontend && npm run test:lib` | 7 اختبارات |
 | نموذج التحليلات (unittest) | `cd analytics && python -m unittest -v` | 7 اختبارات |
 | بناء الواجهة | `cd frontend && npm run build` | — |
 
 الـ CI على GitHub يشغّل الخادم وبناء الواجهة واختبارات التحليلات على كل Pull Request.
+اختبارات node:test في الواجهة تحتاج Node 22.6 أو أحدث، فتُشغَّل على جهازك (الـ CI على Node 20).
 اختبارات الخادم لا تحتاج قاعدة بيانات (Prisma مُحاكى).
 
 ---

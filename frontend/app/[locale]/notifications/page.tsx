@@ -25,6 +25,7 @@ import {
   UserIcon,
 } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
 import PageHeader from '@/components/PageHeader';
@@ -50,6 +51,8 @@ const PAGE_SIZE = 15;
 /** The picture beside each kind of notification, and where it leads. */
 const KIND: Record<NotificationType, { icon: ReactNode; tone: string; href?: string }> = {
   BOOKING_CONFIRMATION: { icon: <TicketIcon className="size-5" />, tone: 'bg-success-light text-success', href: '/bookings' },
+  EVENT_REMINDER: { icon: <CalendarIcon className="size-5" />, tone: 'bg-primary-light text-primary', href: '/bookings' },
+  WAITLIST_PROMOTED: { icon: <TicketIcon className="size-5" />, tone: 'bg-success-light text-success', href: '/bookings' },
   CAPACITY_FULL: { icon: <SeatIcon className="size-5" />, tone: 'bg-accent-light text-accent-dark', href: '/organizer' },
   EVENT_APPROVED: { icon: <CheckIcon className="size-5" />, tone: 'bg-success-light text-success', href: '/organizer' },
   EVENT_REJECTED: { icon: <CloseIcon className="size-5" />, tone: 'bg-danger-light text-danger', href: '/organizer' },
@@ -108,6 +111,7 @@ function Header({ user }: { user: PublicUser | null }) {
       nav={nav}
       tools={
         <>
+          <ThemeSwitcher />
           <LocaleSwitcher />
           {user ? (
             <>
@@ -206,7 +210,7 @@ function Inbox() {
                 setPage(1);
               }}
               className={`min-h-9 cursor-pointer rounded-md px-3 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                pressed ? 'bg-primary text-white' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
+                pressed ? 'bg-primary text-on-fill' : 'text-text-muted hover:bg-primary-light hover:text-primary-dark'
               }`}
             >
               {filter.label}
@@ -271,10 +275,18 @@ function NotificationItem({
   const heading = isFreeText(item.type) ? item.title : t(`types.${item.type}.title`);
   // The event title is isolated (<bdi>) so an Arabic title inside an English sentence, or the
   // other way round, keeps its own direction instead of scrambling the line.
+  // A reminder stores the event's start time; say it relative to now ("in 1 hour",
+  // "tomorrow") in the reader's language, with the exact time beside it.
+  const reminderAt = item.type === 'EVENT_REMINDER' ? new Date(item.body) : null;
+  const reminderValid = reminderAt !== null && !Number.isNaN(reminderAt.getTime());
   const text = isFreeText(item.type)
     ? item.body
     : t.rich(`types.${item.type}.body`, {
         title: item.title,
+        when: reminderValid ? format.relativeTime(reminderAt, now) : '',
+        time: reminderValid
+          ? format.dateTime(reminderAt, { weekday: 'long', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Riyadh' })
+          : '',
         event: (chunks) => <bdi className="font-medium text-text">{chunks}</bdi>,
       });
 

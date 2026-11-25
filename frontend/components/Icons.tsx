@@ -120,6 +120,36 @@ export function StarIcon({ className = 'size-6', filled }: Props & { filled: boo
   );
 }
 
+/** Saved events: an outline heart, filled once saved. */
+export function HeartIcon({ className = 'size-5', filled = false }: Props & { filled?: boolean }) {
+  return (
+    <svg {...base} fill={filled ? 'currentColor' : 'none'} className={className}>
+      <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />
+    </svg>
+  );
+}
+
+/** Attendance certificate: a rosette with ribbons. */
+export function AwardIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="9" r="5.5" />
+      <path d="m8.6 13.3-1.6 7 5-2.5 5 2.5-1.6-7" />
+    </svg>
+  );
+}
+
+/** Waitlist: a small queue of people. */
+export function QueueIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="7" cy="8" r="2.5" />
+      <circle cx="16.5" cy="8" r="2" />
+      <path d="M2.5 19c.5-3 2.3-4.5 4.5-4.5S11 16 11.5 19M13.5 18.5c.4-2.4 1.6-3.6 3-3.6 1.5 0 2.7 1.2 3 3.6" />
+    </svg>
+  );
+}
+
 export function PlusIcon({ className = 'size-4' }: Props) {
   return (
     <svg {...base} className={className}>
@@ -274,6 +304,87 @@ export function SpinnerIcon({ className = 'size-4' }: Props) {
   return (
     <svg {...base} strokeWidth={2.2} className={`${className} animate-spin`}>
       <path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5" />
+    </svg>
+  );
+}
+
+/** Share: three linked dots. */
+export function ShareIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1" />
+    </svg>
+  );
+}
+
+/** A calendar with a plus: "add to my calendar". */
+export function CalendarPlusIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4M12 12.5v5M9.5 15h5" />
+    </svg>
+  );
+}
+
+/** Download: an arrow into a tray. */
+export function DownloadIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" />
+      <path d="M4.5 15.5v3a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-3" />
+    </svg>
+  );
+}
+
+/** A link (two chain loops): "copy link". */
+export function LinkIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+      <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+    </svg>
+  );
+}
+
+/** An envelope. */
+export function MailIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3" y="5.5" width="18" height="13" rx="2" />
+      <path d="m3.5 7 8.5 6 8.5-6" />
+    </svg>
+  );
+}
+
+/** Light theme. */
+export function SunIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" />
+    </svg>
+  );
+}
+
+/** Dark theme. */
+export function MoonIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+    </svg>
+  );
+}
+
+/** Follow the device's own setting. */
+export function MonitorIcon({ className = 'size-4' }: Props) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3" y="4" width="18" height="12.5" rx="2" />
+      <path d="M8.5 20.5h7M12 16.5v4" />
     </svg>
   );
 }

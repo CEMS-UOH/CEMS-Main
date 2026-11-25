@@ -8,7 +8,11 @@ export type NotificationType =
   | 'EVENT_APPROVED'
   | 'EVENT_REJECTED'
   | 'BROADCAST'
-  | 'SYSTEM';
+  | 'SYSTEM'
+  /** A day or an hour before an event; `body` is the event's start time (ISO). */
+  | 'EVENT_REMINDER'
+  /** A freed seat went to the attendee from the waitlist. */
+  | 'WAITLIST_PROMOTED';
 
 export type AppNotification = {
   id: string;

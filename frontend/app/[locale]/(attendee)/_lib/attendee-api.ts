@@ -1,7 +1,7 @@
 // Typed calls for the attendee screens (FR-03..FR-09 + feedback). OWNER: Role 4.
 // The JSON contract is backend/src/modules/attendee/API.md (Role 2). Every call goes through the
 // shared apiFetch (CLAUDE.md rule 9), which sends the session cookie and unwraps ok()/fail().
-import { apiFetch } from '@/lib/api';
+import { apiFetch, type ApiResult } from '@/lib/api';
 
 export type Venue = { id: string; name: string; building: string | null; location: string | null };
 export type Category = { id: string; name: string };
@@ -78,6 +78,31 @@ export const listEvents = (filters: EventFilters = {}) =>
     `/api/attendee/events${eventsQuery(filters)}`
   );
 
+/**
+ * Every upcoming event that matches (no paging), for the calendar view: it needs the whole
+ * month, not one page of 50. Asks for page 1, then any further pages at once; stops at
+ * MAX_PAGES so a huge feed cannot turn one view into dozens of requests.
+ */
+const MAX_PAGES = 10;
+export async function listAllEvents(
+  filters: Omit<EventFilters, 'page' | 'limit' | 'date'> = {}
+): Promise<ApiResult<{ events: AttendeeEvent[]; total: number; truncated: boolean }>> {
+  const first = await listEvents({ ...filters, limit: 50 });
+  if (!first.ok) return first;
+  const pages = Math.min(first.data.pagination.totalPages, MAX_PAGES);
+  const rest = await Promise.all(
+    Array.from({ length: Math.max(pages - 1, 0) }, (_, i) => listEvents({ ...filters, page: i + 2, limit: 50 }))
+  );
+  const failed = rest.find((r) => !r.ok);
+  if (failed) return failed;
+  const events = [first, ...rest].flatMap((r) => (r.ok ? r.data.events : []));
+  return {
+    ok: true,
+    status: 200,
+    data: { events, total: first.data.pagination.total, truncated: first.data.pagination.totalPages > MAX_PAGES },
+  };
+}
+
 // --- Recommended for you (Attendee) - backend/src/modules/attendee/recommendations.service.js ---
 /** Why an event was suggested: the attendee's favourite category, an organizer they liked, or popular. */
 export type RecommendationReason = 'CATEGORY' | 'ORGANIZER' | 'POPULAR';
@@ -122,3 +147,39 @@ export const submitFeedback = (eventId: string, input: { rating: number; comment
     `/api/attendee/events/${encodeURIComponent(eventId)}/feedback`,
     { method: 'POST', body: JSON.stringify(input) }
   );
+
+// --- Waitlist for full events - backend/src/modules/attendee/API.md ---
+export type WaitlistPlace = { eventId: string; joinedAt: string; position: number };
+export const joinWaitlist = (eventId: string) =>
+  apiFetch<{ waitlist: WaitlistPlace }>(`/api/attendee/events/${encodeURIComponent(eventId)}/waitlist`, {
+    method: 'POST',
+  });
+export const leaveWaitlist = (eventId: string) =>
+  apiFetch<{ left: boolean }>(`/api/attendee/events/${encodeURIComponent(eventId)}/waitlist`, {
+    method: 'DELETE',
+  });
+export const listMyWaitlist = () =>
+  apiFetch<{ waitlist: (WaitlistPlace & { event: AttendeeEvent })[] }>('/api/attendee/waitlist');
+
+// --- Saved events ---
+export const listSaved = () =>
+  apiFetch<{ events: (AttendeeEvent & { savedAt: string })[] }>('/api/attendee/favorites');
+export const saveEvent = (eventId: string) =>
+  apiFetch<{ saved: boolean }>(`/api/attendee/favorites/${encodeURIComponent(eventId)}`, { method: 'PUT' });
+export const unsaveEvent = (eventId: string) =>
+  apiFetch<{ saved: boolean }>(`/api/attendee/favorites/${encodeURIComponent(eventId)}`, { method: 'DELETE' });
+
+// --- Attendance certificate (public) - backend/src/modules/certificates/API.md ---
+export type Certificate = {
+  id: string;
+  attendeeName: string;
+  eventTitle: string;
+  category: string;
+  venue: string | null;
+  startsAt: string;
+  endsAt: string;
+  issuedBy: string;
+  attendedAt: string;
+};
+export const getCertificate = (id: string) =>
+  apiFetch<{ certificate: Certificate }>(`/api/certificates/${encodeURIComponent(id)}`);

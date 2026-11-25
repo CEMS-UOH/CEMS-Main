@@ -6,10 +6,14 @@ const requireAuth = require('../../middleware/requireAuth');
 const requireRole = require('../../middleware/requireRole');
 const controller = require('./events.controller');
 const feedbackController = require('./feedback.controller');
+const waitlistController = require('./waitlist.controller');
 
 router.get('/', controller.list);
 router.get('/:id', controller.details);
-// Rating an event after it ends: the one route here that needs a session.
+// The routes below need a session: rating an event, and its waitlist.
 router.post('/:id/feedback', requireAuth, requireRole('ATTENDEE'), feedbackController.create);
+// The waitlist of a full event.
+router.post('/:id/waitlist', requireAuth, requireRole('ATTENDEE'), waitlistController.join);
+router.delete('/:id/waitlist', requireAuth, requireRole('ATTENDEE'), waitlistController.leave);
 
 module.exports = router;

@@ -9,6 +9,7 @@ import Button from '@/components/Button';
 import Card from '@/components/Card';
 import { CalendarIcon, ForwardIcon, GridIcon, SearchIcon, TicketIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import HeaderBar from '@/components/HeaderBar';
 import { FRAME_WIDE, TEXT_LINK } from '@/components/styles';
 import { Link } from '@/i18n/navigation';
@@ -37,6 +38,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
           start={<Brand name={t('title')} href="/" />}
           tools={
             <>
+              <ThemeSwitcher />
               <LocaleSwitcher />
               <HomeAccount />
             </>
@@ -80,18 +82,20 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
             priority
             unoptimized
             sizes="100vw"
-            className="object-cover object-[0%_100%] rtl:-scale-x-100"
+            className="object-cover object-[0%_100%] rtl:-scale-x-100 dark:brightness-[0.62] dark:saturate-[0.85]"
           />
           {/* Phones and tablets: the picture's top edge melts into the white above it instead
               of ending in a visible line. */}
           <div className="absolute inset-x-0 top-0 h-1/3 bg-linear-to-b from-surface to-transparent lg:hidden" />
         </div>
+        {/* In the dark theme the scene is dimmed and the veil reaches further, so the headline
+            sits on night, not on a bright sky. */}
         {/* Desktop only: a soft white veil beside the text, fading out sideways over the scene
             so the end of a long line never sits on the buildings. It also fades out downwards
             (the mask), well above the people standing at the bottom, so it never covers them. */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 hidden from-surface from-30% to-transparent to-48% [mask-image:linear-gradient(to_bottom,black_50%,transparent_64%)] lg:block ltr:bg-linear-to-r rtl:bg-linear-to-l"
+          className="absolute inset-0 -z-10 hidden from-surface from-30% to-transparent to-48% dark:from-32% dark:to-62% [mask-image:linear-gradient(to_bottom,black_50%,transparent_64%)] lg:block ltr:bg-linear-to-r rtl:bg-linear-to-l"
         />
 
         <div className={`${FRAME_WIDE} flex min-h-[46rem] flex-col lg:min-h-[max(50rem,56vw)]`}>
@@ -183,6 +187,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: string 
             <Button href="/login" variant="ghost" size="sm">
               {t('login')}
             </Button>
+            <ThemeSwitcher />
             <LocaleSwitcher />
           </nav>
         </div>

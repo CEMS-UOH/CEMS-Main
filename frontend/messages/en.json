@@ -227,7 +227,13 @@
       "notCheckedIn": "Not yet",
       "checkedInCount": "{checkedIn, number} of {confirmed, number} checked in",
       "checkedInNotice": "{name} is checked in.",
-      "scan": "Scan tickets"
+      "scan": "Scan tickets",
+      "export": "Export to Excel",
+      "exporting": "Preparing the file…",
+      "exported": "{count, plural, one {The file with # attendee was downloaded.} other {The file with # attendees was downloaded.}}",
+      "sheetName": "Attendees",
+      "fileSuffix": "attendees",
+      "colCheckedInAt": "Checked in at"
     },
     "limit": {
       "title": "Your request is with the admin",
@@ -512,7 +518,11 @@
     "CHATBOT_UNAVAILABLE": "The assistant is not available right now. Please try again later.",
     "ANALYTICS_UNAVAILABLE": "Predictions are not available right now.",
     "ALREADY_CHECKED_IN": "You have already been checked in at the door, so this booking can no longer be cancelled",
-    "TOO_MANY_ATTEMPTS": "Too many wrong passwords for this account. Wait 15 minutes, then try again."
+    "TOO_MANY_ATTEMPTS": "Too many wrong passwords for this account. Wait 15 minutes, then try again.",
+    "EVENT_NOT_FULL": "Seats are still available - you can book one now.",
+    "ALREADY_WAITLISTED": "You are already on the waitlist for this event.",
+    "NOT_ON_WAITLIST": "You are not on this waitlist.",
+    "CERTIFICATE_NOT_FOUND": "This certificate does not exist or is no longer valid."
   },
   "AttendeeNav": {
     "productName": "Smart Campus Event Manager System",
@@ -520,7 +530,9 @@
     "skipToContent": "Skip to content",
     "events": "Events",
     "bookings": "My bookings",
-    "login": "Log in"
+    "login": "Log in",
+    "saved": "Saved",
+    "activity": "My activity"
   },
   "AttendeeCommon": {
     "loading": "Loading…",
@@ -557,6 +569,26 @@
       "filteredBody": "Try another category, venue or date.",
       "searchTitle": "Nothing matches your search",
       "searchBody": "Check the spelling or try a different word."
+    },
+    "view": {
+      "label": "View",
+      "list": "List",
+      "calendar": "Calendar"
+    },
+    "calendar": {
+      "caption": "Events in {month}",
+      "monthCount": "{count, plural, =0 {No events this month} one {# event this month} other {# events this month}}",
+      "dayCount": "{count, plural, =0 {no events} one {# event} other {# events}}",
+      "today": "today",
+      "thisMonth": "This month",
+      "previous": "Previous month",
+      "next": "Next month",
+      "more": "+{count, number} more",
+      "agendaMonth": "All events in {month}",
+      "showMonth": "Show the whole month",
+      "emptyDay": "No events on this day.",
+      "emptyMonth": "No events this month.",
+      "jumpTo": "Go to {month}"
     }
   },
   "EventDetails": {
@@ -704,13 +736,23 @@
       },
       "SYSTEM": {
         "label": "System message"
+      },
+      "EVENT_REMINDER": {
+        "title": "Event reminder",
+        "body": "<event>{title}</event> starts {when} ({time}). Your ticket is in My bookings."
+      },
+      "WAITLIST_PROMOTED": {
+        "title": "You got a seat",
+        "body": "A seat freed up at <event>{title}</event> and it is now yours. Your ticket is in My bookings."
       }
     },
     "open": {
       "BOOKING_CONFIRMATION": "Open my bookings",
       "CAPACITY_FULL": "Open my events",
       "EVENT_APPROVED": "Open my events",
-      "EVENT_REJECTED": "Open my events"
+      "EVENT_REJECTED": "Open my events",
+      "EVENT_REMINDER": "Open my ticket",
+      "WAITLIST_PROMOTED": "Open my ticket"
     }
   },
   "Assistant": {
@@ -742,5 +784,112 @@
       "ORGANIZER": "From an organizer you liked",
       "POPULAR": "Popular right now"
     }
+  },
+  "Saved": {
+    "title": "Saved events",
+    "subtitle": "Events you saved with the heart, to come back to.",
+    "save": "Save event",
+    "saved": "Saved",
+    "saveLabel": "Save “{title}”",
+    "unsaveLabel": "Remove “{title}” from saved",
+    "attendeesOnly": "Saving events is for Attendee accounts.",
+    "emptyTitle": "Nothing saved yet",
+    "emptyBody": "Tap the heart on any event to keep it here.",
+    "browse": "Browse events",
+    "past": "Already happened"
+  },
+  "Waitlist": {
+    "fullTitle": "This event is full.",
+    "guestHint": "Log in to join the waitlist: if a seat frees up, it is booked for you automatically.",
+    "loginToJoin": "Log in to join the waitlist",
+    "checking": "Checking your place…",
+    "yourPlace": "You are number {position, number} in line",
+    "howItWorks": "If a seat frees up, it is booked for you automatically and you get a notification with your ticket.",
+    "leave": "Leave the waitlist",
+    "joinHint": "Join the waitlist: the first freed seat goes to the first person in line, automatically.",
+    "join": "Join the waitlist",
+    "joining": "Joining…",
+    "seeAll": "My bookings and waitlists",
+    "sectionTitle": "Waiting for a seat"
+  },
+  "Certificate": {
+    "open": "Attendance certificate",
+    "back": "My bookings",
+    "loading": "Loading the certificate…",
+    "notFoundTitle": "Certificate not found",
+    "notFoundBody": "This certificate does not exist or is no longer valid.",
+    "retry": "Try again",
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "print": "Print or save as PDF",
+    "sheetLabel": "Certificate of attendance for {name}",
+    "verified": "Verified certificate",
+    "title": "Certificate of Attendance",
+    "certifies": "{issuer} certifies that",
+    "attended": "attended",
+    "whenWhere": "{date} · {venue}",
+    "issuedBy": "Issued by",
+    "number": "Certificate no.",
+    "attendedAt": "Checked in {time}",
+    "qrLabel": "QR code to verify this certificate",
+    "scanToVerify": "Scan to verify"
+  },
+  "EventActions": {
+    "addToCalendar": "Add to calendar",
+    "share": "Share",
+    "google": "Google Calendar",
+    "googleHint": "Opens in a new tab",
+    "ics": "Apple Calendar or Outlook",
+    "icsHint": "Downloads an .ics file, with a reminder an hour before",
+    "copyLink": "Copy link",
+    "copied": "Link copied",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "shareText": "Join me at \"{title}\" at the University of Hail"
+  },
+  "Activity": {
+    "title": "My activity",
+    "subtitle": "The events you have been to, the time you have given them, and your certificates.",
+    "attendeesOnly": "This page is for Attendee accounts.",
+    "emptyTitle": "Your activity starts with your first event",
+    "emptyBody": "Book a seat at an event; what you attend shows up here, with a certificate for each.",
+    "browse": "Browse events",
+    "statsLabel": "Your numbers",
+    "stats": {
+      "attended": "Events attended",
+      "hours": "Hours at events",
+      "rate": "Turned up",
+      "rating": "{count, plural, =0 {Your ratings} one {Your rating (# given)} other {Your average rating (# given)}}"
+    },
+    "nextUp": "Next up",
+    "upcomingCount": "{count, plural, one {# upcoming seat} other {# upcoming seats}}",
+    "months": {
+      "title": "Events attended by month",
+      "subtitle": "{count, plural, =0 {The last six months} one {# event in the last six months} other {# events in the last six months}}",
+      "empty": "No attended events in the last six months yet.",
+      "columnLabel": "{month}: {count, plural, =0 {no events} one {# event} other {# events}}",
+      "count": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "showTable": "Show as a table",
+      "month": "Month",
+      "attended": "Attended"
+    },
+    "categories": {
+      "title": "What you go for",
+      "subtitle": "Your seats by category",
+      "empty": "No seats yet.",
+      "count": "{count, plural, one {# seat} other {# seats}}"
+    },
+    "certificates": {
+      "title": "Your certificates",
+      "subtitle": "One for every event you were checked in at. Print it or share its link.",
+      "empty": "Certificates appear here once you are checked in at an event's door.",
+      "open": "View"
+    }
+  },
+  "Theme": {
+    "label": "Theme: {current}. Switch to {next}",
+    "system": "same as device",
+    "light": "light",
+    "dark": "dark"
   }
 }

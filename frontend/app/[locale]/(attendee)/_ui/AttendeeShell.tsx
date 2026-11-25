@@ -5,23 +5,27 @@
 import { useTranslations } from 'next-intl';
 import AppHeader from '@/components/AppHeader';
 import Button from '@/components/Button';
-import { CalendarIcon, TicketIcon, UserIcon } from '@/components/Icons';
+import { CalendarIcon, ChartIcon, HeartIcon, TicketIcon, UserIcon } from '@/components/Icons';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import NotificationBell from '@/components/NotificationBell';
 import ChatAssistant from '@/components/ChatAssistant';
 import { FRAME } from '@/components/styles';
 import { usePathname } from '@/i18n/navigation';
+import { SavedProvider } from '../_lib/saved';
 import { SessionProvider, useSession } from '../_lib/session';
 
 export default function AttendeeShell({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main id="attendee-main" className={`${FRAME} flex-1 pt-8 pb-16 sm:pt-10`}>
-          {children}
-        </main>
-      </div>
+      <SavedProvider>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main id="attendee-main" className={`${FRAME} flex-1 pt-8 pb-16 sm:pt-10`}>
+            {children}
+          </main>
+        </div>
+      </SavedProvider>
     </SessionProvider>
   );
 }
@@ -51,9 +55,27 @@ function Header() {
           icon: <TicketIcon />,
           active: pathname.startsWith('/bookings'),
         },
+        // Only an Attendee saves events and has an activity record, so only they see these tabs.
+        ...(user?.role === 'ATTENDEE'
+          ? [
+              {
+                href: '/saved',
+                label: t('saved'),
+                icon: <HeartIcon className="size-4" />,
+                active: pathname.startsWith('/saved'),
+              },
+              {
+                href: '/activity',
+                label: t('activity'),
+                icon: <ChartIcon />,
+                active: pathname.startsWith('/activity'),
+              },
+            ]
+          : []),
       ]}
       tools={
         <>
+          <ThemeSwitcher />
           <LocaleSwitcher />
           {session.status === 'loading' ? (
             <span className="h-9 w-24 animate-pulse rounded-lg bg-background" aria-hidden />
