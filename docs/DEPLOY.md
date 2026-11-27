@@ -1,0 +1,411 @@
+# Deployment
+
+**Owner: Role 8 (QA + DevOps).**
+
+> **Current plan (Leader decision, 2026-10-24): the free setup below.** The DigitalOcean setup
+> further down is kept as the alternative for when the project gets its own domain and a paid
+> server.
+
+## Free setup: Vercel + Koyeb + Render
+
+| Part | Where | Free plan limits that matter |
+|---|---|---|
+| Frontend (Next.js) | **Vercel** (Hobby) | none for this project |
+| Backend API (Express) | **Koyeb** free instance, region **Frankfurt** (same city as the Supabase database, so bookings are fast) | sleeps after 1 hour without traffic; the first request after that waits a few seconds |
+| Analytics (FastAPI) | **Render** free web service, region **Frankfurt** | sleeps after 15 minutes; waking takes about a minute (the admin page shows "try again" meanwhile) |
+| Database | Supabase (already running) | free projects pause after a week without use - open the dashboard and restore |
+
+**Before a demo:** open the site and the admin analytics page five minutes early, so all three
+are awake.
+
+### Why no cookie problems without a domain
+
+The browser only ever talks to the Vercel site. Every `/api/*` request is passed on by Vercel to
+the Koyeb backend (the rewrite in `frontend/next.config.ts`), so the session cookie belongs to
+the Vercel address and is never a "third-party" cookie. Nothing to set for cookies or CORS
+domains: leave `COOKIE_DOMAIN` empty and do **not** set `NEXT_PUBLIC_API_URL`.
+
+### 1. Analytics on Render (first - the backend needs its address)
+
+1. render.com -> **New -> Web Service** -> connect the GitHub repo `CEMS-UOH/CEMS-Main`.
+2. Branch: `main` (or `develop` for testing). **Root Directory: `analytics`**. Runtime: **Docker**
+   (it uses `analytics/Dockerfile`). Region: **Frankfurt**. Instance type: **Free**.
+3. Environment variable: `ANALYTICS_TOKEN` = a long random string. Generate one with
+   `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`
+   and keep it - the backend needs the same value.
+4. Create. When it is live, open `https://<name>.onrender.com/health` -> `{"success":true,...}`.
+
+### 2. Backend on Koyeb
+
+1. koyeb.com -> **Create Web Service** -> GitHub -> `CEMS-UOH/CEMS-Main`.
+2. Branch: same as above. Builder: **Dockerfile**, **work directory `backend`**.
+   Instance: **Free**, region **Frankfurt**. Exposed port: **5000** (HTTP), health check path
+   `/health`.
+3. Environment variables (Koyeb lets you mark the sensitive ones as secrets - do that):
+
+   | Name | Value |
+   |---|---|
+   | `NODE_ENV` | `production` |
+   | `PORT` | `5000` |
+   | `DATABASE_URL` | the pooler in **session mode**: port **5432**, ending `?connection_limit=5` (as in `.env.example` - about 5x fewer round trips than port 6543) |
+   | `DIRECT_URL` | same as your `.env` |
+   | `JWT_SECRET` | a **new** long random string (not the development one) |
+   | `CORS_ORIGINS` | the Vercel address, e.g. `https://scems.vercel.app` (fill in after step 3, then redeploy) |
+   | `COOKIE_DOMAIN` | leave empty |
+   | `GROQ_API_KEY` | your Groq key |
+   | `GROQ_MODEL` | `openai/gpt-oss-120b` |
+   | `ANALYTICS_URL` | `https://<name>.onrender.com` from step 1 |
+   | `ANALYTICS_TOKEN` | the same value as on Render |
+
+4. Deploy. Check `https://<name>.koyeb.app/health/db` -> `{"database":"up"}`.
+
+Migrations are not run on deploy. When a new migration is added, run
+`cd backend && npm run prisma:deploy` once from a laptop with the production `.env`.
+
+### 3. Frontend on Vercel
+
+1. vercel.com -> **Add New -> Project** -> import `CEMS-UOH/CEMS-Main`.
+2. **Root Directory: `frontend`** (framework Next.js is detected).
+3. Environment variable: `BACKEND_URL` = `https://<name>.koyeb.app` (no trailing slash).
+   Nothing else.
+4. Deploy. Then put the Vercel address into the backend's `CORS_ORIGINS` (step 2) and redeploy
+   the backend.
+
+### 4. Check it end to end
+
+- Open the Vercel address -> the home page shows the upcoming events (the API answers).
+- Log in, book a seat, see the notification bell count, open the ticket.
+- As admin: analytics page (predictions may need "try again" the first time - Render waking up).
+- Ask the assistant a question.
+
+Pushing to the chosen branch redeploys all three automatically.
+
+---
+
+# Alternative: own domain + DigitalOcean (paid)
+
+Kept for later. Not used by the current plan.
+
+Documentation only — nothing in this alternative has been run against a real server yet.
+
+Two hosts, one domain:
+
+| Part | Where | URL |
+|---|---|---|
+| Frontend (Next.js) | Vercel | `https://app.<domain>` |
+| Backend API (Express) | DigitalOcean droplet, Docker Compose + NGINX | `https://api.<domain>` |
+| Analytics (FastAPI) | Same droplet, **not** publicly exposed | internal only |
+| Database | Supabase (managed) | — |
+
+Keeping both on subdomains of **one** registered domain is what lets the session cookie work —
+see [Cookies and CORS](#cookies-and-cors-the-part-that-breaks-first).
+
+---
+
+## 1. Prerequisites
+
+- A registered domain with DNS you control.
+- A DigitalOcean droplet: Ubuntu 24.04 LTS, 2 GB RAM minimum (Prisma + Node + Python in one
+  Compose stack will OOM on the 1 GB plan during `npm ci`).
+- DNS **A records**, both pointing at the droplet's IPv4:
+  - `api.<domain>` → droplet IP
+  - `app.<domain>` → Vercel will give you a CNAME instead; set that when you add the domain in
+    Vercel, not here.
+
+---
+
+## 2. Droplet setup
+
+SSH in as root, then create a non-root user — do not run the stack as root.
+
+```bash
+adduser scems
+usermod -aG sudo scems
+```
+
+Install Docker Engine and the Compose plugin from Docker's official repository (Ubuntu's
+`docker.io` package lags badly):
+
+```bash
+curl -fsSL https://get.docker.com | sh
+usermod -aG docker scems
+```
+
+Log out and back in as `scems` so the group membership takes effect.
+
+### Firewall
+
+Only SSH and HTTP/HTTPS should be reachable. Ports 5000 and 8000 must **never** be public —
+NGINX reaches them over the Docker network.
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+```
+
+---
+
+## 3. Clone and configure
+
+```bash
+cd /opt
+sudo git clone https://github.com/CEMS-UOH/CEMS-Main.git scems
+sudo chown -R scems:scems scems
+cd scems
+git checkout main
+cp .env.example .env
+```
+
+Fill in `/opt/scems/.env`. **Never commit it.** Production values that differ from local:
+
+```ini
+NODE_ENV=production
+PORT=5000
+
+# Supabase - same project, same strings as development
+DATABASE_URL="postgresql://...pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://...pooler.supabase.com:5432/postgres"
+
+# A DIFFERENT secret from development. Generate it on the droplet:
+#   node -e "console.log(require('crypto').randomBytes(64).toString('base64url'))"
+JWT_SECRET="<64 random bytes>"
+
+# See section 6. Note the leading dot on COOKIE_DOMAIN.
+CORS_ORIGINS="https://app.<domain>"
+COOKIE_DOMAIN=".<domain>"
+
+SEED_ADMIN_EMAIL="admin@<domain>"
+SEED_ADMIN_PASSWORD="<strong password>"
+```
+
+`assertRuntimeConfig()` in `backend/src/config/env.js` **exits the process** if `JWT_SECRET` is
+empty while `NODE_ENV=production`, so a missing secret fails at boot rather than at the first
+login attempt.
+
+---
+
+## 4. Bring the stack up
+
+```bash
+cd /opt/scems
+docker compose up -d --build
+```
+
+`docker-compose.yml` defines two services, both reading `env_file: .env`:
+
+- `backend` → `127.0.0.1:5000:5000`
+- `analytics` → `127.0.0.1:8000:8000`
+
+Both are bound to **loopback**, not `0.0.0.0`, so neither is reachable from outside the droplet
+even if UFW is misconfigured. NGINX reaches the backend over `127.0.0.1:5000`. The analytics
+mapping can be dropped entirely once nothing on the host needs to call it directly.
+
+### Migrations
+
+Run migrations **inside the container**, and use `npx` directly:
+
+```bash
+docker compose exec backend npx prisma migrate deploy
+```
+
+Do **not** use `npm run prisma:deploy` here. That script wraps the command in `dotenv-cli`,
+which is a devDependency and is therefore absent from the image (`npm ci --omit=dev`). It is
+also unnecessary: Compose already injects `.env` into the container's environment.
+
+Seeding, the first time only:
+
+```bash
+docker compose exec backend node prisma/seed.js
+```
+
+The seed is idempotent, so re-running it creates nothing new and never changes an existing
+admin's password.
+
+### Health check
+
+```bash
+curl http://localhost:5000/health
+curl http://localhost:5000/health/db     # must return {"success":true,...,"database":"up"}
+```
+
+---
+
+## 5. NGINX + HTTPS for `api.<domain>`
+
+Install NGINX and Certbot **on the host**, not in a container:
+
+```bash
+sudo apt update && sudo apt install -y nginx certbot python3-certbot-nginx
+```
+
+Create `/etc/nginx/sites-available/api.<domain>`:
+
+```nginx
+server {
+    listen 80;
+    server_name api.<domain>;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        # Required: Express uses this to know the original request was HTTPS.
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_set_header Upgrade    $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+Enable it and reload:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/api.<domain> /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Then issue the certificate — Certbot rewrites the file to add the 443 block and an HTTP→HTTPS
+redirect:
+
+```bash
+sudo certbot --nginx -d api.<domain>
+```
+
+Renewal is automatic via the `certbot.timer` systemd unit. Verify with:
+
+```bash
+sudo certbot renew --dry-run
+```
+
+### Why the proxy headers matter
+
+The session cookie is set with `secure: isProduction` (`backend/src/lib/session.js`). Behind a
+proxy, Express only treats a request as secure if it trusts `X-Forwarded-Proto` — otherwise it
+sees plain `http`, refuses to send a `secure` cookie, and login fails silently.
+
+`backend/src/app.js` already handles this:
+
+```js
+if (isProduction) app.set('trust proxy', 1);
+```
+
+`1` trusts exactly one hop — the NGINX instance in front of us. Do not raise it: a larger value
+would let a client forge `X-Forwarded-For` and spoof its own IP. If a CDN is ever added in front
+of NGINX, increase it to match the real number of proxies, and no more.
+
+The `proxy_set_header X-Forwarded-Proto $scheme;` line in the NGINX config above is the other
+half of this — both are required.
+
+---
+
+## 6. Vercel (frontend)
+
+In the Vercel dashboard, import `CEMS-UOH/CEMS-Main` and set:
+
+| Setting | Value |
+|---|---|
+| Framework preset | Next.js |
+| **Root Directory** | **`frontend`** |
+| Build command | `npm run build` (default) |
+| Install command | `npm install` (default) |
+| Production branch | `main` |
+
+Environment variables (Project → Settings → Environment Variables):
+
+| Name | Production | Preview |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `https://api.<domain>` | `https://api.<domain>` |
+
+That is the only variable the frontend needs. Everything else in `.env.example` is
+backend-side — **never** add `DATABASE_URL`, `JWT_SECRET` or `SEED_ADMIN_PASSWORD` to Vercel.
+`NEXT_PUBLIC_*` variables are inlined into the browser bundle and are public by definition.
+
+Then add the domain: Project → Settings → Domains → `app.<domain>`, and create the CNAME Vercel
+shows you.
+
+`SWC_NATIVE_BINDING_CACHE` is **not** needed on Vercel — that workaround is only for the
+Windows permission quirk described in the README.
+
+---
+
+## Cookies and CORS: the part that breaks first
+
+The session is an `httpOnly` cookie, and the frontend and API are on **different hosts**. Three
+settings have to agree or login silently fails — the request succeeds, but the cookie is never
+stored or never sent back.
+
+| Variable | Value | Why |
+|---|---|---|
+| `CORS_ORIGINS` | `https://app.<domain>` | Exact scheme + host, no trailing slash, no wildcard. With `credentials: true` the browser rejects `*`. |
+| `COOKIE_DOMAIN` | `.<domain>` | **Leading dot.** Scopes the cookie to the parent domain so `app.` can send it to `api.`. Set it to `api.<domain>` and the browser will not send it from `app.`. |
+| `NEXT_PUBLIC_API_URL` | `https://api.<domain>` | Must match `CORS_ORIGINS`' counterpart exactly — `http` vs `https`, or a trailing slash, breaks it. |
+
+Both subdomains must sit under **one registered domain**. `SameSite=Lax` plus a shared parent
+domain makes this a same-site request. If the frontend ever moves to a different registered
+domain (`scems.vercel.app` against `api.example.com`), the cookie becomes third-party and would
+need `SameSite=None; Secure` — which is blocked by default in several browsers. Do not go there;
+use the subdomain layout.
+
+Locally, leave `COOKIE_DOMAIN` **empty** — the cookie then defaults to `localhost` and
+`http://localhost:3000` → `http://localhost:5000` works without `Secure`.
+
+### Verifying it end to end
+
+```bash
+curl -i -X POST https://api.<domain>/api/attendee/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"...","password":"..."}'
+```
+
+The `Set-Cookie` header must contain **all** of: `HttpOnly`, `SameSite=Lax`, `Secure`, and
+`Domain=.<domain>`. If `Secure` is missing, `NODE_ENV` is not `production` in the container. If
+`Domain` is missing, `COOKIE_DOMAIN` is not set.
+
+---
+
+## Updating a release
+
+```bash
+cd /opt/scems
+git pull origin main
+docker compose up -d --build
+docker compose exec backend npx prisma migrate deploy   # only if migrations were added
+docker compose logs -f backend                          # watch for a clean boot
+```
+
+Vercel redeploys `main` automatically on push.
+
+## Rollback
+
+```bash
+cd /opt/scems
+git checkout <previous-tag>      # e.g. foundation-v1
+docker compose up -d --build
+```
+
+Prisma migrations do **not** roll back. If a release added a migration, rolling the code back
+leaves the database ahead of it — fine for additive changes (new tables and nullable columns),
+not for destructive ones. Review every migration for backward compatibility before tagging a
+release.
+
+---
+
+## Still to be verified
+
+Nothing in this document has been executed. Before the production deploy, Role 8 should confirm:
+
+1. `docker compose build` succeeds for both services. **Not yet verified** — Docker Desktop
+   would not start on the Leader's machine during the bootstrap session.
+2. The `apk add --no-cache openssl` line in `backend/Dockerfile` is actually required (it is
+   Prisma's documented requirement on Alpine, but it was added without a build to confirm).
+3. `docker compose exec backend npx prisma migrate deploy` works inside the image — the image
+   deliberately ships the Prisma CLI as a runtime dependency for this.
+4. `Set-Cookie` on a real login through NGINX carries `Secure` and `Domain=.<domain>`, which
+   confirms `trust proxy` and `COOKIE_DOMAIN` are both working.

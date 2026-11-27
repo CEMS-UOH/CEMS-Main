@@ -3,12 +3,51 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 require('dotenv').config(); // fallback: backend/.env
 
-module.exports = {
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+const config = {
   port: Number(process.env.PORT) || 5000,
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
+  isProduction: nodeEnv === 'production',
   jwtSecret: process.env.JWT_SECRET || '',
+  // Session lifetime. Keep the cookie and the token in step - 7 days (NFR: JWT sessions).
+  sessionDays: 7,
+  // Optional. In production set it to the shared parent domain (e.g. ".example.com") so
+  // app.<domain> and api.<domain> can share the session cookie. Empty is correct for localhost.
+  cookieDomain: process.env.COOKIE_DOMAIN || '',
+  // bcrypt cost factor. Shared by the seed and the auth service so they never diverge.
+  bcryptRounds: Number(process.env.BCRYPT_ROUNDS) || 12,
   corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:3000')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // FR-23 chatbot (Groq, groq.com - per Leader decision, see CLAUDE.md). An empty key is valid
+  // here: the chatbot fails each request cleanly (CHATBOT_UNAVAILABLE) rather than at startup,
+  // since it is not required for the rest of the app to run.
+  groqApiKey: process.env.GROQ_API_KEY || '',
+  // openai/gpt-oss-120b: Groq's largest production model, good in Arabic and English.
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+  // FR-20 attendance predictions: where the Python analytics service listens (in Docker,
+  // http://analytics:8000). Optional - without it the admin analytics page still shows every
+  // descriptive number and says predictions are unavailable.
+  analyticsUrl: process.env.ANALYTICS_URL || '',
+  // Shared secret sent to the analytics service as X-Analytics-Token. Needed only when that
+  // service is reachable from the internet; the same value goes in its ANALYTICS_TOKEN.
+  analyticsToken: process.env.ANALYTICS_TOKEN || '',
 };
+
+// Fail fast on a missing JWT_SECRET. Called from src/index.js at startup, NOT from app.js,
+// so tests can build the app without a real secret.
+config.assertRuntimeConfig = () => {
+  if (!config.jwtSecret) {
+    const msg =
+      'JWT_SECRET is empty. Set it in .env (a long random string) - sessions cannot be signed without it.';
+    if (config.isProduction) {
+      console.error(`FATAL: ${msg}`);
+      process.exit(1);
+    }
+    console.warn(`WARNING: ${msg} Login and /me will fail until it is set.`);
+  }
+};
+
+module.exports = config;

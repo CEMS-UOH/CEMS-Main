@@ -10,12 +10,15 @@ services:
     environment:
       PORT: 5000
     ports:
-      - "5000:5000"
+      # Bound to loopback on purpose: NGINX on the host proxies to it. Publishing on
+      # 0.0.0.0 would expose the API directly, bypassing TLS and the reverse proxy.
+      - "127.0.0.1:5000:5000"
     restart: unless-stopped
 
   analytics:
     build: ./analytics
     env_file: .env
     ports:
-      - "8000:8000"
+      # Internal only - the analytics service is never publicly reachable.
+      - "127.0.0.1:8000:8000"
     restart: unless-stopped

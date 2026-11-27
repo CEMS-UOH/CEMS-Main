@@ -1,6 +1,417 @@
 @import 'tailwindcss';
 
-/* Placeholder styles - the real look comes from the Figma design (Role 7). */
+/* dark: utilities follow the chosen theme (html[data-theme]), not only the system setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * SCEMS design tokens.
+ *
+ * Palette is drawn from the University of Hail portal (deep green brand color,
+ * white surfaces, soft neutral background, a gold accent from the university
+ * crest used sparingly). Component shapes (cards, buttons, shadows) follow the
+ * reference dashboard style the team picked, recolored into this palette.
+ *
+ * These are approximate reads from a screenshot, not the university's official
+ * brand hex values - Role 7 should swap them for the real brand kit once Figma
+ * has one.
+ *
+ * Tailwind 4 turns every --color-* token below into utilities automatically:
+ * bg-primary, text-primary, border-primary, bg-background, etc.
+ *
+ * Dark mode re-points the same tokens (see "Dark theme" below), so screens never name a
+ * theme: they say bg-surface or text-primary and get the right colour in either one.
+ */
+@theme {
+  --color-primary: #1f7a52;
+  --color-primary-dark: #123b2e;
+  --color-primary-light: #e6f2ec;
+  --color-accent: #c9a227;
+  --color-accent-dark: #8a6a1a;
+  --color-accent-light: #f6eed7;
+
+  --color-background: #f5f6f6;
+  --color-surface: #ffffff;
+
+  --color-text: #1a1f1c;
+  --color-text-muted: #5b6560;
+  --color-border: #e3e7e5;
+
+  --color-danger: #b3261e;
+  --color-danger-light: #fbecea;
+  --color-success: #1f7a52;
+  --color-success-light: #e6f2ec;
+
+  /* Text and icons that sit ON a filled colour (a primary button, the unread badge, a
+     selected tab). White here; near-black in the dark theme, where the fills turn bright. */
+  --color-on-fill: #ffffff;
+  /* The dim layer behind a dialog. Always dark, in both themes. */
+  --color-scrim: #123b2e;
+
+  /* Charts. A lighter step of primary for a second, related measure (e.g. "expected" next to
+     "booked now"). Checked with the dataviz validator as a one-hue ramp with primary:
+     monotone lightness, visible step, 2.84:1 against white. */
+  --color-chart-soft: #58a97f;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+
+  --shadow-card: 0 1px 2px rgba(16, 24, 21, 0.04), 0 8px 20px rgba(16, 24, 21, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(16, 24, 21, 0.06), 0 12px 28px rgba(16, 24, 21, 0.09);
+
+  --font-ar: var(--font-tajawal), 'Segoe UI', Tahoma, sans-serif;
+  --font-en: var(--font-jakarta), 'Segoe UI', system-ui, sans-serif;
+
+  /* Motion. Confident deceleration for arrivals, a quick accelerate for exits, and short
+     durations: feedback 120 ms, state changes 200 ms, overlays 320 ms. Nothing bounces; only
+     the spinner and the loading shimmer loop. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-quick: cubic-bezier(0.4, 0, 1, 1);
+  --animate-rise: rise 0.6s var(--ease-out-soft) both;
+  --animate-fade-in: fade-in 0.2s var(--ease-out-expo) both;
+  --animate-pop: pop 0.32s var(--ease-out-expo) both;
+  --animate-sheet-in: sheet-in 0.32s var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-ticket: ticket-print 0.62s var(--ease-out-expo) backwards;
+  --animate-qr-in: qr-in 0.5s var(--ease-out-expo) 0.28s backwards;
+  /* A chart bar grows from its baseline: up for columns, along the line for bars (works in
+     both reading directions, since it is the size that grows, not a transform). */
+  --animate-grow-up: grow-up 0.6s var(--ease-out-expo) 0.1s backwards;
+  --animate-grow-side: grow-side 0.6s var(--ease-out-expo) 0.1s backwards;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* A count that changed: a short swell, so the eye catches it without a loop. */
+  @keyframes pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.12);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* A panel opening from the button that opened it (transform-origin is set where used). */
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92) translateY(0.5rem);
+    }
+  }
+
+  /* Loading placeholders: a soft band of light passing over the shape of what is coming. */
+  @keyframes shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -100% 0;
+    }
+  }
+
+  /* The booking ticket comes out like a printed ticket: revealed top to bottom. */
+  @keyframes ticket-print {
+    from {
+      clip-path: inset(0 0 100% 0 round 1rem);
+      transform: translateY(-0.75rem);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 1rem);
+      transform: none;
+    }
+  }
+
+  /* ...and its QR code settles into focus once the ticket is out. */
+  @keyframes qr-in {
+    from {
+      opacity: 0;
+      filter: blur(6px);
+      transform: scale(0.94);
+    }
+  }
+
+  @keyframes grow-up {
+    from {
+      height: 0;
+    }
+  }
+
+  @keyframes grow-side {
+    from {
+      width: 0;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/*
+ * Type scale. Use these names instead of picking a text-* size per screen:
+ *
+ *   type-display  the homepage headline only
+ *   type-h1       the title of a page; on the home page, where the display line is the
+ *                 title, it is the title of each section instead
+ *   type-h2       a section inside a page
+ *   type-h3       the title of a card or list item
+ *   type-eyebrow  the small label above a title
+ *   text-base     body copy            text-sm   secondary / UI copy
+ *   text-xs       captions and field labels
+ *
+ * Arabic (Tajawal) and English (Plus Jakarta Sans) do not share metrics: Tajawal draws
+ * smaller at the same size and its marks need more room between lines, while tight letter
+ * spacing - which suits large Latin headings - breaks the joins between Arabic letters. So
+ * the scale is one set of names with two sets of numbers, switched by html[dir] below.
+ */
+@utility type-display {
+  font-size: clamp(2.25rem, 1rem + 3vw, 4.75rem);
+  font-weight: var(--weight-display);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+@utility type-h1 {
+  font-size: clamp(1.75rem, 1.6rem + 0.7vw, 2.125rem);
+  font-weight: 700;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+@utility type-h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+@utility type-h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: var(--leading-title);
+}
+
+@utility type-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
 html {
-  font-family: Tahoma, 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+/* The parts of the page the browser draws itself, in the same palette as the rest. */
+html {
+  color-scheme: light;
+  caret-color: var(--color-primary);
+  accent-color: var(--color-primary);
+  scrollbar-color: color-mix(in oklab, var(--color-primary-dark) 28%, transparent) transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * Dark theme. <html data-theme="dark"> - set before the first paint by the script in
+ * app/[locale]/layout.tsx from the visitor's choice (components/ThemeSwitcher.tsx), or from
+ * the system setting when they have not chosen.
+ *
+ * Not an inverted light theme: a deep green-black (the brand's own hue, very dark) with
+ * surfaces a step lighter, so cards still lift off the page; the brand green brightens so it
+ * reads as text, and fills carry near-black text (--color-on-fill). Every text pair was
+ * checked: body 14:1, muted 7:1, green text 7.9:1, text on a green button 8.8:1.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-primary: #55c592;
+  --color-primary-dark: #a6e5c3;
+  --color-primary-light: #173a2b;
+  --color-accent: #dcb543;
+  --color-accent-dark: #ecd07a;
+  --color-accent-light: #352c12;
+
+  --color-background: #0e1512;
+  --color-surface: #151e1a;
+
+  --color-text: #e6ece9;
+  --color-text-muted: #9eaba4;
+  --color-border: #28332e;
+
+  --color-danger: #f08a80;
+  --color-danger-light: #3b1c1a;
+  --color-success: #55c592;
+  --color-success-light: #173a2b;
+
+  --color-on-fill: #06140d;
+  --color-scrim: #000000;
+
+  /* One-hue ramp with primary, checked with the dataviz validator against the dark surface. */
+  --color-chart-soft: #17865a;
+
+  /* Shadows can't lighten, so on a dark page they go deeper and the hairline border does
+     more of the work. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.28);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+/*
+ * Paper stays paper: the printable certificate, the ticket's QR and every QR code are light
+ * whatever the theme (a scanner needs dark on light, and a certificate is printed). Put
+ * theme-light on the element and everything inside it uses the light tokens again.
+ */
+.theme-light {
+  color-scheme: light;
+  color: #1a1f1c;
+
+  --color-primary: #1f7a52;
+  --color-primary-dark: #123b2e;
+  --color-primary-light: #e6f2ec;
+  --color-accent: #c9a227;
+  --color-accent-dark: #8a6a1a;
+  --color-accent-light: #f6eed7;
+  --color-background: #f5f6f6;
+  --color-surface: #ffffff;
+  --color-text: #1a1f1c;
+  --color-text-muted: #5b6560;
+  --color-border: #e3e7e5;
+  --color-danger: #b3261e;
+  --color-danger-light: #fbecea;
+  --color-success: #1f7a52;
+  --color-success-light: #e6f2ec;
+  --color-on-fill: #ffffff;
+  --shadow-card: 0 1px 2px rgba(16, 24, 21, 0.04), 0 8px 20px rgba(16, 24, 21, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(16, 24, 21, 0.06), 0 12px 28px rgba(16, 24, 21, 0.09);
+}
+
+/* Switching theme cross-fades the page's colours instead of snapping (only while the switch
+   happens - ThemeSwitcher adds the class for a moment - so nothing else is slowed down). */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition:
+    background-color 200ms var(--ease-out-soft),
+    border-color 200ms var(--ease-out-soft),
+    color 200ms var(--ease-out-soft),
+    fill 200ms var(--ease-out-soft) !important;
+}
+
+a {
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: from-font;
+}
+
+/* Numbers in tables line up in columns. */
+table,
+time,
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Locale-driven typeface: layout.tsx sets dir="rtl|ltr" on <html>, this maps it
+   to the matching font family without any per-component font classes. */
+html[dir='rtl'] {
+  font-family: var(--font-ar);
+
+  /* Arabic display type is set lighter than the Latin: Tajawal's heavy cuts fill in at large
+     sizes and read as clumsy, while its medium keeps the letterforms open. */
+  --weight-display: 500;
+  --leading-display: 1.3;
+  --leading-heading: 1.45;
+  --leading-title: 1.55;
+  --tracking-display: 0;
+  --tracking-heading: 0;
+  --tracking-eyebrow: 0;
+
+  /* Tajawal reads about one step smaller than Plus Jakarta Sans, so the small sizes are
+     nudged up, and every size gets taller lines to clear the diacritics. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.65;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.7;
+  --text-base--line-height: 1.8;
+  --text-lg--line-height: 1.7;
+}
+
+html[dir='ltr'] {
+  font-family: var(--font-en);
+
+  --weight-display: 800;
+  --leading-display: 1.08;
+  --leading-heading: 1.2;
+  --leading-title: 1.35;
+  --tracking-display: -0.03em;
+  --tracking-heading: -0.02em;
+  --tracking-eyebrow: 0.08em;
+
+  --text-base--line-height: 1.6;
+}
+
+/* Default border colour for anything that draws a border. It lives in the base layer on
+   purpose: written outside a layer it outranks every Tailwind utility, so border-primary,
+   border-danger and friends silently did nothing (no red outline on an invalid field, no
+   underline on the active tab). */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+}
+
+/* People who ask for less motion get none of the decorative kind. The loading spinner keeps
+   turning: it is information, not decoration. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-grow-up,
+  .animate-grow-side {
+    animation: none;
+  }
+  /* Keep the meaning, drop the movement: what appears still fades in, nothing travels or
+     scales, and the shimmer stands still. */
+  .animate-sheet-in,
+  .animate-ticket,
+  .animate-qr-in,
+  .animate-pop {
+    animation: fade-in 0.2s ease-out both;
+  }
+  .animate-shimmer {
+    animation: none;
+  }
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
